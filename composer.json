@@ -1,0 +1,18 @@
+{
+  "name": "nypl-microservice-starter",
+  "description": "NYPL Microservice Starter",
+  "require": {
+    "slim/slim": "3.5.0",
+    "slim/pdo": "1.9.9",
+    "kwn/php-rdkafka-stubs": "0.0.5",
+    "zircote/swagger-php": "2.0.7",
+    "monolog/monolog": "1.9.1"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "NYPL\\API\\": [ "src/" ]
+    }
+  }
+}

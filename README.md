@@ -25,7 +25,7 @@ $ git clone git@bitbucket.org:NYPL/microservice-php-starter.git
 * Avro serializer ([Avro](http://apache.osuosl.org/avro/))
 * Swagger documentation generator ([swagger-php](https://github.com/zircote/swagger-php))
 * Error logging ([Monolog](https://github.com/Seldaek/monolog))
-* JWT authentication interaction via NYPL API Gateway
+* Identity/JWT interaction via NYPL API Gateway (`X-NYPL-Identity`)
 
 ## Usage
 

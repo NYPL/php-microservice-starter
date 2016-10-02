@@ -3,7 +3,6 @@ namespace NYPL\API;
 
 use NYPL\API\Model\DataModel\Source;
 use NYPL\API\Model\Identity;
-use NYPL\API\Model\ModelTrait\DBReadTrait;
 use NYPL\API\Model\Response\SuccessResponse;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -201,16 +200,16 @@ abstract class Controller
         if ($model instanceof ModelSet) {
             if (!$model->isNoDefaultSorting()) {
                 if (!$model->getOrderBy()) {
-                    $model->setOrderBy('updatedDate');
+                    $model->setOrderBy("updatedDate");
                 }
 
                 if (!$model->getOrderDirection()) {
-                    $model->setOrderDirection('DESC');
+                    $model->setOrderDirection("DESC");
                 }
             }
 
-            $model->setOffset($this->getRequest()->getParam('offset'));
-            $model->setLimit($this->getRequest()->getParam('limit'));
+            $model->setOffset($this->getRequest()->getParam("offset"));
+            $model->setLimit($this->getRequest()->getParam("limit"));
 
             if ($filter) {
                 $model->addFilter($filter);

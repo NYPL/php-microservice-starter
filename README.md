@@ -20,12 +20,12 @@ $ git clone git@bitbucket.org:NYPL/microservice-php-starter.git
 ## Features
 
 * RESTful HTTP framework ([Slim](http://www.slimframework.com/))
-* Database PDO library ([slim-pdo](https://github.com/FaaPz/Slim-PDO))
+* Database PDO library ([Slim-PDO](https://github.com/FaaPz/Slim-PDO))
 * Kafka message publishing ([Rdkafka](https://arnaud-lb.github.io/php-rdkafka/phpdoc/book.rdkafka.html))
 * Avro serializer ([Avro](http://apache.osuosl.org/avro/))
 * Swagger documentation generator ([swagger-php](https://github.com/zircote/swagger-php))
 * Error logging ([Monolog](https://github.com/Seldaek/monolog))
-* Identity/JWT interaction via NYPL API Gateway (`X-NYPL-Identity`)
+* Identity/JWT authentication via NYPL API Gateway (`X-NYPL-Identity`)
 
 ## Usage
 

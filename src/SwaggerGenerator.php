@@ -5,7 +5,7 @@ use Slim\Http\Response;
 
 class SwaggerGenerator
 {
-    public function generate($directory, Response $response)
+    public static function generate($directory, Response $response)
     {
         $swagger = \Swagger\scan($directory);
 

@@ -38,7 +38,7 @@ Create an `index.php` with a `Service` object and your [Slim](http://www.slimfra
 ~~~~
 require __DIR__ . '/vendor/autoload.php';
 
-$service = new NYPL\API\Service();
+$service = new NYPL\Starter\Service();
 
 $service->get("/v0.1/bibs", function (Request $request, Response $response) {
     $controller = new Controller\BibController($request, $response);

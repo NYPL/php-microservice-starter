@@ -1,7 +1,6 @@
 {
   "name": "nypl/microservice-starter",
   "description": "NYPL Microservice Starter",
-  "minimum-stability": "stable",
   "license": "proprietary",
   "authors": [
     {

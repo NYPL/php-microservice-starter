@@ -3,6 +3,7 @@ namespace NYPL\API\Model\ModelTrait;
 
 use NYPL\API\Model;
 use NYPL\API\Model\ModelInterface\MessageInterface;
+use NYPL\API\Model\ModelInterface\DeleteInterface;
 use NYPL\API\Model\LocalDateTime;
 
 trait CreateTrait
@@ -13,6 +14,11 @@ trait CreateTrait
      * @return string
      */
     abstract public function getIdName();
+
+    /**
+     * @return string
+     */
+    abstract public function getSequenceId();
 
     /**
      * @return mixed
@@ -57,6 +63,10 @@ trait CreateTrait
             return $value->getDateTime()->format("c");
         }
 
+        if (is_bool($value)) {
+            return (int) $value;
+        }
+
         if (is_array($value) || is_object($value)) {
             return json_encode($value);
         }
@@ -66,8 +76,8 @@ trait CreateTrait
 
     protected function checkCreatedDate()
     {
-        $dateCreatedGetter = "getCreatedDate";
-        $dateCreatedSetter = "setCreatedDate";
+        $dateCreatedGetter = 'getCreatedDate';
+        $dateCreatedSetter = 'setCreatedDate';
 
         if (method_exists($this, $dateCreatedGetter) && method_exists($this, $dateCreatedSetter)) {
             if (!$this->$dateCreatedGetter()) {
@@ -79,7 +89,7 @@ trait CreateTrait
     /**
      * @param bool $useId
      *
-     * @return string
+     * @throws \Exception
      */
     public function create($useId = false)
     {
@@ -89,10 +99,18 @@ trait CreateTrait
 
         $this->checkCreatedDate();
 
-        $this->createDbRecord($useId);
+        $insertId = $this->createDbRecord($useId);
 
-        if ($this instanceof MessageInterface) {
-            $this->publishMessage($this->createMessage());
+        try {
+            if ($this instanceof MessageInterface) {
+                $this->publishMessage($this->createMessage());
+            }
+        } catch (\Exception $exception) {
+            if ($this instanceof DeleteInterface) {
+                $this->delete($insertId);
+            }
+
+            throw $exception;
         }
     }
 }

@@ -3,6 +3,7 @@ namespace NYPL\API\Model\ModelTrait;
 
 use NYPL\API\APIException;
 use NYPL\API\Model;
+use Stringy\Stringy;
 
 trait TranslateTrait
 {
@@ -23,6 +24,16 @@ trait TranslateTrait
     }
 
     /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public function translateToObjectName($name = '')
+    {
+        return (string) Stringy::create($name)->camelize();
+    }
+
+    /**
      * @param array $data
      * @param bool $validateData
      */
@@ -30,7 +41,11 @@ trait TranslateTrait
     {
         foreach ($data as $objectKey => $objectValue) {
             if (isset($objectValue)) {
-                $this->setObject($objectKey, $objectValue, $validateData);
+                $this->setObject(
+                    $this->translateToObjectName($objectKey),
+                    $objectValue,
+                    $validateData
+                );
             }
         }
     }
@@ -65,7 +80,7 @@ trait TranslateTrait
                 return true;
             }
 
-            throw new APIException('Data attribute (' . $objectKey . ') specified is not valid');
+            throw new APIException("Data attribute (" . $objectKey . ") specified is not valid");
         }
     }
 

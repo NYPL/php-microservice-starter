@@ -2,9 +2,13 @@
 namespace NYPL\API;
 
 use NYPL\API\Model\ModelInterface\ReadInterface;
+use NYPL\API\Model\ModelTrait\DBReadTrait;
+use NYPL\API\Model\ModelTrait\DBTrait;
 
 class ModelSet extends Model implements ReadInterface
 {
+    use DBTrait, DBReadTrait;
+
     /**
      * @var Model
      */
@@ -18,12 +22,12 @@ class ModelSet extends Model implements ReadInterface
     /**
      * @var string
      */
-    public $orderBy = '';
+    public $orderBy = "";
 
     /**
      * @var string
      */
-    public $orderDirection = '';
+    public $orderDirection = "";
 
     /**
      * @var int

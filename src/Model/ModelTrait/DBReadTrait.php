@@ -13,12 +13,12 @@ trait DBReadTrait
     {
         $selectStatement = DB::getDatabase()->select()
             ->from($this->getTableName())
-            ->where($this->getIdName(), "=", $id);
+            ->where($this->getIdName(), '=', $id);
 
         $selectStatement = $selectStatement->execute();
 
         if (!$selectStatement->rowCount()) {
-            throw new APIException("No record found");
+            throw new APIException("No record found", [], 0, null, 404);
         }
 
         $this->translate($selectStatement->fetch());
@@ -34,9 +34,16 @@ trait DBReadTrait
          */
         foreach ($this->getFilters() as $filter) {
             if ($filter->isJsonColumn()) {
-                $selectStatement->whereLike($filter->getFilterColumn(), '%"' . $filter->getFilterValue() . '"%');
+                $selectStatement->whereLike(
+                    $this->translateDbName($filter->getFilterColumn()),
+                    '%"' . $filter->getFilterValue() . '"%'
+                );
             } else {
-                $selectStatement->where($filter->getFilterColumn(), "=", $filter->getFilterValue());
+                $selectStatement->where(
+                    $this->translateDbName($filter->getFilterColumn()),
+                    '=',
+                    $filter->getFilterValue()
+                );
             }
         }
     }
@@ -49,16 +56,16 @@ trait DBReadTrait
         $baseModel = $this->getBaseModel();
 
         $selectStatement = DB::getDatabase()->select()
-            ->from($baseModel->getTableName());
+            ->from($baseModel->translateDbName($baseModel->getTableName()));
 
         if ($this->getOffset()) {
-            $selectStatement->limit($this->getLimit(), $this->getOffset());
-        } else {
-            $selectStatement->limit($this->getLimit());
+            $selectStatement->offset($this->getOffset());
         }
 
+        $selectStatement->limit($this->getLimit());
+
         if ($this->getOrderBy()) {
-            $selectStatement->orderBy($this->getOrderBy(), $this->getOrderDirection());
+            $selectStatement->orderBy($this->translateDbName($this->getOrderBy()), $this->getOrderDirection());
         }
 
         if ($this->getFilters()) {
@@ -68,7 +75,7 @@ trait DBReadTrait
         $selectStatement = $selectStatement->execute();
 
         if (!$selectStatement->rowCount()) {
-            throw new APIException('No records found');
+            throw new APIException("No records found", [], 0, null, 404);
         }
 
         foreach ($selectStatement->fetchAll() as $result) {
@@ -82,12 +89,7 @@ trait DBReadTrait
         }
     }
 
-    /**
-     * @param string $id
-     *
-     * @return bool
-     */
-    public function read($id = '')
+    public function read($id = "")
     {
         if ($id) {
             $this->setSingle($id);

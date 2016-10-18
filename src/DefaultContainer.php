@@ -12,7 +12,11 @@ class DefaultContainer extends Container
     {
         parent::__construct();
 
-        $this["settings"]["displayErrorDetails"] = true;
+        ini_set('display_errors', 0);
+        set_error_handler(ErrorHandler::class . "::errorFunction");
+        register_shutdown_function(ErrorHandler::class . "::shutdownFunction");
+
+        $this["settings"]["displayErrorDetails"] = false;
 
         $this["notFoundHandler"] = function (Container $container) {
             return function (Request $request, Response $response) use ($container) {
@@ -25,9 +29,24 @@ class DefaultContainer extends Container
 
         $this["errorHandler"] = function (Container $container) {
             return function (Request $request, Response $response, \Exception $exception) use ($container) {
-                return $container["response"]->withStatus(500)
+                if ($exception instanceof APIException) {
+                    $errorCode = $exception->getHttpCode();
+                } else {
+                    $errorCode = 500;
+                }
+
+                APILogger::addLog(
+                    $errorCode,
+                    $exception->getMessage(),
+                    [
+                        (string) $request->getUri(),
+                        $request->getParsedBody()
+                    ]
+                );
+
+                return $container["response"]->withStatus($errorCode)
                     ->withJson(new ErrorResponse(
-                        500,
+                        $errorCode,
                         'exception',
                         $exception->getMessage(),
                         $exception

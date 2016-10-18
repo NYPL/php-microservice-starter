@@ -7,10 +7,10 @@ class Message
 {
     const PAYLOAD_CONTENT_TYPE = "binary/avro";
 
-    const ACTION_CREATE = "create";
-    const ACTION_READ = "read";
-    const ACTION_UPDATE = "update";
-    const ACTION_DELETE = "delete";
+    const ACTION_CREATE = 'create';
+    const ACTION_READ = 'read';
+    const ACTION_UPDATE = 'update';
+    const ACTION_DELETE = 'delete';
 
     /**
      * @var string
@@ -30,7 +30,7 @@ class Message
     /**
      * @var string
      */
-    public $payload = "";
+    public $payload = '';
 
     protected $allowableActions = [self::ACTION_CREATE, self::ACTION_READ, self::ACTION_UPDATE, self::ACTION_DELETE];
 

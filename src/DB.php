@@ -1,6 +1,7 @@
 <?php
 namespace NYPL\API;
 
+use NYPL\Services\Config;
 use Slim\PDO\Database;
 
 class DB

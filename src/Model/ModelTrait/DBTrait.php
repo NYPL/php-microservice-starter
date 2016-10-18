@@ -3,6 +3,8 @@ namespace NYPL\API\Model\ModelTrait;
 
 use NYPL\API\APIException;
 use NYPL\API\DB;
+use Stringy\Stringy;
+use NYPL\API\Model\ModelInterface\DeleteInterface;
 
 trait DBTrait
 {
@@ -22,14 +24,26 @@ trait DBTrait
     protected function checkExistingDb()
     {
         $selectStatement = DB::getDatabase()->select()
-            ->from($this->getTableName())
-            ->where($this->getIdName(), '=', $this->getId());
+            ->from($this->translateDbName($this->getTableName()))
+            ->where($this->translateDbName($this->getIdName()), '=', $this->getId());
 
         $selectStatement = $selectStatement->execute();
 
         if ($selectStatement->rowCount()) {
-            throw new APIException('ID specified (' . $this->getId() . ') already exists');
+            if ($this instanceof DeleteInterface) {
+                $this->delete($this->getId());
+            }
         }
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return string
+     */
+    public function translateDbName($key = "")
+    {
+        return (string) Stringy::create($key)->underscored();
     }
 
     /**
@@ -43,7 +57,7 @@ trait DBTrait
 
         foreach (get_object_vars($this) as $key => $value) {
             if (($useId || $key !== $this->getIdName()) && !in_array($key, $this->getExcludeProperties())) {
-                $insertValues[$key] = $this->getObjectValue($value);
+                $insertValues[$this->translateDbName($key)] = $this->getObjectValue($value);
             }
         }
 
@@ -51,7 +65,13 @@ trait DBTrait
             ->into($this->getTableName())
             ->values(array_values($insertValues));
 
-        $insertId = $insertStatement->execute(true);
+        $insertStatement->execute(true);
+
+        if ($this->getSequenceId()) {
+            $insertId = DB::getDatabase()->lastInsertId($this->getSequenceId());
+        } else {
+            $insertId = "";
+        }
 
         if ($useId) {
             return $this->getId();

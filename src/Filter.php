@@ -6,7 +6,7 @@ class Filter
     /**
      * @var string
      */
-    public $filterColumn = "";
+    public $filterColumn = '';
 
     /**
      * @var mixed
@@ -29,7 +29,7 @@ class Filter
      * @param bool $isJsonColumn
      * @param string $id
      */
-    public function __construct($filterColumn = "", $filterValue = "", $isJsonColumn = false, $id = "")
+    public function __construct($filterColumn = '', $filterValue = '', $isJsonColumn = false, $id = '')
     {
         if ($filterColumn && $filterColumn) {
             $this->setFilterColumn($filterColumn);

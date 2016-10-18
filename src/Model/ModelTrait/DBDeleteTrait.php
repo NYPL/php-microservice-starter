@@ -6,11 +6,11 @@ use NYPL\API\Model;
 
 trait DBDeleteTrait
 {
-    public function delete($id = "")
+    public function delete($id = '')
     {
         $sql = DB::getDatabase()->delete()
             ->from($this->getTableName())
-            ->where($this->getIdName(), "=", $id);
+            ->where($this->getIdName(), '=', $id);
 
         $sql->execute();
 

@@ -1,7 +1,8 @@
 <?php
 namespace NYPL\API\Model\ModelTrait;
 
-use NYPL\API\Config;
+use NYPL\API\AvroLoader;
+use NYPL\Services\Config;
 use NYPL\API\Model\Message;
 use NYPL\API\Model\ModelInterface\MessageInterface;
 
@@ -29,6 +30,8 @@ trait MessageTrait
      */
     protected function encodeMessageAsAvro()
     {
+        AvroLoader::load();
+
         /**
          * @var MessageInterface $this
          */
@@ -49,7 +52,7 @@ trait MessageTrait
 
     protected function createMessage()
     {
-        return $this->createMessageAsJson();
+        return $this->createMessageAsBinary();
     }
 
     /**
@@ -60,7 +63,7 @@ trait MessageTrait
         /**
          * @var MessageInterface $this
          */
-        return $this->getSchema()->getId() . chr(0) . $this->encodeMessageAsAvro();
+        return $this->encodeMessageAsAvro();
     }
 
     /**

@@ -2,10 +2,12 @@
 namespace NYPL\API;
 
 use NYPL\API\Model\LocalDateTime;
+use NYPL\API\Model\ModelTrait\DBReadTrait;
+use NYPL\API\Model\ModelTrait\DBTrait;
 
 abstract class Model implements \JsonSerializable
 {
-    use Model\ModelTrait\DBReadTrait;
+    use DBTrait, DBReadTrait;
 
     /**
      * @var Filter[]
@@ -15,7 +17,7 @@ abstract class Model implements \JsonSerializable
     /**
      * @var array
      */
-    public $excludeProperties = ["filters", "excludeProperties"];
+    public $excludeProperties = ['filters', 'excludeProperties'];
 
     protected function getJsonObjectValue($value)
     {

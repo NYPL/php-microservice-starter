@@ -7,6 +7,8 @@ class SwaggerGenerator
 {
     public static function generate($directory, Response $response)
     {
+        ErrorHandler::setIgnoreError(true);
+
         $swagger = \Swagger\scan($directory);
 
         return $response->withJson($swagger)

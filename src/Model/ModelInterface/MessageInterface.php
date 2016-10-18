@@ -2,7 +2,7 @@
 namespace NYPL\Starter\Model\ModelInterface;
 
 use NYPL\Starter\Model;
-use NYPL\Starter\Model\DataModel\Schema;
+use NYPL\Starter\Model\Schema;
 
 interface MessageInterface
 {

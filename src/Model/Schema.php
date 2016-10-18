@@ -1,5 +1,5 @@
 <?php
-namespace NYPL\Starter\Model\DataModel;
+namespace NYPL\Starter\Model;
 
 /**
  * @SWG\Definition(title="Schema", type="object", required={"id"})

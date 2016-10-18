@@ -1,11 +1,11 @@
 <?php
-namespace NYPL\Starter\Model\DataModel;
+namespace NYPL\Starter\Model;
 
 use NYPL\Starter\Model;
 use NYPL\Starter\Model\ModelTrait\CreateTrait;
 use NYPL\Starter\Model\ModelTrait\TranslateTrait;
 
-class Source extends Model
+class åSource extends Model
 {
     use TranslateTrait, CreateTrait;
 

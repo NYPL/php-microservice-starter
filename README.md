@@ -33,11 +33,13 @@ Via Composer
 
 ### HTTP/API Server
 
+See the `samples/service` directory to learn how to create an example service.
+
+#### Basic Example
+
 Create an `index.php` with a `Service` object and your [Slim](http://www.slimframework.com/) routes:
 
 ~~~~
-require __DIR__ . '/vendor/autoload.php';
-
 $service = new NYPL\Starter\Service();
 
 $service->get("/v0.1/bibs", function (Request $request, Response $response) {
@@ -47,7 +49,7 @@ $service->get("/v0.1/bibs", function (Request $request, Response $response) {
 ~~~~
 
 Configure your web server to load `index.php` on all requests.
-See the `/samples` directory for sample configuration files for an Apache `.htaccess` or Nginx `nginx.conf` installation.
+See the `samples/service-config` directory for sample configuration files for an Apache `.htaccess` or Nginx `nginx.conf` installation.
 
 ### Swagger Documentation Generator
 

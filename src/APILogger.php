@@ -1,5 +1,5 @@
 <?php
-namespace NYPL\API;
+namespace NYPL\Starter;
 
 use Monolog\Handler\SlackHandler;
 use Monolog\Handler\StreamHandler;

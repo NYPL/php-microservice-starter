@@ -1,10 +1,10 @@
 <?php
-namespace NYPL\API\Model\ModelTrait;
+namespace NYPL\Starter\Model\ModelTrait;
 
-use NYPL\API\APIException;
-use NYPL\API\DB;
+use NYPL\Starter\APIException;
+use NYPL\Starter\DB;
 use Stringy\Stringy;
-use NYPL\API\Model\ModelInterface\DeleteInterface;
+use NYPL\Starter\Model\ModelInterface\DeleteInterface;
 
 trait DBTrait
 {

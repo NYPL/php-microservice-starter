@@ -1,10 +1,10 @@
 <?php
-namespace NYPL\API;
+namespace NYPL\Starter;
 
 use NYPL\Services\Config;
 use NYPL\Services\Model\DataModel\Source;
-use NYPL\API\Model\Identity;
-use NYPL\API\Model\Response\SuccessResponse;
+use NYPL\Starter\Model\Identity;
+use NYPL\Starter\Model\Response\SuccessResponse;
 use Slim\Http\Request;
 use Slim\Http\Response;
 

@@ -1,5 +1,5 @@
 <?php
-namespace NYPL\API\Model;
+namespace NYPL\Starter\Model;
 
 class Identity
 {

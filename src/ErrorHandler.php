@@ -1,7 +1,7 @@
 <?php
-namespace NYPL\API;
+namespace NYPL\Starter;
 
-use NYPL\API\Model\Response\ErrorResponse;
+use NYPL\Starter\Model\Response\ErrorResponse;
 
 class ErrorHandler
 {

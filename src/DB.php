@@ -1,5 +1,5 @@
 <?php
-namespace NYPL\API;
+namespace NYPL\Starter;
 
 use NYPL\Services\Config;
 use Slim\PDO\Database;

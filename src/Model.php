@@ -1,9 +1,9 @@
 <?php
-namespace NYPL\API;
+namespace NYPL\Starter;
 
-use NYPL\API\Model\LocalDateTime;
-use NYPL\API\Model\ModelTrait\DBReadTrait;
-use NYPL\API\Model\ModelTrait\DBTrait;
+use NYPL\Starter\Model\LocalDateTime;
+use NYPL\Starter\Model\ModelTrait\DBReadTrait;
+use NYPL\Starter\Model\ModelTrait\DBTrait;
 
 abstract class Model implements \JsonSerializable
 {

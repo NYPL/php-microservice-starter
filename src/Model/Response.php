@@ -1,7 +1,7 @@
 <?php
-namespace NYPL\API\Model;
+namespace NYPL\Starter\Model;
 
-use NYPL\API\Model;
+use NYPL\Starter\Model;
 
 abstract class Response
 {

@@ -1,7 +1,7 @@
 <?php
-namespace NYPL\API\Filter;
+namespace NYPL\Starter\Filter;
 
-use NYPL\API\Filter;
+use NYPL\Starter\Filter;
 use Slim\Http\Request;
 
 class QueryFilter extends Filter

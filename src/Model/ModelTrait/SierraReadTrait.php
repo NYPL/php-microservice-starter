@@ -1,10 +1,10 @@
 <?php
-namespace NYPL\API\Model\ModelTrait;
+namespace NYPL\Starter\Model\ModelTrait;
 
-use NYPL\API\APIException;
+use NYPL\Starter\APIException;
 use NYPL\Services\Config;
-use NYPL\API\DB;
-use NYPL\API\Model;
+use NYPL\Starter\DB;
+use NYPL\Starter\Model;
 
 trait SierraReadTrait
 {

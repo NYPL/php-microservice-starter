@@ -1,7 +1,7 @@
 <?php
-namespace NYPL\API\Model;
+namespace NYPL\Starter\Model;
 
-use NYPL\API\APIException;
+use NYPL\Starter\APIException;
 
 class LocalDateTime
 {

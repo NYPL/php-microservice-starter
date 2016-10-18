@@ -1,5 +1,5 @@
 <?php
-namespace NYPL\API;
+namespace NYPL\Starter;
 
 class AvroLoader
 {

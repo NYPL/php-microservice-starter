@@ -1,5 +1,5 @@
 <?php
-namespace NYPL\API;
+namespace NYPL\Starter;
 
 use Slim\App;
 use Slim\Container;

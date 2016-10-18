@@ -1,8 +1,8 @@
 <?php
-namespace NYPL\API\Model\ModelTrait;
+namespace NYPL\Starter\Model\ModelTrait;
 
-use NYPL\API\DB;
-use NYPL\API\Model;
+use NYPL\Starter\DB;
+use NYPL\Starter\Model;
 
 trait DBDeleteTrait
 {

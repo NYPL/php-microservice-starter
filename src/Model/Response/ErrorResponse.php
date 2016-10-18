@@ -1,8 +1,8 @@
 <?php
-namespace NYPL\API\Model\Response;
+namespace NYPL\Starter\Model\Response;
 
-use NYPL\API\APIException;
-use NYPL\API\Model\Response;
+use NYPL\Starter\APIException;
+use NYPL\Starter\Model\Response;
 
 /**
  * @SWG\Definition(title="ErrorResponse", type="object")

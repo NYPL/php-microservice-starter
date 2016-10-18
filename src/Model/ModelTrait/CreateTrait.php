@@ -1,10 +1,10 @@
 <?php
-namespace NYPL\API\Model\ModelTrait;
+namespace NYPL\Starter\Model\ModelTrait;
 
-use NYPL\API\Model;
-use NYPL\API\Model\ModelInterface\MessageInterface;
-use NYPL\API\Model\ModelInterface\DeleteInterface;
-use NYPL\API\Model\LocalDateTime;
+use NYPL\Starter\Model;
+use NYPL\Starter\Model\ModelInterface\MessageInterface;
+use NYPL\Starter\Model\ModelInterface\DeleteInterface;
+use NYPL\Starter\Model\LocalDateTime;
 
 trait CreateTrait
 {

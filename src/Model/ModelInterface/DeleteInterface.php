@@ -1,5 +1,5 @@
 <?php
-namespace NYPL\API\Model\ModelInterface;
+namespace NYPL\Starter\Model\ModelInterface;
 
 interface DeleteInterface
 {

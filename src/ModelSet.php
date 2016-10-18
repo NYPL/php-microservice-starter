@@ -1,9 +1,9 @@
 <?php
-namespace NYPL\API;
+namespace NYPL\Starter;
 
-use NYPL\API\Model\ModelInterface\ReadInterface;
-use NYPL\API\Model\ModelTrait\DBReadTrait;
-use NYPL\API\Model\ModelTrait\DBTrait;
+use NYPL\Starter\Model\ModelInterface\ReadInterface;
+use NYPL\Starter\Model\ModelTrait\DBReadTrait;
+use NYPL\Starter\Model\ModelTrait\DBTrait;
 
 class ModelSet extends Model implements ReadInterface
 {
@@ -79,7 +79,7 @@ class ModelSet extends Model implements ReadInterface
     }
 
     /**
-     * @return \NYPL\API\Model[]
+     * @return \NYPL\Starter\Model[]
      */
     public function getData()
     {
@@ -87,7 +87,7 @@ class ModelSet extends Model implements ReadInterface
     }
 
     /**
-     * @param \NYPL\API\Model[] $data
+     * @param \NYPL\Starter\Model[] $data
      */
     public function setData(array $data)
     {

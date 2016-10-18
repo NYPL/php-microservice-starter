@@ -1,9 +1,9 @@
 <?php
-namespace NYPL\API;
+namespace NYPL\Starter;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use NYPL\API\Model\Response\ErrorResponse;
+use NYPL\Starter\Model\Response\ErrorResponse;
 use Slim\Container;
 
 class DefaultContainer extends Container

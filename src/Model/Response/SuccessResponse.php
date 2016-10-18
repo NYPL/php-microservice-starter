@@ -1,8 +1,8 @@
 <?php
-namespace NYPL\API\Model\Response;
+namespace NYPL\Starter\Model\Response;
 
-use NYPL\API\Model;
-use NYPL\API\Model\Response;
+use NYPL\Starter\Model;
+use NYPL\Starter\Model\Response;
 
 /**
  * @SWG\Definition(title="Response", type="object")

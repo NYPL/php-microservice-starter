@@ -2,7 +2,7 @@
 namespace NYPL\Starter;
 
 use NYPL\Services\Config;
-use NYPL\Services\Model\DataModel\Source;
+use NYPL\Starter\Model\DataModel\Source;
 use NYPL\Starter\Model\Identity;
 use NYPL\Starter\Model\Response\SuccessResponse;
 use Slim\Http\Request;

@@ -9,7 +9,7 @@ This package adheres to [PSR-1](http://www.php-fig.org/psr/psr-1/), [PSR-2](http
 Via Composer
 ~~~~
 "require": {
-    "nypl/microservice-starter": "~2.3"
+    "nypl/microservice-starter": "~0.1"
 }
 ~~~~
 

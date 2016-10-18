@@ -6,9 +6,11 @@ This package adheres to [PSR-1](http://www.php-fig.org/psr/psr-1/), [PSR-2](http
 
 ## Installation
 
-Via Git
+Via Composer
 ~~~~
-$ git clone git@bitbucket.org:NYPL/microservice-php-starter.git
+"require": {
+    "nypl/microservice-starter": "~2.3"
+}
 ~~~~
 
 ## Requirements
@@ -31,10 +33,28 @@ $ git clone git@bitbucket.org:NYPL/microservice-php-starter.git
 
 ### HTTP/API Server
 
-Configure your web server to point to the `/` directory. The `index.php` file should be loaded on all requests.
+Create an `index.php` with a `Service` object and your [Slim](http://www.slimframework.com/) routes:
 
+~~~~
+require __DIR__ . '/vendor/autoload.php';
+
+$service = new NYPL\API\Service();
+
+$service->get("/v0.1/bibs", function (Request $request, Response $response) {
+    $controller = new Controller\BibController($request, $response);
+    return $controller->getBibs();
+});
+~~~~
+
+Configure your web server to load `index.php` on all requests.
 See the `/samples` directory for sample configuration files for an Apache `.htaccess` or Nginx `nginx.conf` installation.
 
 ### Swagger Documentation Generator
 
-Configure the Swagger UI client to point to the `/swagger` directory.
+Create a Swagger route to generate Swagger specification documentation:
+
+~~~~
+$service->get("/swagger", function (Request $request, Response $response) {
+    return SwaggerGenerator::generate(__DIR__ . "/src", $response);
+});
+~~~~

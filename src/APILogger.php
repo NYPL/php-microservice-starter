@@ -4,6 +4,7 @@ namespace NYPL\API;
 use Monolog\Handler\SlackHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use NYPL\Services\Config;
 
 class APILogger
 {
@@ -31,9 +32,9 @@ class APILogger
         //$log->pushHandler(new StreamHandler('error.log', Logger::DEBUG));
 
         $log->pushHandler(new SlackHandler(
-            'xoxb-92411558631-OYXzR0omukZvqRzDv6wVV2Cv',
-            'service-logging',
-            'general-services',
+            Config::SLACK_TOKEN,
+            Config::SLACK_CHANNEL,
+            Config::SLACK_USERNAME,
             true,
             null,
             Logger::DEBUG

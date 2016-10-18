@@ -1,7 +1,6 @@
 {
   "name": "nypl/microservice-starter",
   "description": "NYPL Microservice Starter",
-  "license": "proprietary",
   "authors": [
     {
       "name": "Kevin Friedman",

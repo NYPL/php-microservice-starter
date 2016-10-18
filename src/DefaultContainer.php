@@ -12,10 +12,6 @@ class DefaultContainer extends Container
     {
         parent::__construct();
 
-        ini_set('display_errors', 0);
-        set_error_handler(ErrorHandler::class . "::errorFunction");
-        register_shutdown_function(ErrorHandler::class . "::shutdownFunction");
-
         $this["settings"]["displayErrorDetails"] = false;
 
         $this["notFoundHandler"] = function (Container $container) {

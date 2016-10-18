@@ -10,6 +10,10 @@ class Service extends App
 {
     public function __construct(Container $container = null)
     {
+        ini_set('display_errors', 0);
+        set_error_handler(ErrorHandler::class . "::errorFunction");
+        register_shutdown_function(ErrorHandler::class . "::shutdownFunction");
+
         if (!$container) {
             $container = new DefaultContainer();
         }
@@ -26,7 +30,7 @@ class Service extends App
                 "Access-Control-Allow-Headers",
                 "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
             );
-            $response = $response->withHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+            $response = $response->withHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             $response = $response->withHeader("Access-Control-Allow-Origin", "*");
 
             $response = $next($request, $response);

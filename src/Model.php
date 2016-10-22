@@ -40,13 +40,23 @@ abstract class Model implements \JsonSerializable
         return $value;
     }
 
+    /**
+     * @param string $objectName
+     *
+     * @return mixed|string
+     */
+    protected function getJsonObjectName($objectName = '')
+    {
+        return $objectName;
+    }
+
     public function jsonSerialize()
     {
         $jsonArray = [];
 
         foreach (get_object_vars($this) as $objectName => $objectValue) {
             if (!in_array($objectName, $this->getExcludeProperties())) {
-                $jsonArray[$objectName] = $this->getJsonObjectValue($objectValue);
+                $jsonArray[$this->getJsonObjectName($objectName)] = $this->getJsonObjectValue($objectValue);
             }
         }
 

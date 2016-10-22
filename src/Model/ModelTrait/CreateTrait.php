@@ -21,26 +21,6 @@ trait CreateTrait
     abstract public function getSequenceId();
 
     /**
-     * @return mixed
-     */
-    protected function getId()
-    {
-        $idGetter = "get{$this->getIdName()}";
-
-        return $this->$idGetter();
-    }
-
-    /**
-     * @param mixed $value
-     */
-    protected function setId($value)
-    {
-        $idSetter = "set{$this->getIdName()}";
-
-        $this->$idSetter($value);
-    }
-
-    /**
      * @param mixed $value
      *
      * @return string

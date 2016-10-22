@@ -43,7 +43,9 @@ trait DBTrait
      */
     public function translateDbName($key = "")
     {
-        return (string) Stringy::create($key)->underscored();
+        $key = (string) Stringy::create($key)->underscored();
+
+        return $key;
     }
 
     /**

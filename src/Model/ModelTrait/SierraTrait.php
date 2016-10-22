@@ -1,17 +1,39 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
-use NYPL\Starter\APIException;
 use NYPL\Services\Config;
 use NYPL\Starter\DB;
 use NYPL\Starter\Model;
 
-trait SierraReadTrait
+trait SierraTrait
 {
     /**
+     * @param string $id
+     *
      * @return string
      */
     abstract public function getSierraPath($id = '');
+
+    /**
+     * @param resource $curl
+     *
+     * @return mixed
+     */
+    abstract public function applyCurlOptions($curl);
+
+    /**
+     * @param string $id
+     *
+     * @return string
+     */
+    public function getSierraId($id = '')
+    {
+        if (is_numeric(substr($id, 0, 1))) {
+            return $id;
+        }
+
+        return substr($id, 1);
+    }
 
     /**
      * @param string $path
@@ -28,6 +50,8 @@ trait SierraReadTrait
         curl_setopt($curl, CURLOPT_URL, Config::BASE_SIERRA_API_URL . '/' . $path);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        $this->applyCurlOptions($curl);
 
         $response = curl_exec($curl);
 
@@ -84,20 +108,5 @@ trait SierraReadTrait
         curl_close($curl);
 
         return $tokenJson;
-    }
-
-    public function read($id = '')
-    {
-        $response = $this->getCurl($this->getSierraPath($id));
-
-        $data = json_decode($response, true);
-
-        if (isset($data['httpStatus'])) {
-            throw new APIException($data['name'], $data);
-        }
-
-        $this->translate($data);
-
-        return true;
     }
 }

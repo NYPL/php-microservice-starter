@@ -1,13 +1,13 @@
 <?php
-namespace NYPL\Services\Model\DataModel;
+namespace NYPL\ServiceSample\Model\DataModel;
 
-use NYPL\Starter\Model;
-use NYPL\Services\Model\DataModel;
+use NYPL\ServiceSample\Model\DataModel;
 use NYPL\Starter\Model\LocalDateTime;
+use NYPL\Starter\Model\ModelTrait\TranslateTrait;
 
 abstract class BaseBib extends DataModel
 {
-    use Model\ModelTrait\TranslateTrait;
+    use TranslateTrait;
 
     /**
      * @SWG\Property(example="2016-01-07T02:32:51Z", type="string")

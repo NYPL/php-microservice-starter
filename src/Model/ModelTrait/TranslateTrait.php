@@ -34,6 +34,18 @@ trait TranslateTrait
     }
 
     /**
+     * @param string $key
+     *
+     * @return string
+     */
+    public function translateDbName($key = "")
+    {
+        $key = (string) Stringy::create($key)->underscored();
+
+        return $key;
+    }
+
+    /**
      * @param array $data
      * @param bool $validateData
      */

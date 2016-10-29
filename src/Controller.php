@@ -2,6 +2,7 @@
 namespace NYPL\Starter;
 
 use NYPL\Services\Config;
+use NYPL\Starter\Filter\QueryFilter;
 use NYPL\Starter\Model\Source;
 use NYPL\Starter\Model\Identity;
 use NYPL\Starter\Model\Response\SuccessResponse;
@@ -193,11 +194,16 @@ abstract class Controller
      * @param Model $model
      * @param SuccessResponse $response
      * @param Filter|null $filter
+     * @param array $queryParameters
      *
      * @return Response
      */
-    protected function getDefaultReadResponse(Model $model, SuccessResponse $response, Filter $filter = null)
-    {
+    protected function getDefaultReadResponse(
+        Model $model,
+        SuccessResponse $response,
+        Filter $filter = null,
+        array $queryParameters = []
+    ) {
         if ($model instanceof ModelSet) {
             if (!$model->isNoDefaultSorting()) {
                 if (!$model->getOrderBy()) {
@@ -216,15 +222,19 @@ abstract class Controller
                 $model->addFilter($filter);
             }
 
+            if ($queryParameters) {
+                foreach ($queryParameters as $queryParameter) {
+                    $model->addFilter(new QueryFilter($this->getRequest(), $queryParameter));
+                }
+            }
+
             $model->read();
 
-            $response->intializeResponse($model->getData());
+            $response->initializeResponse($model->getData());
         } else {
             $model->read($filter->getId());
 
-            $response->intializeResponse($model);
-
-            $response->setCount(1);
+            $response->initializeResponse($model);
         }
 
         return $this->getResponse()->withJson($response);

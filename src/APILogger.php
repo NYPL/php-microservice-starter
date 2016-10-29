@@ -60,7 +60,7 @@ class APILogger
      */
     public static function addLog($httpCode = 0, $error = '', array $context = [])
     {
-        if ($httpCode == 404) {
+        if ($httpCode < 500) {
             return self::addInfo($error, $context);
         }
 

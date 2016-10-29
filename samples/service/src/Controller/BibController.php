@@ -1,15 +1,12 @@
 <?php
-namespace NYPL\Services\Controller;
+namespace NYPL\ServiceSample\Controller;
 
 use NYPL\Starter\Controller;
 use NYPL\Starter\Filter;
-use NYPL\Services\Model\DataModel\BaseBib\Bib;
-use NYPL\Services\Model\DataModel\BaseBib\NewBib;
-use NYPL\Services\Model\DataModel\BaseItem\Item;
-use NYPL\Services\Model\DataModel\BaseItem\NewBibItem;
-use NYPL\Services\Model\Response\SuccessResponse\BibsResponse;
-use NYPL\Services\Model\Response\SuccessResponse\BibResponse;
-use NYPL\Services\Model\Response\SuccessResponse\ItemResponse;
+use NYPL\ServiceSample\Model\DataModel\BaseBib\Bib;
+use NYPL\ServiceSample\Model\DataModel\BaseBib\NewBib;
+use NYPL\ServiceSample\Model\Response\SuccessResponse\BibsResponse;
+use NYPL\ServiceSample\Model\Response\SuccessResponse\BibResponse;
 use NYPL\Starter\ModelSet;
 use NYPL\Starter\Model\Source;
 
@@ -151,109 +148,5 @@ final class BibController extends Controller
     public function getBib($id)
     {
         return $this->getDefaultReadResponse(new Bib(), new BibResponse(), new Filter(null, null, false, $id));
-    }
-
-    /**
-     * @SWG\Get(
-     *     path="/v0.1/bibs/{id}/items",
-     *     summary="Get items for a Bib",
-     *     tags={"bibs"},
-     *     operationId="getBibItems",
-     *     consumes={"application/json"},
-     *     produces={"application/json"},
-     *     @SWG\Parameter(
-     *         description="ID of Bib",
-     *         in="path",
-     *         name="id",
-     *         required=true,
-     *         type="string",
-     *         format="string"
-     *     ),
-     *     @SWG\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @SWG\Schema(ref="#/definitions/BibResponse")
-     *     ),
-     *     @SWG\Response(
-     *         response="500",
-     *         description="Error",
-     *         @SWG\Schema(
-     *            type="array",
-     *            @SWG\Items(ref="#/definitions/ErrorResponse")
-     *         ),
-     *     ),
-     *     security={
-     *         {
-     *             "api_auth": {"openid api"}
-     *         }
-     *     }
-     * )
-     */
-    public function getBibItems($id)
-    {
-        return $this->getDefaultReadResponse(
-            new ModelSet(new Item()),
-            new BibsResponse(),
-            new Filter('bibIds', $id, true)
-        );
-    }
-
-    /**
-     * @SWG\Post(
-     *     path="/v0.1/bibs/{id}/items",
-     *     summary="Create a new Item for a Bib",
-     *     tags={"bibs"},
-     *     operationId="createBibItem",
-     *     consumes={"application/json"},
-     *     produces={"application/json"},
-     *     @SWG\Parameter(
-     *         description="ID of Bib",
-     *         in="path",
-     *         name="id",
-     *         required=true,
-     *         type="string",
-     *         format="string"
-     *     ),
-     *     @SWG\Parameter(
-     *         name="NewBibItem",
-     *         in="body",
-     *         description="",
-     *         required=true,
-     *         @SWG\Schema(ref="#/definitions/NewBibItem"),
-     *     ),
-     *     @SWG\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @SWG\Schema(ref="#/definitions/ItemResponse")
-     *     ),
-     *     @SWG\Response(
-     *         response="500",
-     *         description="Error",
-     *         @SWG\Schema(
-     *            type="array",
-     *            @SWG\Items(ref="#/definitions/ErrorResponse")
-     *         ),
-     *     ),
-     *     security={
-     *         {
-     *             "api_auth": {"openid api"}
-     *         }
-     *     }
-     * )
-     */
-    public function createBibItem($id)
-    {
-        $source = new Source($this->getRequest()->getParsedBody());
-        $source->create();
-
-        $newItem = new NewBibItem($this->getRequest()->getParsedBody(), false, true);
-
-        $item = new Item();
-        $item->translateFromNewModel($newItem);
-        $item->setId($this->generateId($source));
-        $item->setBibIds([$id]);
-        $item->create(true);
-
-        return $this->getResponse()->withJson(new ItemResponse($item));
     }
 }

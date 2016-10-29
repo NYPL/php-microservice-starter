@@ -1,12 +1,12 @@
 <?php
-namespace NYPL\Services\Model\DataModel\BaseBib;
+namespace NYPL\ServiceSample\Model\DataModel\BaseBib;
 
-use NYPL\Services\Model\DataModel\BaseBib;
+use NYPL\ServiceSample\Model\DataModel\BaseBib;
 use NYPL\Starter\Model\Schema;
 use NYPL\Starter\Model\ModelInterface\DeleteInterface;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
 use NYPL\Starter\Model\ModelInterface\ReadInterface;
-use NYPL\Starter\Model\ModelTrait\CreateTrait;
+use NYPL\Starter\Model\ModelTrait\DBCreateTrait;
 use NYPL\Starter\Model\ModelTrait\DBDeleteTrait;
 use NYPL\Starter\Model\ModelTrait\DBReadTrait;
 
@@ -15,7 +15,7 @@ use NYPL\Starter\Model\ModelTrait\DBReadTrait;
  */
 class Bib extends BaseBib implements MessageInterface, ReadInterface, DeleteInterface
 {
-    use CreateTrait, DBReadTrait, DBDeleteTrait;
+    use DBCreateTrait, DBReadTrait, DBDeleteTrait;
 
     /**
      * @SWG\Property(example="s17746307")

@@ -4,25 +4,19 @@ namespace NYPL\Starter\Model\Response;
 use NYPL\Starter\Model;
 use NYPL\Starter\Model\Response;
 
-/**
- * @SWG\Definition(title="Response", type="object")
- */
 abstract class SuccessResponse extends Response
 {
     /**
      * @SWG\Property
-     * @var Model|Model[]
      */
     public $data;
 
     /**
-     * @SWG\Property(format="int32", example=1)
      * @var int
      */
     public $count = 0;
 
     /**
-     * @SWG\Property(format="int32", example=200)
      * @var int
      */
     public $statusCode;
@@ -34,7 +28,7 @@ abstract class SuccessResponse extends Response
     public function __construct($model = null, $code = 200)
     {
         if ($model) {
-            $this->intializeResponse($model);
+            $this->initializeResponse($model);
         }
 
         $this->setStatusCode($code);
@@ -43,12 +37,14 @@ abstract class SuccessResponse extends Response
     /**
      * @param Model|Model[] $model
      */
-    public function intializeResponse($model)
+    public function initializeResponse($model)
     {
         $this->setData($model);
 
         if (is_array($model)) {
             $this->setCount(count($model));
+        } else {
+            $this->setCount(1);
         }
     }
 

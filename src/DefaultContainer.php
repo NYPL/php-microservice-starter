@@ -5,6 +5,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use NYPL\Starter\Model\Response\ErrorResponse;
 use Slim\Container;
+use Slim\HttpCache\CacheProvider;
 
 class DefaultContainer extends Container
 {
@@ -13,6 +14,10 @@ class DefaultContainer extends Container
         parent::__construct();
 
         $this["settings"]["displayErrorDetails"] = false;
+
+        $this["cache"] = function () {
+            return new CacheProvider();
+        };
 
         $this["notFoundHandler"] = function (Container $container) {
             return function (Request $request, Response $response) use ($container) {
@@ -40,13 +45,45 @@ class DefaultContainer extends Container
                     ]
                 );
 
-                return $container["response"]->withStatus($errorCode)
+                return $container["response"]
+                    ->withStatus($errorCode)
                     ->withJson(new ErrorResponse(
                         $errorCode,
-                        'exception',
+                        "exception",
                         $exception->getMessage(),
                         $exception
-                    ));
+                    ))
+                    ->withHeader(
+                        "Access-Control-Allow-Origin",
+                        "*"
+                    );
+            };
+        };
+
+        $this["phpErrorHandler"] = function (Container $container) {
+            return function (Request $request, Response $response, \Throwable $error) use ($container) {
+                $defaultErrorHttpCode = 500;
+
+                APILogger::addError(
+                    $error->getMessage(),
+                    [
+                        (string) $request->getUri(),
+                        $request->getParsedBody()
+                    ]
+                );
+
+                return $container["response"]
+                    ->withStatus($defaultErrorHttpCode)
+                    ->withJson(new ErrorResponse(
+                        $defaultErrorHttpCode,
+                        "error",
+                        $error->getMessage(),
+                        $error
+                    ))
+                    ->withHeader(
+                        "Access-Control-Allow-Origin",
+                        "*"
+                    );
             };
         };
     }

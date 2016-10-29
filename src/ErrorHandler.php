@@ -26,6 +26,7 @@ class ErrorHandler
 
             http_response_code(500);
             header('Content-Type: application/json');
+            header('Access-Control-Allow-Origin: *');
             echo json_encode($apiResponse, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
             die();
@@ -49,9 +50,12 @@ class ErrorHandler
     }
 
 
-    public static function errorFunction($errorNumber, $errorString)
+    public static function errorFunction($errorNumber, $errorString, $errorFile, $errorLine, array $errorContext)
     {
-        self::processError($errorString);
+        self::processError(
+            $errorString . ' (' . $errorNumber . ') in ' . $errorFile . ' on line ' . $errorLine,
+            $errorContext
+        );
     }
 
     public static function shutdownFunction()

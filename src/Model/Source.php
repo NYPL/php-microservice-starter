@@ -2,12 +2,12 @@
 namespace NYPL\Starter\Model;
 
 use NYPL\Starter\Model;
-use NYPL\Starter\Model\ModelTrait\CreateTrait;
+use NYPL\Starter\Model\ModelTrait\DBCreateTrait;
 use NYPL\Starter\Model\ModelTrait\TranslateTrait;
 
 class Source extends Model
 {
-    use TranslateTrait, CreateTrait;
+    use TranslateTrait, DBCreateTrait;
 
     public $id = '';
 

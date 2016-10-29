@@ -1,5 +1,5 @@
 <?php
-namespace NYPL\Services\Model\DataModel;
+namespace NYPL\ServiceSample\Model\DataModel;
 
 use NYPL\Starter\Model;
 

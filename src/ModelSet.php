@@ -2,8 +2,8 @@
 namespace NYPL\Starter;
 
 use NYPL\Starter\Model\ModelInterface\ReadInterface;
-use NYPL\Starter\Model\ModelTrait\DBReadTrait;
 use NYPL\Starter\Model\ModelTrait\DBTrait;
+use NYPL\Starter\Model\ModelTrait\DBReadTrait;
 
 class ModelSet extends Model implements ReadInterface
 {

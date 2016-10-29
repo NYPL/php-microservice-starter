@@ -2,13 +2,11 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\Model;
-use NYPL\Starter\Model\ModelInterface\MessageInterface;
-use NYPL\Starter\Model\ModelInterface\DeleteInterface;
 use NYPL\Starter\Model\LocalDateTime;
 
 trait CreateTrait
 {
-    use DBTrait, MessageTrait;
+    use MessageTrait;
 
     /**
      * @return string
@@ -16,9 +14,22 @@ trait CreateTrait
     abstract public function getIdName();
 
     /**
+     * @param bool $useId
+     *
+     * @return string
+     * @throws \Exception
+     */
+    abstract public function create($useId = false);
+
+    /**
      * @return string
      */
-    abstract public function getSequenceId();
+    public function getObjectName()
+    {
+        $reflection = new \ReflectionClass($this);
+
+        return $reflection->getShortName();
+    }
 
     /**
      * @param mixed $value
@@ -69,28 +80,22 @@ trait CreateTrait
     /**
      * @param bool $useId
      *
-     * @throws \Exception
+     * @return array
      */
-    public function create($useId = false)
+    protected function getInsertValues($useId = false)
     {
-        if ($useId) {
-            $this->checkExistingDb();
+        $insertValues = [];
+
+        /**
+         * @var Model $this
+         */
+        foreach (get_object_vars($this) as $key => $value) {
+            if (($useId || $key !== $this->getIdName()) && !in_array($key, $this->getExcludeProperties())) {
+                $insertValues[$this->translateDbName($key)] = $this->getObjectValue($value);
+            }
         }
 
-        $this->checkCreatedDate();
+        return $insertValues;
 
-        $insertId = $this->createDbRecord($useId);
-
-        try {
-            if ($this instanceof MessageInterface) {
-                $this->publishMessage($this->createMessage());
-            }
-        } catch (\Exception $exception) {
-            if ($this instanceof DeleteInterface) {
-                $this->delete($insertId);
-            }
-
-            throw $exception;
-        }
     }
 }

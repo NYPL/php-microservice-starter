@@ -26,16 +26,21 @@ class Service extends App
     protected function setupDefaultRoutes()
     {
         $this->add(function (Request $request, Response $response, callable $next) {
-            $response = $response->withHeader(
-                "Access-Control-Allow-Headers",
-                "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
-            );
-            $response = $response->withHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            $response = $response->withHeader("Access-Control-Allow-Origin", "*");
+            $response = $response
+                ->withHeader(
+                    "Access-Control-Allow-Headers",
+                    "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
+                )
+                ->withHeader(
+                    "Access-Control-Allow-Methods",
+                    "GET, POST, PUT, DELETE, OPTIONS"
+                )
+                ->withHeader(
+                    "Access-Control-Allow-Origin",
+                    "*"
+                );
 
-            $response = $next($request, $response);
-
-            return $response;
+            return $next($request, $response);
         });
 
         $this->options("[/{params:.*}]", function (Request $request, Response $response) {

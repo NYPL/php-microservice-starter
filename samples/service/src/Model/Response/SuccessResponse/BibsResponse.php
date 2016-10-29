@@ -1,7 +1,7 @@
 <?php
-namespace NYPL\Services\Model\Response\SuccessResponse;
+namespace NYPL\ServiceSample\Model\Response\SuccessResponse;
 
-use NYPL\Services\Model\DataModel\BaseBib\Bib;
+use NYPL\ServiceSample\Model\DataModel\BaseBib\Bib;
 use NYPL\Starter\Model\Response\SuccessResponse;
 
 /**

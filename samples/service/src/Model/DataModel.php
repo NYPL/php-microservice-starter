@@ -1,5 +1,5 @@
 <?php
-namespace NYPL\Services\Model;
+namespace NYPL\ServiceSample\Model;
 
 use NYPL\Starter\Model;
 

@@ -5,7 +5,7 @@ use Slim\Http\Response;
 
 class SwaggerGenerator
 {
-    public static function generate($directory, Response $response)
+    public static function generate(array $directory, Response $response)
     {
         ErrorHandler::setIgnoreError(true);
 

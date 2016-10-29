@@ -5,7 +5,7 @@ use NYPL\Starter\APIException;
 use NYPL\Starter\Model\Response;
 
 /**
- * @SWG\Definition(title="ErrorResponse", type="object")
+ * @SWG\Definition(name="ErrorResponse", type="object")
  */
 class ErrorResponse extends Response
 {
@@ -16,34 +16,36 @@ class ErrorResponse extends Response
     public $statusCode;
 
     /**
-     * @SWG\Property
+     * @SWG\Property(example="error_type")
      * @var string
      */
     public $type;
 
     /**
-     * @SWG\Property
+     * @SWG\Property(example="Description of error")
      * @var string
      */
     public $message;
 
     /**
-     * @var array|object
-     */
-    public $debugInfo = [];
-
-    /**
+     * @SWG\Property(type="object")
      * @var array
      */
-    public $exception;
+    public $error;
+
+    /**
+     * @SWG\Property(type="object")
+     * @var array
+     */
+    public $debugInfo = [];
 
     /**
      * @param int $code
      * @param string $type
      * @param string $message
-     * @param \Exception|APIException $exception
+     * @param \Exception|\Throwable $throwable
      */
-    public function __construct($code, $type, $message, \Exception $exception)
+    public function __construct($code, $type, $message, $throwable = null)
     {
         $this->setStatusCode($code);
 
@@ -51,11 +53,13 @@ class ErrorResponse extends Response
 
         $this->setMessage($message);
 
-        if ($exception instanceof APIException) {
-            $this->setDebugInfo($exception->getDebugInfo());
-        }
+        if ($throwable) {
+            $this->initializeError($throwable);
 
-        $this->initializeException($exception);
+            if ($throwable instanceof APIException) {
+                $this->setDebugInfo($throwable->getDebugInfo());
+            }
+        }
     }
 
     /**
@@ -109,31 +113,31 @@ class ErrorResponse extends Response
     /**
      * @return array
      */
-    public function getException()
+    public function getError()
     {
-        return $this->exception;
+        return $this->error;
     }
 
     /**
-     * @param array $exception
+     * @param array $error
      */
-    public function setException($exception)
+    public function setError($error)
     {
-        $this->exception = $exception;
+        $this->error = $error;
     }
 
     /**
-     * @param \Exception $exception
+     * @param \Exception|\Throwable $error
      */
-    public function initializeException(\Exception $exception)
+    public function initializeError($error)
     {
-        $this->exception = [
-            'type' => get_class($exception),
-            'code' => $exception->getCode(),
-            'message' => $exception->getMessage(),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'trace' => explode("\n", $exception->getTraceAsString()),
+        $this->error = [
+            'type' => get_class($error),
+            'code' => $error->getCode(),
+            'message' => $error->getMessage(),
+            'file' => $error->getFile(),
+            'line' => $error->getLine(),
+            'trace' => explode("\n", $error->getTraceAsString()),
         ];
     }
 

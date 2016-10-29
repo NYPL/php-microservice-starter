@@ -1,8 +1,8 @@
 <?php
-namespace NYPL\Services\Model\DataModel\BaseBib;
+namespace NYPL\ServiceSample\Model\DataModel\BaseBib;
 
 use NYPL\Starter\APIException;
-use NYPL\Services\Model\DataModel\BaseBib;
+use NYPL\ServiceSample\Model\DataModel\BaseBib;
 
 /**
  * @SWG\Definition(type="object", required={"sourceCode"})

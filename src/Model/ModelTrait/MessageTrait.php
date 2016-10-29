@@ -9,9 +9,10 @@ use NYPL\Starter\Model\ModelInterface\MessageInterface;
 trait MessageTrait
 {
     /**
+     * @param string $topic
      * @param string $message
      */
-    protected function publishMessage($message = '')
+    protected function publishMessage($topic = '', $message = '')
     {
         $producer = new \RdKafka\Producer();
         $producer->setLogLevel(LOG_DEBUG);
@@ -20,7 +21,7 @@ trait MessageTrait
         /**
          * @var \RdKafka\ProducerTopic $topic
          */
-        $topic = $producer->newTopic($this->getTableName());
+        $topic = $producer->newTopic($topic);
 
         $topic->produce(RD_KAFKA_PARTITION_UA, 0, $message, $this->getId());
     }

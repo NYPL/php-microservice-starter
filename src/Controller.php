@@ -2,10 +2,12 @@
 namespace NYPL\Starter;
 
 use NYPL\Services\Config;
+use NYPL\Starter\Filter\OrFilter;
 use NYPL\Starter\Filter\QueryFilter;
 use NYPL\Starter\Model\Source;
 use NYPL\Starter\Model\Identity;
 use NYPL\Starter\Model\Response\SuccessResponse;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -23,7 +25,7 @@ abstract class Controller
     public $request;
 
     /**
-     * @var Response
+     * @var Response|ResponseInterface
      */
     public $response;
 
@@ -39,12 +41,15 @@ abstract class Controller
 
     /**
      * @param Request $request
-     * @param Response $response
+     * @param Response|ResponseInterface $response
+     * @param int $cacheSeconds
      */
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, $cacheSeconds = 0)
     {
         $this->setRequest($request);
         $this->setResponse($response);
+
+        $this->addCacheHeader($cacheSeconds);
 
         $this->initializeContentType();
         $this->initializeIdentity();
@@ -67,7 +72,7 @@ abstract class Controller
     }
 
     /**
-     * @return Response
+     * @return Response|ResponseInterface
      */
     public function getResponse()
     {
@@ -75,7 +80,7 @@ abstract class Controller
     }
 
     /**
-     * @param Response $response
+     * @param Response|ResponseInterface $response
      */
     public function setResponse(Response $response)
     {
@@ -191,6 +196,43 @@ abstract class Controller
     }
 
     /**
+     * @param ModelSet $model
+     * @param string $queryParameterName
+     *
+     * @return bool
+     */
+    protected function addQueryFilter(ModelSet $model, $queryParameterName = '')
+    {
+        if ($this->getRequest()->getQueryParam($queryParameterName) !== null) {
+            if (strpos($this->getRequest()->getQueryParam($queryParameterName), ',') !== false) {
+                $queryParameterArray = explode(',', $this->getRequest()->getQueryParam($queryParameterName));
+
+                $filters = [];
+
+                foreach ($queryParameterArray as $queryParameterValue) {
+                    $filters[] = new QueryFilter(
+                        $queryParameterName,
+                        trim($queryParameterValue)
+                    );
+                }
+
+                $model->addFilter(new OrFilter($filters));
+
+                return true;
+            }
+
+            $filter = new QueryFilter(
+                $queryParameterName,
+                $this->getRequest()->getQueryParam($queryParameterName)
+            );
+
+            $model->addFilter($filter);
+
+            return true;
+        }
+    }
+
+    /**
      * @param Model $model
      * @param SuccessResponse $response
      * @param Filter|null $filter
@@ -216,6 +258,7 @@ abstract class Controller
             }
 
             $model->setOffset($this->getRequest()->getParam('offset'));
+
             $model->setLimit($this->getRequest()->getParam('limit'));
 
             if ($filter) {
@@ -223,8 +266,8 @@ abstract class Controller
             }
 
             if ($queryParameters) {
-                foreach ($queryParameters as $queryParameter) {
-                    $model->addFilter(new QueryFilter($this->getRequest(), $queryParameter));
+                foreach ($queryParameters as $queryParameterName) {
+                    $this->addQueryFilter($model, $queryParameterName);
                 }
             }
 
@@ -232,11 +275,49 @@ abstract class Controller
 
             $response->initializeResponse($model->getData());
         } else {
-            $model->read($filter->getId());
+            if ($filter) {
+                if ($filter->getId()) {
+                    $filter->setFilterColumn('id');
+                    $filter->setFilterValue($filter->getId());
+                }
+
+                $model->addFilter($filter);
+            }
+
+            $model->read();
 
             $response->initializeResponse($model);
         }
 
         return $this->getResponse()->withJson($response);
+    }
+
+
+    /**
+     * @param int $numberSeconds
+     *
+     * @return bool
+     */
+    public function addCacheHeader($numberSeconds = 0)
+    {
+        if ($numberSeconds && $this->getRequest()->isGet()) {
+            $this->setResponse(
+                $this->getResponse()->withHeader(
+                    "Cache-Control",
+                    "public, max-age=" . $numberSeconds
+                )
+            );
+
+            return true;
+        }
+
+//        $this->setResponse(
+//            $this->getResponse()->withHeader(
+//                "Cache-Control",
+//                "no-cache, must-revalidate"
+//            )
+//        );
+
+        return true;
     }
 }

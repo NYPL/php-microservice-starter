@@ -1,10 +1,12 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
+use NYPL\Starter\APIException;
 use NYPL\Starter\DB;
 use NYPL\Starter\Model;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
 use NYPL\Starter\Model\ModelInterface\DeleteInterface;
+use NYPL\Starter\Model\LocalDateTime;
 
 trait DBCreateTrait
 {
@@ -18,13 +20,24 @@ trait DBCreateTrait
     /**
      * @param bool $useId
      *
-     * @return string
+     * @return bool|null|string
+     * @throws APIException
      * @throws \Exception
      */
     public function create($useId = false)
     {
+        if (!$this->getRawData()) {
+            throw new APIException('No data provided for request');
+        }
+
         if ($useId) {
-            $this->checkExistingDb();
+            if ($this->checkExistingDb()) {
+                $this->setFilters($this->getIdFilters());
+
+                $this->update($this->getRawData());
+
+                return true;
+            }
         }
 
         $this->checkCreatedDate();
@@ -37,13 +50,25 @@ trait DBCreateTrait
             }
         } catch (\Exception $exception) {
             if ($this instanceof DeleteInterface) {
-                $this->delete($insertId);
+                $this->delete($this->getIdFilters());
             }
 
             throw $exception;
         }
 
         return $insertId;
+    }
+
+    protected function checkCreatedDate()
+    {
+        $dateCreatedGetter = 'getCreatedDate';
+        $dateCreatedSetter = 'setCreatedDate';
+
+        if (method_exists($this, $dateCreatedGetter) && method_exists($this, $dateCreatedSetter)) {
+            if (!$this->$dateCreatedGetter()) {
+                $this->$dateCreatedSetter(new LocalDateTime(LocalDateTime::FORMAT_DATE_TIME_RFC));
+            }
+        }
     }
 
     /**
@@ -53,7 +78,7 @@ trait DBCreateTrait
      */
     protected function createDbRecord($useId = false)
     {
-        $insertValues = $this->getInsertValues($useId);
+        $insertValues = $this->getValueArray($useId, get_object_vars($this));
 
         $insertStatement = DB::getDatabase()->insert(array_keys($insertValues))
             ->into($this->getTableName())
@@ -68,7 +93,7 @@ trait DBCreateTrait
         }
 
         if ($useId) {
-            return $this->getId();
+            return $this->getFullId();
         }
 
         $this->setId($insertId);

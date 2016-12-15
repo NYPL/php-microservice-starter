@@ -20,7 +20,7 @@ class ModelSet extends Model implements ReadInterface
     public $data;
 
     /**
-     * @var string
+     * @var string|OrderBy[]
      */
     public $orderBy = "";
 
@@ -73,7 +73,7 @@ class ModelSet extends Model implements ReadInterface
     /**
      * @param Model $model
      */
-    protected function addModel(Model $model)
+    public function addModel(Model $model)
     {
         $this->data[] = $model;
     }
@@ -103,7 +103,7 @@ class ModelSet extends Model implements ReadInterface
     }
 
     /**
-     * @param string $orderBy
+     * @param string|OrderBy[] $orderBy
      */
     public function setOrderBy($orderBy)
     {
@@ -111,7 +111,7 @@ class ModelSet extends Model implements ReadInterface
     }
 
     /**
-     * @return string
+     * @return string|OrderBy[]
      */
     public function getOrderDirection()
     {

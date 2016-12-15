@@ -24,14 +24,18 @@ trait CacheCreateTrait
     public function create($useId = false)
     {
         if (!$useId) {
-            $count = Cache::getCache()->incr($this->getIdKey());
+            $count = Cache::getCache()->incr(
+                $this->getIdKey()
+            );
 
-            $this->setId(uniqid($count));
+            $this->setId(
+                uniqid($count)
+            );
         }
 
         Cache::getCache()->hMset(
             $this->getCacheKey($this->getId()),
-            $this->getInsertValues(true)
+            $this->getValueArray(true, get_object_vars($this))
         );
 
         try {

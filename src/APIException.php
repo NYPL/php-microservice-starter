@@ -2,6 +2,7 @@
 namespace NYPL\Starter;
 
 use Exception;
+use NYPL\Starter\Model\Response\ErrorResponse;
 
 class APIException extends \Exception
 {
@@ -16,19 +17,36 @@ class APIException extends \Exception
     public $httpCode = 500;
 
     /**
+     * @var ErrorResponse
+     */
+    protected $errorResponse;
+
+    /**
      * @param string $message
      * @param array|object $debugInfo
      * @param int $code
      * @param Exception $previous
+     * @param int $httpCode
+     * @param ErrorResponse $errorResponse
      */
-    public function __construct($message = '', $debugInfo = [], $code = 0, Exception $previous = null, $httpCode = 0)
-    {
+    public function __construct(
+        $message = '',
+        $debugInfo = [],
+        $code = 0,
+        Exception $previous = null,
+        $httpCode = 0,
+        ErrorResponse $errorResponse = null
+    ) {
         if ($debugInfo) {
             $this->setDebugInfo($debugInfo);
         }
 
         if ($httpCode) {
             $this->setHttpCode($httpCode);
+        }
+
+        if ($errorResponse) {
+            $this->setErrorResponse($errorResponse);
         }
 
         parent::__construct($message, $code, $previous);
@@ -63,6 +81,22 @@ class APIException extends \Exception
      */
     public function setHttpCode($httpCode)
     {
-        $this->httpCode = $httpCode;
+        $this->httpCode = (int) $httpCode;
+    }
+
+    /**
+     * @return ErrorResponse
+     */
+    public function getErrorResponse()
+    {
+        return $this->errorResponse;
+    }
+
+    /**
+     * @param ErrorResponse $errorResponse
+     */
+    public function setErrorResponse(ErrorResponse $errorResponse)
+    {
+        $this->errorResponse = $errorResponse;
     }
 }

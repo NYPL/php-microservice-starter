@@ -9,7 +9,9 @@ trait CacheReadTrait
 {
     public function read($id = "")
     {
-        $values = Cache::getCache()->hGetAll($this->getCacheKey($id));
+        $values = Cache::getCache()->hGetAll(
+            $this->getCacheKey($id)
+        );
 
         if (!$values) {
             throw new APIException("No record found", [], 0, null, 404);

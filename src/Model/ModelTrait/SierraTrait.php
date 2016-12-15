@@ -1,9 +1,11 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use NYPL\Services\Config;
+use NYPL\Starter\APIException;
 use NYPL\Starter\DB;
-use NYPL\Starter\Model;
 
 trait SierraTrait
 {
@@ -15,11 +17,9 @@ trait SierraTrait
     abstract public function getSierraPath($id = '');
 
     /**
-     * @param resource $curl
-     *
-     * @return mixed
+     * @return string
      */
-    abstract public function applyCurlOptions($curl);
+    abstract public function getRequestType();
 
     /**
      * @param string $id
@@ -37,25 +37,40 @@ trait SierraTrait
 
     /**
      * @param string $path
+     * @param bool $ignoreNoRecord
      * @param array $headers
      *
-     * @return resource
+     * @return string
+     * @throws APIException
      */
-    protected function getCurl($path = '', array $headers = [])
+    protected function sendRequest($path = '', $ignoreNoRecord = false, array $headers = [])
     {
-        $curl = curl_init();
+        $client = new Client();
 
-        $headers[] = 'Authorization: Bearer ' . $this->getAccessToken();
+        $headers['Authorization'] = 'Bearer ' . $this->getAccessToken();
 
-        curl_setopt($curl, CURLOPT_URL, Config::BASE_SIERRA_API_URL . '/' . $path);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        try {
+            $request = $client->request(
+                $this->getRequestType(),
+                Config::BASE_SIERRA_API_URL . '/' . $path,
+                [
+                    'verify' => false,
+                    'headers' => $headers
+                ]
+            );
+        } catch (ClientException $clientException) {
+            if (!$ignoreNoRecord) {
+                throw new APIException(
+                    (string) $clientException->getMessage(),
+                    null,
+                    0,
+                    null,
+                    $clientException->getResponse()->getStatusCode()
+                );
+            }
+        }
 
-        $this->applyCurlOptions($curl);
-
-        $response = curl_exec($curl);
-
-        return $response;
+        return (string) $request->getBody();
     }
 
     /**
@@ -72,6 +87,9 @@ trait SierraTrait
         $insertStatement->execute(true);
     }
 
+    /**
+     * @return string
+     */
     protected function getAccessToken()
     {
         $selectStatement = DB::getDatabase()->select()
@@ -93,20 +111,25 @@ trait SierraTrait
         return $token["access_token"];
     }
 
-
+    /**
+     * @return string
+     */
     protected function getNewToken()
     {
-        $curl = curl_init();
+        $client = new Client();
 
-        curl_setopt($curl, CURLOPT_URL, Config::OAUTH_TOKEN_URI);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, ["grant_type" => "client_credentials"]);
-        curl_setopt($curl, CURLOPT_USERPWD, Config::OAUTH_CLIENT_ID . ":" . Config::OAUTH_CLIENT_SECRET);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $request = $client->request(
+            'POST',
+            Config::OAUTH_TOKEN_URI,
+            [
+                'auth' => [Config::OAUTH_CLIENT_ID, Config::OAUTH_CLIENT_SECRET],
+                'form_params' => [
+                    'grant_type' => 'client_credentials'
+                ],
+                'verify' => false
+            ]
+        );
 
-        $tokenJson = curl_exec($curl);
-
-        curl_close($curl);
-
-        return $tokenJson;
+        return (string) $request->getBody();
     }
 }

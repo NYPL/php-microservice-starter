@@ -24,14 +24,20 @@ class Filter
     public $id = '';
 
     /**
+     * @var string
+     */
+    public $operator = '';
+
+    /**
      * @param string $filterColumn
      * @param mixed $filterValue
      * @param bool $isJsonColumn
      * @param string $id
+     * @param string $operator
      */
-    public function __construct($filterColumn = '', $filterValue = '', $isJsonColumn = false, $id = '')
+    public function __construct($filterColumn = '', $filterValue = '', $isJsonColumn = false, $id = '', $operator = '')
     {
-        if ($filterColumn && $filterColumn) {
+        if ($filterColumn) {
             $this->setFilterColumn($filterColumn);
             $this->setFilterValue($filterValue);
             $this->setJsonColumn($isJsonColumn);
@@ -39,6 +45,10 @@ class Filter
 
         if ($id) {
             $this->setId($id);
+        }
+
+        if ($operator) {
+            $this->setOperator($operator);
         }
     }
 
@@ -104,5 +114,21 @@ class Filter
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOperator()
+    {
+        return $this->operator;
+    }
+
+    /**
+     * @param string $operator
+     */
+    public function setOperator($operator)
+    {
+        $this->operator = $operator;
     }
 }

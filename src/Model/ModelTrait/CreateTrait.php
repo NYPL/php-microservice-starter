@@ -1,6 +1,7 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
+use NYPL\Starter\APIException;
 use NYPL\Starter\Model;
 use NYPL\Starter\Model\LocalDateTime;
 
@@ -9,9 +10,9 @@ trait CreateTrait
     use MessageTrait;
 
     /**
-     * @return string
+     * @return array
      */
-    abstract public function getIdName();
+    abstract public function getIdFields();
 
     /**
      * @param bool $useId
@@ -65,37 +66,24 @@ trait CreateTrait
         return $value;
     }
 
-    protected function checkCreatedDate()
-    {
-        $dateCreatedGetter = 'getCreatedDate';
-        $dateCreatedSetter = 'setCreatedDate';
-
-        if (method_exists($this, $dateCreatedGetter) && method_exists($this, $dateCreatedSetter)) {
-            if (!$this->$dateCreatedGetter()) {
-                $this->$dateCreatedSetter(new LocalDateTime(LocalDateTime::FORMAT_DATE_TIME_RFC));
-            }
-        }
-    }
-
     /**
-     * @param bool $useId
-     *
-     * @return array
+     * @return string
+     * @throws APIException
      */
-    protected function getInsertValues($useId = false)
+    public function getFullId()
     {
-        $insertValues = [];
+        $idValues = [];
 
-        /**
-         * @var Model $this
-         */
-        foreach (get_object_vars($this) as $key => $value) {
-            if (($useId || $key !== $this->getIdName()) && !in_array($key, $this->getExcludeProperties())) {
-                $insertValues[$this->translateDbName($key)] = $this->getObjectValue($value);
+        foreach ($this->getIdFields() as $idField) {
+            $getterName = 'get' . $idField;
+
+            if (!method_exists($this, $getterName)) {
+                throw new APIException('Getter for ID field does not exist');
             }
+
+            $idValues[] = $this->$getterName();
         }
 
-        return $insertValues;
-
+        return implode(':', $idValues);
     }
 }

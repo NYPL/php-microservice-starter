@@ -3,7 +3,6 @@ namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\AvroLoader;
 use NYPL\Services\Config;
-use NYPL\Starter\Model\Message;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
 
 trait MessageTrait
@@ -23,7 +22,7 @@ trait MessageTrait
          */
         $topic = $producer->newTopic($topic);
 
-        $topic->produce(RD_KAFKA_PARTITION_UA, 0, $message, $this->getId());
+        $topic->produce(RD_KAFKA_PARTITION_UA, 0, $message, $this->getFullId());
     }
 
     /**
@@ -36,7 +35,7 @@ trait MessageTrait
         /**
          * @var MessageInterface $this
          */
-        $jsonSchema = json_encode($this->getSchema()->getSchema());
+        $jsonSchema = json_encode($this->getSchema());
 
         $schema = \AvroSchema::parse($jsonSchema);
 
@@ -67,18 +66,4 @@ trait MessageTrait
         return $this->encodeMessageAsAvro();
     }
 
-    /**
-     * @return string
-     */
-    protected function createMessageAsJson()
-    {
-        /**
-         * @var MessageInterface $this
-         */
-        return json_encode(new Message(
-            Message::ACTION_CREATE,
-            $this->getSchema()->getId(),
-            base64_encode($this->encodeMessageAsAvro())
-        ));
-    }
 }

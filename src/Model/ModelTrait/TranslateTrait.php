@@ -19,6 +19,8 @@ trait TranslateTrait
         }
 
         if ($data) {
+            $this->setRawData($data);
+
             $this->translate($data, $validateData);
         }
     }
@@ -137,5 +139,34 @@ trait TranslateTrait
                 $this->$setter($objectValue);
             }
         }
+    }
+
+    /**
+     * @param bool $useId
+     * @param array $data
+     *
+     * @return array
+     * @throws APIException
+     */
+    protected function getValueArray($useId = false, array $data = [])
+    {
+        if (!$data) {
+            throw new APIException('No data was supplied for operation');
+        }
+
+        $insertValues = [];
+
+        /**
+         * @var Model $this
+         */
+        foreach ($data as $key => $value) {
+            if (($useId || !in_array($key, $this->getIdFields())) &&
+                !in_array($key, $this->getExcludeProperties())
+            ) {
+                $insertValues[$this->translateDbName($key)] = $this->getObjectValue($value);
+            }
+        }
+
+        return $insertValues;
     }
 }

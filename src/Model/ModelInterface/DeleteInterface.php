@@ -1,7 +1,14 @@
 <?php
 namespace NYPL\Starter\Model\ModelInterface;
 
+use NYPL\Starter\Filter;
+
 interface DeleteInterface
 {
-    public function delete($id = '');
+    /**
+     * @param Filter[] $filters
+     *
+     * @return int
+     */
+    public function delete(array $filters);
 }

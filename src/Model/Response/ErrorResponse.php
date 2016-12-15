@@ -13,52 +13,42 @@ class ErrorResponse extends Response
      * @SWG\Property(format="int32")
      * @var int
      */
-    public $statusCode;
+    public $statusCode = 500;
 
     /**
      * @SWG\Property(example="error_type")
      * @var string
      */
-    public $type;
+    public $type = '';
 
     /**
      * @SWG\Property(example="Description of error")
      * @var string
      */
-    public $message;
+    public $message = '';
 
     /**
      * @SWG\Property(type="object")
      * @var array
      */
-    public $error;
+    public $error = [];
 
     /**
-     * @SWG\Property(type="object")
-     * @var array
-     */
-    public $debugInfo = [];
-
-    /**
-     * @param int $code
+     * @param int $statusCode
      * @param string $type
      * @param string $message
-     * @param \Exception|\Throwable $throwable
+     * @param \Exception|\Throwable $exception
      */
-    public function __construct($code, $type, $message, $throwable = null)
+    public function __construct($statusCode = 500, $type = '', $message = '', $exception = null)
     {
-        $this->setStatusCode($code);
+        $this->setStatusCode($statusCode);
 
         $this->setType($type);
 
         $this->setMessage($message);
 
-        if ($throwable) {
-            $this->initializeError($throwable);
-
-            if ($throwable instanceof APIException) {
-                $this->setDebugInfo($throwable->getDebugInfo());
-            }
+        if ($exception) {
+            $this->translateException($exception);
         }
     }
 
@@ -123,15 +113,21 @@ class ErrorResponse extends Response
      */
     public function setError($error)
     {
+        if ($error instanceof \Exception) {
+            $error = $this->translateException($error);
+        }
+
         $this->error = $error;
     }
 
     /**
      * @param \Exception|\Throwable $error
+     *
+     * @return array
      */
-    public function initializeError($error)
+    public function translateException($error)
     {
-        $this->error = [
+        $error = [
             'type' => get_class($error),
             'code' => $error->getCode(),
             'message' => $error->getMessage(),
@@ -139,21 +135,14 @@ class ErrorResponse extends Response
             'line' => $error->getLine(),
             'trace' => explode("\n", $error->getTraceAsString()),
         ];
-    }
 
-    /**
-     * @return array|object
-     */
-    public function getDebugInfo()
-    {
-        return $this->debugInfo;
-    }
+        if ($error instanceof APIException) {
+            $this->addDebugInfo(
+                'exception',
+                $error->getDebugInfo()
+            );
+        }
 
-    /**
-     * @param array|object $debugInfo
-     */
-    public function setDebugInfo($debugInfo)
-    {
-        $this->debugInfo = $debugInfo;
+        return $error;
     }
 }

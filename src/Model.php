@@ -13,9 +13,14 @@ abstract class Model implements \JsonSerializable
     /**
      * @var array
      */
-    public $excludeProperties = ["filters", "excludeProperties"];
+    public $excludeProperties = ["filters", "excludeProperties", "rawData"];
 
-    protected function getJsonObjectValue($value)
+    /**
+     * @var array
+     */
+    public $rawData = [];
+
+    public function getJsonObjectValue($value)
     {
         if ($value instanceof \DateTime) {
             return $value->format("c");
@@ -80,9 +85,7 @@ abstract class Model implements \JsonSerializable
      */
     public function addFilter(Filter $filter)
     {
-        if ($filter->getFilterValue()) {
-            $this->filters[] = $filter;
-        }
+        $this->filters[] = $filter;
     }
 
     /**
@@ -99,5 +102,21 @@ abstract class Model implements \JsonSerializable
     public function setExcludeProperties($excludeProperties)
     {
         $this->excludeProperties = $excludeProperties;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRawData()
+    {
+        return $this->rawData;
+    }
+
+    /**
+     * @param array $rawData
+     */
+    public function setRawData($rawData)
+    {
+        $this->rawData = $rawData;
     }
 }

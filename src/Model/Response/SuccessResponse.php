@@ -46,6 +46,8 @@ abstract class SuccessResponse extends Response
         } else {
             $this->setCount(1);
         }
+
+        $this->initializeDebug();
     }
 
     /**

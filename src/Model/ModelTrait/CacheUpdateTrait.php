@@ -15,7 +15,7 @@ trait CacheUpdateTrait
     {
         Cache::getCache()->hMset(
             $this->getCacheKey($this->getId()),
-            $this->getInsertValues(true)
+            $this->getValueArray(true, get_object_vars($this))
         );
 
         if ($this instanceof MessageInterface) {

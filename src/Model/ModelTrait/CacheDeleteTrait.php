@@ -7,13 +7,13 @@ use NYPL\Starter\Model;
 trait CacheDeleteTrait
 {
     /**
-     * @param string $id
-     *
      * @return bool
      */
-    public function delete($id = '')
+    public function delete(array $filters = [])
     {
-        Cache::getCache()->del($this->getCacheKey($id));
+        Cache::getCache()->del(
+            $this->getCacheKey($this->getId())
+        );
 
         return true;
     }

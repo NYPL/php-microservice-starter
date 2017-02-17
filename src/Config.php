@@ -12,12 +12,19 @@ class Config
 
     protected static $configDirectory = '';
 
+    protected static $required = [];
+
     /**
      * @param string $configDirectory
+     * @param array $required
      */
-    public static function initialize($configDirectory = '')
+    public static function initialize($configDirectory = '', array $required = [])
     {
         self::setConfigDirectory($configDirectory);
+
+        if ($required) {
+            self::setRequired($required);
+        }
 
         self::loadConfiguration();
 
@@ -51,11 +58,15 @@ class Config
 
         $dotEnv->required('DB_USERNAME');
         $dotEnv->required('DB_PASSWORD');
-        $dotEnv->required('OAUTH_CLIENT_ID');
-        $dotEnv->required('OAUTH_CLIENT_SECRET');
         $dotEnv->required('SLACK_TOKEN');
         $dotEnv->required('AWS_ACCESS_KEY_ID');
         $dotEnv->required('AWS_SECRET_ACCESS_KEY');
+
+        if (self::getRequired()) {
+            foreach (self::getRequired() as $requiredName) {
+                $dotEnv->required($requiredName);
+            }
+        }
 
         self::setInitialized(true);
     }
@@ -90,5 +101,21 @@ class Config
     protected static function setConfigDirectory(string $configDirectory)
     {
         self::$configDirectory = $configDirectory;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getRequired()
+    {
+        return self::$required;
+    }
+
+    /**
+     * @param array $required
+     */
+    public static function setRequired(array $required)
+    {
+        self::$required = $required;
     }
 }

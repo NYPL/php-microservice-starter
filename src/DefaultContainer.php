@@ -11,11 +11,11 @@ class DefaultContainer extends Container
     const DEFAULT_ERROR_STATUS_CODE = 500;
 
     /**
-     * @param \Exception $exception
+     * @param \Throwable $exception
      *
      * @return int
      */
-    protected function getStatusCode(\Exception $exception)
+    protected function getStatusCode(\Throwable $exception)
     {
         if ($exception instanceof APIException) {
             return $exception->getHttpCode();
@@ -24,7 +24,7 @@ class DefaultContainer extends Container
         return self::DEFAULT_ERROR_STATUS_CODE;
     }
 
-    protected function initializeErrorResponse(\Exception $exception, ErrorResponse $errorResponse)
+    protected function initializeErrorResponse(\Throwable $exception, ErrorResponse $errorResponse)
     {
         $errorResponse->setStatusCode($this->getStatusCode($exception));
         $errorResponse->setType('exception');
@@ -37,7 +37,7 @@ class DefaultContainer extends Container
      *
      * @return ErrorResponse
      */
-    protected function getErrorResponse(\Exception $exception)
+    protected function getErrorResponse(\Throwable $exception)
     {
         if ($exception instanceof APIException && $exception->getErrorResponse()) {
             $errorResponse = $exception->getErrorResponse();
@@ -86,7 +86,7 @@ class DefaultContainer extends Container
         };
 
         $this["errorHandler"] = function (Container $container) {
-            return function (Request $request, Response $response, \Exception $exception) use ($container) {
+            return function (Request $request, Response $response, \Throwable $exception) use ($container) {
                 $this->logError($request, $exception);
 
                 return $container["response"]

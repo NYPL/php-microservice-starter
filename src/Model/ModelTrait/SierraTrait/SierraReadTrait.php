@@ -11,6 +11,11 @@ trait SierraReadTrait
     use Model\ModelTrait\SierraTrait;
 
     /**
+     * @var string
+     */
+    protected $body = '';
+
+    /**
      * @param bool $ignoreNoRecord
      *
      * @return string
@@ -76,5 +81,21 @@ trait SierraReadTrait
     public function getRequestType()
     {
         return 'GET';
+    }
+
+    /**
+     * @return string
+     */
+    public function getBody(): string
+    {
+        return $this->body;
+    }
+
+    /**
+     * @param string $body
+     */
+    public function setBody(string $body)
+    {
+        $this->body = $body;
     }
 }

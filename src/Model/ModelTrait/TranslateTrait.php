@@ -113,14 +113,16 @@ trait TranslateTrait
 
         $modelArray = [];
 
-        foreach ($data as $value) {
-            /**
-             * @var TranslateTrait $newModel
-             */
-            $newModel = clone $model;
-            $newModel->translate($value);
+        foreach ($data as $key => $value) {
+            if ($value) {
+                /**
+                 * @var TranslateTrait $newModel
+                 */
+                $newModel = clone $model;
+                $newModel->translate($value);
 
-            $modelArray[] = $newModel;
+                $modelArray[(int) $key] = $newModel;
+            }
         }
 
         return $modelArray;

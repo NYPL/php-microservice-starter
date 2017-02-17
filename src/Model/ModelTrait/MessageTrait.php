@@ -1,9 +1,11 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
+use Aws\Kinesis\KinesisClient;
 use NYPL\Starter\AvroLoader;
-use NYPL\Services\Config;
+use NYPL\Starter\Config;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
+use RdKafka\Producer;
 
 trait MessageTrait
 {
@@ -13,16 +15,53 @@ trait MessageTrait
      */
     protected function publishMessage($topic = '', $message = '')
     {
-        $producer = new \RdKafka\Producer();
+        $this->publishMessageAsKinesis($topic, $message);
+    }
+
+    /**
+     * @param string $topic
+     * @param string $message
+     */
+    protected function publishMessageAsKafka($topic = '', $message = '')
+    {
+        $producer = new Producer();
         $producer->setLogLevel(LOG_DEBUG);
-        $producer->addBrokers(Config::MESSAGE_BROKER);
+        $producer->addBrokers(Config::get('MESSAGE_BROKER'));
 
         /**
          * @var \RdKafka\ProducerTopic $topic
          */
         $topic = $producer->newTopic($topic);
 
-        $topic->produce(RD_KAFKA_PARTITION_UA, 0, $message, $this->getFullId());
+        $topic->produce(
+            RD_KAFKA_PARTITION_UA,
+            0,
+            $message,
+            $this->getFullId()
+        );
+    }
+
+    /**
+     * @param string $topic
+     * @param string $message
+     * @throws \InvalidArgumentException
+     */
+    protected function publishMessageAsKinesis($topic = '', $message = '')
+    {
+        $client = new KinesisClient([
+            'version' => 'latest',
+            'region'  => Config::get('AMAZON_REGION'),
+            'credentials' => [
+                'key' => Config::get('AMAZON_KEY'),
+                'secret' => Config::get('AMAZON_SECRET')
+            ]
+        ]);
+
+        $client->putRecord([
+            'Data' => $message,
+            'PartitionKey' => md5($topic),
+            'StreamName' => $topic
+        ]);
     }
 
     /**

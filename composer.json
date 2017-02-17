@@ -15,7 +15,8 @@
     "monolog/monolog": "1.21.0",
     "danielstjules/stringy": "2.3.2",
     "zircote/swagger-php": "2.0.7",
-    "aws/aws-sdk-php": "3.9.4"
+    "aws/aws-sdk-php": "3.9.4",
+    "vlucas/phpdotenv": "2.4.0"
   },
   "require-dev": {
   },

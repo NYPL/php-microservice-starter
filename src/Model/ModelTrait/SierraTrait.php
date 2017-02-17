@@ -3,7 +3,7 @@ namespace NYPL\Starter\Model\ModelTrait;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use NYPL\Services\Config;
+use NYPL\Starter\Config;
 use NYPL\Starter\APIException;
 use NYPL\Starter\DB;
 
@@ -52,10 +52,11 @@ trait SierraTrait
         try {
             $request = $client->request(
                 $this->getRequestType(),
-                Config::BASE_SIERRA_API_URL . '/' . $path,
+                Config::get('BASE_SIERRA_API_URL') . '/' . $path,
                 [
                     'verify' => false,
-                    'headers' => $headers
+                    'headers' => $headers,
+                    'body' => $this->getBody()
                 ]
             );
         } catch (ClientException $clientException) {
@@ -120,9 +121,12 @@ trait SierraTrait
 
         $request = $client->request(
             'POST',
-            Config::OAUTH_TOKEN_URI,
+            Config::get('OAUTH_TOKEN_URI'),
             [
-                'auth' => [Config::OAUTH_CLIENT_ID, Config::OAUTH_CLIENT_SECRET],
+                'auth' => [
+                    Config::get('OAUTH_CLIENT_ID'),
+                    Config::get('OAUTH_CLIENT_SECRET')
+                ],
                 'form_params' => [
                     'grant_type' => 'client_credentials'
                 ],

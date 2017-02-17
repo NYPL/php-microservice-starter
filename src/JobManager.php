@@ -2,7 +2,7 @@
 namespace NYPL\Starter;
 
 use GuzzleHttp\Client;
-use NYPL\Services\Config;
+use NYPL\Starter\Config;
 
 class JobManager
 {
@@ -11,10 +11,10 @@ class JobManager
      */
     public static function createJob()
     {
-        if (Config::JOB_SERVICE_URL) {
+        if (Config::get('JOB_SERVICE_URL')) {
             $client = new Client([
-                'base_uri' => Config::JOB_SERVICE_URL,
-                'timeout'  => 2.0,
+                'base_uri' => Config::get('JOB_SERVICE_URL'),
+                'timeout'  => 10,
             ]);
 
             $response = $client->post('');
@@ -32,6 +32,6 @@ class JobManager
      */
     public static function getJobUrl($id = '')
     {
-        return Config::JOB_SERVICE_URL . '/' . $id;
+        return Config::get('JOB_SERVICE_URL') . '/' . $id;
     }
 }

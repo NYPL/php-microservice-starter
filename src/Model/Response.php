@@ -1,7 +1,7 @@
 <?php
 namespace NYPL\Starter\Model;
 
-use NYPL\Services\Config;
+use NYPL\Starter\Config;
 
 abstract class Response
 {
@@ -29,7 +29,7 @@ abstract class Response
 
     protected function initializeDebug()
     {
-        if (extension_loaded('xhprof') && Config::XH_PROF_BASE_URL) {
+        if (extension_loaded('xhprof') && Config::get('XH_PROF_BASE_URL')) {
             $profilerNamespace = 'Service';
             $xhprofData = xhprof_disable();
             $xhprofRuns = new \XHProfRuns_Default();

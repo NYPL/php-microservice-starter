@@ -1,7 +1,7 @@
 <?php
 namespace NYPL\Starter;
 
-use NYPL\Services\Config;
+use NYPL\Starter\Config;
 use NYPL\Starter\Filter\OrFilter;
 use NYPL\Starter\Filter\QueryFilter;
 use NYPL\Starter\Model\Source;
@@ -169,9 +169,9 @@ abstract class Controller
      */
     public function initializeIdentity()
     {
-        if ($this->getRequest()->hasHeader(Config::IDENTITY_HEADER)) {
+        if ($this->getRequest()->hasHeader(Config::get('IDENTITY_HEADER'))) {
             $this->setIdentity(new Identity(
-                $this->getRequest()->getHeaderLine(Config::IDENTITY_HEADER)
+                $this->getRequest()->getHeaderLine(Config::get('IDENTITY_HEADER'))
             ));
             return true;
         }

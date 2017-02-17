@@ -1,7 +1,7 @@
 <?php
 namespace NYPL\Starter;
 
-use NYPL\Services\Config;
+use NYPL\Starter\Config;
 
 class Cache
 {
@@ -13,7 +13,10 @@ class Cache
     protected static function initializeCache()
     {
         $redis = new \Redis();
-        $redis->connect(Config::CACHE_HOST, Config::CACHE_PORT);
+        $redis->connect(
+            Config::get('CACHE_HOST'),
+            Config::get('CACHE_PORT')
+        );
 
         self::setCache($redis);
     }

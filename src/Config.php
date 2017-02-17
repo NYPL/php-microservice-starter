@@ -41,16 +41,21 @@ class Config
 
     protected static function loadConfiguration()
     {
-        $dotEnv = new Dotenv(self::getConfigDirectory(), self::PUBLIC_CONFIG_FILE);
-        $dotEnv->load();
-
         if (file_exists(self::getConfigDirectory() . '/' . self::PRIVATE_CONFIG_FILE)) {
             $dotEnv = new Dotenv(self::getConfigDirectory(), self::PRIVATE_CONFIG_FILE);
             $dotEnv->load();
         }
 
+        $dotEnv = new Dotenv(self::getConfigDirectory(), self::PUBLIC_CONFIG_FILE);
+        $dotEnv->load();
+
         $dotEnv->required('DB_USERNAME');
         $dotEnv->required('DB_PASSWORD');
+        $dotEnv->required('OAUTH_CLIENT_ID');
+        $dotEnv->required('OAUTH_CLIENT_SECRET');
+        $dotEnv->required('SLACK_TOKEN');
+        $dotEnv->required('AWS_ACCESS_KEY_ID');
+        $dotEnv->required('AWS_SECRET_ACCESS_KEY');
 
         self::setInitialized(true);
     }

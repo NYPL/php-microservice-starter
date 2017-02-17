@@ -52,8 +52,8 @@ trait MessageTrait
             'version' => 'latest',
             'region'  => Config::get('AMAZON_REGION'),
             'credentials' => [
-                'key' => Config::get('AMAZON_KEY'),
-                'secret' => Config::get('AMAZON_SECRET')
+                'key' => Config::get('AWS_ACCESS_KEY_ID'),
+                'secret' => Config::get('AWS_SECRET_ACCESS_KEY')
             ]
         ]);
 

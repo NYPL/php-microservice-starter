@@ -1,7 +1,6 @@
 <?php
 namespace NYPL\Starter;
 
-use NYPL\Starter\Config;
 use Slim\App;
 use Slim\Container;
 use Slim\Http\Request;
@@ -13,18 +12,16 @@ class Service extends App
 
     public function __construct(Container $container = null)
     {
-        ini_set('display_errors', 0);
-
-        date_default_timezone_set(Config::get('TIME_ZONE'));
-
         set_error_handler(ErrorHandler::class . "::errorFunction");
         register_shutdown_function(ErrorHandler::class . "::shutdownFunction");
+
+        date_default_timezone_set(Config::get('TIME_ZONE'));
 
         if (!$container) {
             $container = new DefaultContainer();
         }
 
-        if (extension_loaded('xhprof') && Config::XH_PROF_DIRECTORY) {
+        if (extension_loaded('xhprof') && Config::get('XH_PROF_DIRECTORY')) {
             include_once Config::get('XH_PROF_DIRECTORY') . '/xhprof_lib/utils/xhprof_lib.php';
             include_once Config::get('XH_PROF_DIRECTORY') . '/xhprof_lib/utils/xhprof_runs.php';
             xhprof_enable();

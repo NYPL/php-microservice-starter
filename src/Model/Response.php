@@ -38,7 +38,7 @@ abstract class Response
             $this->addDebugInfo(
                 'performanceReport',
                 sprintf(
-                    Config::XH_PROF_BASE_URL . '?run=%s&source=%s&sort=excl_wt',
+                    Config::get('XH_PROF_BASE_URL') . '?run=%s&source=%s&sort=excl_wt',
                     $runID,
                     $profilerNamespace
                 )

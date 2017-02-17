@@ -5,17 +5,35 @@ use Dotenv\Dotenv;
 
 class Config
 {
-    protected static $loaded = false;
+    const PUBLIC_CONFIG_FILE = '.public';
+    const PRIVATE_CONFIG_FILE = '.private';
+
+    protected static $initialized = false;
+
+    protected static $configDirectory = '';
+
+    /**
+     * @param string $configDirectory
+     */
+    public static function initialize($configDirectory = '')
+    {
+        self::setConfigDirectory($configDirectory);
+
+        self::loadConfiguration();
+
+        self::setInitialized(true);
+    }
 
     /**
      * @param string $name
      *
-     * @return mixed
+     * @return string
+     * @throws APIException
      */
     public static function get($name = '')
     {
-        if (!self::isLoaded()) {
-            self::loadConfiguration();
+        if (!self::isInitialized()) {
+            throw new APIException('Configuration has not been initialized');
         }
 
         return getenv($name);
@@ -23,26 +41,49 @@ class Config
 
     protected static function loadConfiguration()
     {
-        ini_set('display_errors', 'On');
-        $dotEnv = new Dotenv(__DIR__ . '/../config/.env');
+        $dotEnv = new Dotenv(self::getConfigDirectory(), self::PUBLIC_CONFIG_FILE);
         $dotEnv->load();
 
-        self::setLoaded(true);
+        if (file_exists(self::getConfigDirectory() . '/' . self::PRIVATE_CONFIG_FILE)) {
+            $dotEnv = new Dotenv(self::getConfigDirectory(), self::PRIVATE_CONFIG_FILE);
+            $dotEnv->load();
+        }
+
+        $dotEnv->required('DB_USERNAME');
+        $dotEnv->required('DB_PASSWORD');
+
+        self::setInitialized(true);
     }
 
     /**
      * @return bool
      */
-    public static function isLoaded(): bool
+    protected static function isInitialized(): bool
     {
-        return self::$loaded;
+        return self::$initialized;
     }
 
     /**
-     * @param bool $loaded
+     * @param bool $initialized
      */
-    public static function setLoaded(bool $loaded)
+    protected static function setInitialized(bool $initialized)
     {
-        self::$loaded = $loaded;
+        self::$initialized = $initialized;
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getConfigDirectory(): string
+    {
+        return self::$configDirectory;
+    }
+
+    /**
+     * @param string $configDirectory
+     */
+    protected static function setConfigDirectory(string $configDirectory)
+    {
+        self::$configDirectory = $configDirectory;
     }
 }

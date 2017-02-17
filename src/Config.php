@@ -12,7 +12,10 @@ class Config
 
     protected static $configDirectory = '';
 
-    protected static $required = [];
+    protected static $defaultRequired =
+        ['DB_USERNAME', 'DB_PASSWORD', 'SLACK_TOKEN', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'];
+
+    protected static $addedRequired = [];
 
     /**
      * @param string $configDirectory
@@ -23,7 +26,7 @@ class Config
         self::setConfigDirectory($configDirectory);
 
         if ($required) {
-            self::setRequired($required);
+            self::setAddedRequired($required);
         }
 
         self::loadConfiguration();
@@ -56,17 +59,9 @@ class Config
         $dotEnv = new Dotenv(self::getConfigDirectory(), self::PUBLIC_CONFIG_FILE);
         $dotEnv->load();
 
-        $dotEnv->required('DB_USERNAME');
-        $dotEnv->required('DB_PASSWORD');
-        $dotEnv->required('SLACK_TOKEN');
-        $dotEnv->required('AWS_ACCESS_KEY_ID');
-        $dotEnv->required('AWS_SECRET_ACCESS_KEY');
+        $dotEnv->required(self::getDefaultRequired());
 
-        if (self::getRequired()) {
-            foreach (self::getRequired() as $requiredName) {
-                $dotEnv->required($requiredName);
-            }
-        }
+        $dotEnv->required(self::getAddedRequired());
 
         self::setInitialized(true);
     }
@@ -106,16 +101,24 @@ class Config
     /**
      * @return array
      */
-    public static function getRequired()
+    public static function getAddedRequired()
     {
-        return self::$required;
+        return self::$addedRequired;
     }
 
     /**
-     * @param array $required
+     * @param array $addedRequired
      */
-    public static function setRequired(array $required)
+    public static function setAddedRequired(array $addedRequired)
     {
-        self::$required = $required;
+        self::$addedRequired = $addedRequired;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getDefaultRequired()
+    {
+        return self::$defaultRequired;
     }
 }

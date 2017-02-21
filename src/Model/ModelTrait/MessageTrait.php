@@ -50,7 +50,7 @@ trait MessageTrait
     {
         $client = new KinesisClient([
             'version' => 'latest',
-            'region'  => Config::get('AMAZON_REGION'),
+            'region'  => Config::get('AWS_DEFAULT_REGION'),
             'credentials' => [
                 'key' => Config::get('AWS_ACCESS_KEY_ID'),
                 'secret' => Config::get('AWS_SECRET_ACCESS_KEY'),

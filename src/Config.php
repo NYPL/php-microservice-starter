@@ -15,7 +15,7 @@ class Config
 
     protected static $publicRequired =
         [
-            'TIME_ZONE', 'DB_CONNECT_STRING', 'SLACK_CHANNEL', 'SLACK_USERNAME', 'AMAZON_REGION'
+            'TIME_ZONE', 'DB_CONNECT_STRING', 'SLACK_CHANNEL', 'SLACK_USERNAME', 'AWS_DEFAULT_REGION'
         ];
 
     protected static $privateRequired =

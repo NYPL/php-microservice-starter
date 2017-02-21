@@ -58,10 +58,8 @@ class Config
 
     protected static function loadConfiguration()
     {
-        if (file_exists(self::getConfigDirectory() . '/' . self::PRIVATE_CONFIG_FILE)) {
-            $dotEnv = new Dotenv(self::getConfigDirectory(), self::PRIVATE_CONFIG_FILE);
-            $dotEnv->load();
-        }
+        $dotEnv = new Dotenv(self::getConfigDirectory(), self::PRIVATE_CONFIG_FILE);
+        $dotEnv->load();
 
         $dotEnv->required(self::getPrivateRequired());
 

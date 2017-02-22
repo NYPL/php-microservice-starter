@@ -2,7 +2,6 @@
 namespace NYPL\Starter;
 
 use GuzzleHttp\Client;
-use NYPL\Starter\Config;
 
 class JobManager
 {

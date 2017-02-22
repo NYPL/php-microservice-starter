@@ -1,7 +1,6 @@
 <?php
 namespace NYPL\Starter;
 
-use NYPL\Starter\Config;
 use NYPL\Starter\Filter\OrFilter;
 use NYPL\Starter\Filter\QueryFilter;
 use NYPL\Starter\Model\Source;

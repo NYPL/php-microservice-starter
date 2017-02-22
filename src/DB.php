@@ -1,7 +1,6 @@
 <?php
 namespace NYPL\Starter;
 
-use NYPL\Starter\Config;
 use Slim\PDO\Database;
 
 class DB

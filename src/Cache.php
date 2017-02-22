@@ -1,8 +1,6 @@
 <?php
 namespace NYPL\Starter;
 
-use NYPL\Starter\Config;
-
 class Cache
 {
     /**

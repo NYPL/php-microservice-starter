@@ -20,7 +20,7 @@ class Config
 
     protected static $privateRequired =
         [
-            'DB_USERNAME', 'DB_PASSWORD', 'SLACK_TOKEN', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'
+            'SLACK_TOKEN', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'
         ];
 
     protected static $addedRequired = [];

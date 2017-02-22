@@ -52,7 +52,7 @@ trait SierraTrait
         try {
             $request = $client->request(
                 $this->getRequestType(),
-                Config::get('BASE_SIERRA_API_URL') . '/' . $path,
+                Config::get('SIERRA_BASE_API_URL') . '/' . $path,
                 [
                     'verify' => false,
                     'headers' => $headers,
@@ -121,11 +121,11 @@ trait SierraTrait
 
         $request = $client->request(
             'POST',
-            Config::get('OAUTH_TOKEN_URI'),
+            Config::get('SIERRA_OAUTH_TOKEN_URI'),
             [
                 'auth' => [
-                    Config::get('OAUTH_CLIENT_ID'),
-                    Config::get('OAUTH_CLIENT_SECRET')
+                    Config::get('SIERRA_OAUTH_CLIENT_ID'),
+                    Config::get('SIERRA_OAUTH_CLIENT_SECRET')
                 ],
                 'form_params' => [
                     'grant_type' => 'client_credentials'

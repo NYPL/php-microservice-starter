@@ -13,7 +13,7 @@ class Cache
         $redis = new \Redis();
         $redis->connect(
             Config::get('CACHE_HOST'),
-            Config::get('CACHE_PORT')
+            (int) Config::get('CACHE_PORT')
         );
 
         self::setCache($redis);

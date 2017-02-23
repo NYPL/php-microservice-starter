@@ -11,6 +11,12 @@ class SwaggerGenerator
 
         $swagger = \Swagger\scan($directory);
 
+        $swagger->host = Config::get('SWAGGER_HOST');
+
+        $swagger->schemes = [
+            Config::get('SWAGGER_SCHEME')
+        ];
+
         return $response->withJson($swagger)
             ->withHeader('Access-Control-Allow-Origin', '*')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')

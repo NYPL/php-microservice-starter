@@ -36,7 +36,7 @@ class APILogger
             Config::get('SLACK_USERNAME'),
             true,
             null,
-            Logger::WARNING
+            Logger::INFO
         ));
 
         self::setLogger($log);

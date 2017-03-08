@@ -44,17 +44,22 @@ class Config
 
     /**
      * @param string $name
+     * @param null $defaultValue
      *
-     * @return string
+     * @return array|false|string
      * @throws APIException
      */
-    public static function get($name = '')
+    public static function get($name = '', $defaultValue = null)
     {
         if (!self::isInitialized()) {
             throw new APIException('Configuration has not been initialized');
         }
 
-        return getenv($name);
+        if (getenv($name) !== false) {
+            return getenv($name);
+        }
+
+        return $defaultValue;
     }
 
     protected static function loadConfiguration()

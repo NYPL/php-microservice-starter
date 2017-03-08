@@ -2,11 +2,12 @@
 namespace NYPL\Starter;
 
 use Monolog\Handler\SlackHandler;
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 class APILogger
 {
+    const DEFAULT_SLACK_LOGGING_LEVEL = Logger::ERROR;
+
     /**
      * @var Logger
      */
@@ -28,15 +29,13 @@ class APILogger
     {
         $log = new Logger('API');
 
-        //$log->pushHandler(new StreamHandler('error.log', Logger::DEBUG));
-
         $log->pushHandler(new SlackHandler(
             Config::get('SLACK_TOKEN'),
             Config::get('SLACK_CHANNEL'),
             Config::get('SLACK_USERNAME'),
             true,
             null,
-            Logger::INFO
+            Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
         ));
 
         self::setLogger($log);

@@ -1,7 +1,6 @@
 <?php
 namespace NYPL\Starter;
 
-use NYPL\Services\Model\DataModel\BasePatron\Patron;
 use NYPL\Starter\Filter\OrFilter;
 use NYPL\Starter\Filter\QueryFilter;
 use NYPL\Starter\Model\Source;
@@ -177,15 +176,22 @@ abstract class Controller
         return $output;
     }
 
+    /**
+     * @return bool
+     */
     public function initializeIdentityHeader()
     {
         if ($this->getRequest()->hasHeader(Config::get('IDENTITY_HEADER'))) {
             $this->setIdentityHeader(new IdentityHeader(
                 $this->getRequest()->getHeaderLine(Config::get('IDENTITY_HEADER'))
             ));
+
+            return true;
         }
 
         $this->setIdentityHeader(new IdentityHeader());
+
+        return false;
     }
 
 

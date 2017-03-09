@@ -325,8 +325,9 @@ abstract class Controller
      * @param string $patronId
      *
      * @return bool
+     * @throws APIException
      */
-    public function checkPatronAccess($patronId = '')
+    public function checkAccess($patronId = '')
     {
         if (!$this->getIdentityHeader()->isExists()) {
             return true;
@@ -336,6 +337,6 @@ abstract class Controller
             return true;
         }
 
-        return false;
+        throw new APIException('Insufficient access for endpoint', null, null, null, 403);
     }
 }

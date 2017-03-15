@@ -421,7 +421,7 @@ class AvroSchema
         if (is_array($datum))
         {
           foreach ($datum as $k => $v)
-            if (!is_string($k)
+            if ((!is_string($k) && !is_int($k))
                 || !self::is_valid_datum($expected_schema->values(), $v))
               return false;
           return true;
@@ -989,7 +989,7 @@ class AvroNamedSchemata
 
   public function list_schemas() {
     var_export($this->schemata);
-    foreach($this->schemata as $sch) 
+    foreach($this->schemata as $sch)
       print('Schema '.$sch->__toString()."\n");
   }
 
@@ -1254,7 +1254,7 @@ class AvroRecordSchema extends AvroNamedSchema
         'Record schema requires a non-empty fields attribute');
 
     if (AvroSchema::REQUEST_SCHEMA == $schema_type)
-      parent::__construct($schema_type, $name); 
+      parent::__construct($schema_type, $name);
     else
       parent::__construct($schema_type, $name, $doc, $schemata);
 

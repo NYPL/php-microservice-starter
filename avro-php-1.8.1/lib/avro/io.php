@@ -187,7 +187,7 @@ class AvroStringIO extends AvroIO
   public function write($arg)
   {
     $this->check_closed();
-    if (is_string($arg))
+    if (is_string($arg) || is_int($arg))
       return $this->append_str($arg);
     throw new AvroIOException(
       sprintf('write argument must be a string: (%s) %s',
@@ -202,7 +202,7 @@ class AvroStringIO extends AvroIO
   {
     $this->check_closed();
     $read='';
-    for($i=$this->current_index; $i<($this->current_index+$len); $i++) 
+    for($i=$this->current_index; $i<($this->current_index+$len); $i++)
       $read .= $this->string_buffer[$i];
     if (strlen($read) < $len)
       $this->current_index = $this->length();
@@ -291,13 +291,13 @@ class AvroStringIO extends AvroIO
    * @returns integer count of bytes written.
    */
   private function append_str($str)
-  { 
-    $this->check_closed(); 
-    $this->string_buffer .= $str; 
-    $len = strlen($str); 
-    $this->current_index += $len; 
-    return $len; 
-  } 
+  {
+    $this->check_closed();
+    $this->string_buffer .= $str;
+    $len = strlen($str);
+    $this->current_index += $len;
+    return $len;
+  }
 
   /**
    * Truncates the truncate buffer to 0 bytes and returns the pointer

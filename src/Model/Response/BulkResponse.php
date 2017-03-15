@@ -37,9 +37,7 @@ abstract class BulkResponse extends Response
      */
     public function __construct(array $successModels = [], array $errors = [], $code = 200)
     {
-        if ($successModels) {
-            $this->initializeResponse($successModels, $errors);
-        }
+        $this->initializeResponse($successModels, $errors);
 
         $this->setStatusCode($code);
     }

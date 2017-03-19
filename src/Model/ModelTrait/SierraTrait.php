@@ -3,12 +3,15 @@ namespace NYPL\Starter\Model\ModelTrait;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use NYPL\Starter\Cache;
 use NYPL\Starter\Config;
 use NYPL\Starter\APIException;
-use NYPL\Starter\DB;
 
 trait SierraTrait
 {
+    protected static $cacheKey = 'PatronService:Token';
+    protected static $timeoutSeconds = 10;
+
     /**
      * @param string $id
      *
@@ -56,7 +59,8 @@ trait SierraTrait
                 [
                     'verify' => false,
                     'headers' => $headers,
-                    'body' => $this->getBody()
+                    'body' => $this->getBody(),
+                    'timeout' => self::$timeoutSeconds
                 ]
             );
         } catch (ClientException $clientException) {
@@ -81,11 +85,7 @@ trait SierraTrait
     {
         $token["expire_time"] = time() + $token["expires_in"];
 
-        $insertStatement = DB::getDatabase()->insert(array_keys($token))
-            ->into("Token")
-            ->values(array_values($token));
-
-        $insertStatement->execute(true);
+        Cache::getCache()->set(self::$cacheKey, serialize($token));
     }
 
     /**
@@ -93,14 +93,10 @@ trait SierraTrait
      */
     protected function getAccessToken()
     {
-        $selectStatement = DB::getDatabase()->select()
-            ->from("Token")
-            ->where("expire_time", ">", time());
+        $token = Cache::getCache()->get(self::$cacheKey);
 
-        $selectStatement = $selectStatement->execute();
-
-        if ($selectStatement->rowCount()) {
-            $token = $selectStatement->fetch();
+        if ($token) {
+            $token = unserialize($token);
 
             return $token['access_token'];
         }
@@ -130,7 +126,8 @@ trait SierraTrait
                 'form_params' => [
                     'grant_type' => 'client_credentials'
                 ],
-                'verify' => false
+                'verify' => false,
+                'timeout' => self::$timeoutSeconds
             ]
         );
 

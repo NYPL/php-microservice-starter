@@ -13,6 +13,8 @@ class SwaggerGenerator
 
         $swagger->host = Config::get('SWAGGER_HOST');
 
+        $swagger->basePath = '/api';
+
         $swagger->schemes = [
             Config::get('SWAGGER_SCHEME')
         ];

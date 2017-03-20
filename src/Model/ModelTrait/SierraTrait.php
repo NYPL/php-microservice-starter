@@ -9,7 +9,7 @@ use NYPL\Starter\APIException;
 
 trait SierraTrait
 {
-    protected static $cacheKey = 'PatronService:Token';
+    protected static $cacheKey = 'PatronService:Sierra:Token';
     protected static $timeoutSeconds = 10;
 
     /**
@@ -89,15 +89,32 @@ trait SierraTrait
     }
 
     /**
+     * @return bool|array
+     */
+    protected function getCachedAccessToken()
+    {
+        $token = Cache::getCache()->get(self::$cacheKey);
+
+        if (!$token) {
+            return false;
+        }
+
+        $token = unserialize($token);
+
+        if ($token['expire_time'] <= time()) {
+            return false;
+        }
+
+        return $token;
+    }
+
+    /**
      * @return string
      */
     protected function getAccessToken()
     {
-        $token = Cache::getCache()->get(self::$cacheKey);
 
-        if ($token) {
-            $token = unserialize($token);
-
+        if ($token = $this->getCachedAccessToken()) {
             return $token['access_token'];
         }
 

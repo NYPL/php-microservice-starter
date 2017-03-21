@@ -1,7 +1,6 @@
 <?php
 namespace NYPL\Starter;
 
-use NYPL\Starter\Filter\OrFilter;
 use NYPL\Starter\Filter\QueryFilter;
 use NYPL\Starter\Model\Source;
 use NYPL\Starter\Model\IdentityHeader;
@@ -217,24 +216,7 @@ abstract class Controller
      */
     protected function addQueryFilter(ModelSet $model, $queryParameterName = '')
     {
-        if ($this->getRequest()->getQueryParam($queryParameterName) !== null) {
-            if (strpos($this->getRequest()->getQueryParam($queryParameterName), ',') !== false) {
-                $queryParameterArray = explode(',', $this->getRequest()->getQueryParam($queryParameterName));
-
-                $filters = [];
-
-                foreach ($queryParameterArray as $queryParameterValue) {
-                    $filters[] = new QueryFilter(
-                        $queryParameterName,
-                        trim($queryParameterValue)
-                    );
-                }
-
-                $model->addFilter(new OrFilter($filters));
-
-                return true;
-            }
-
+        if ($this->getRequest()->getQueryParam($queryParameterName)) {
             $filter = new QueryFilter(
                 $queryParameterName,
                 $this->getRequest()->getQueryParam($queryParameterName)

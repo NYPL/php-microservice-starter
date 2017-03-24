@@ -16,7 +16,7 @@ class DB
             new Database(
                 Config::get('DB_CONNECT_STRING'),
                 Config::get('DB_USERNAME'),
-                Config::get('DB_PASSWORD')
+                Config::get('DB_PASSWORD', null, true)
             )
         );
     }

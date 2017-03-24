@@ -1,6 +1,7 @@
 <?php
 namespace NYPL\Starter;
 
+use Aws\Kms\KmsClient;
 use Dotenv\Dotenv;
 use Dotenv\Exception\InvalidPathException;
 
@@ -23,7 +24,16 @@ class Config
             'SLACK_TOKEN', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'
         ];
 
+    protected static $environmentName = 'ENVIRONMENT';
+
+    protected static $localEnvironmentValue = 'local';
+
     protected static $addedRequired = [];
+
+    /**
+     * @var KmsClient
+     */
+    protected static $keyClient;
 
     /**
      * @param string $configDirectory
@@ -45,21 +55,50 @@ class Config
     /**
      * @param string $name
      * @param null $defaultValue
+     * @param bool $isEncrypted
      *
-     * @return array|false|string
+     * @return null|string
      * @throws APIException
      */
-    public static function get($name = '', $defaultValue = null)
+    public static function get($name = '', $defaultValue = null, $isEncrypted = false)
     {
         if (!self::isInitialized()) {
             throw new APIException('Configuration has not been initialized');
         }
 
         if (getenv($name) !== false) {
-            return getenv($name);
+            if ($isEncrypted && self::isEncryptedEnvironment()) {
+                return self::decryptEnvironmentVariable($name);
+            }
+
+            return (string) getenv($name);
         }
 
         return $defaultValue;
+    }
+
+    /**
+     * @return bool
+     */
+    protected static function isEncryptedEnvironment()
+    {
+        if (self::get(self::$environmentName) == self::$localEnvironmentValue) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    protected static function decryptEnvironmentVariable($name = '')
+    {
+        return (string) self::getKeyClient()->decrypt([
+            'CiphertextBlob' => base64_decode(getenv($name)),
+        ])['Plaintext'];
     }
 
     protected static function loadConfiguration()
@@ -85,7 +124,7 @@ class Config
     /**
      * @return bool
      */
-    protected static function isInitialized(): bool
+    protected static function isInitialized()
     {
         return self::$initialized;
     }
@@ -93,7 +132,7 @@ class Config
     /**
      * @param bool $initialized
      */
-    protected static function setInitialized(bool $initialized)
+    protected static function setInitialized($initialized)
     {
         self::$initialized = $initialized;
     }
@@ -101,7 +140,7 @@ class Config
     /**
      * @return string
      */
-    protected static function getConfigDirectory(): string
+    protected static function getConfigDirectory()
     {
         return self::$configDirectory;
     }
@@ -144,5 +183,41 @@ class Config
     public static function getPrivateRequired(): array
     {
         return self::$privateRequired;
+    }
+
+    /**
+     * @return KmsClient
+     */
+    protected static function createKeyClient()
+    {
+        return new KmsClient([
+            'version' => 'latest',
+            'region'  => Config::get('AWS_DEFAULT_REGION'),
+            'credentials' => [
+                'key' => Config::get('AWS_ACCESS_KEY_ID'),
+                'secret' => Config::get('AWS_SECRET_ACCESS_KEY'),
+                'token' => Config::get('AWS_SESSION_TOKEN')
+            ]
+        ]);
+    }
+
+    /**
+     * @return KmsClient
+     */
+    public static function getKeyClient()
+    {
+        if (!self::$keyClient) {
+            self::setKeyClient(self::createKeyClient());
+        }
+
+        return self::$keyClient;
+    }
+
+    /**
+     * @param KmsClient $keyClient
+     */
+    public static function setKeyClient(KmsClient $keyClient)
+    {
+        self::$keyClient = $keyClient;
     }
 }

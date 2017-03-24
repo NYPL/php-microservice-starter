@@ -30,7 +30,7 @@ class APILogger
         $log = new Logger('API');
 
         $log->pushHandler(new SlackHandler(
-            Config::get('SLACK_TOKEN'),
+            Config::get('SLACK_TOKEN', null, true),
             Config::get('SLACK_CHANNEL'),
             Config::get('SLACK_USERNAME'),
             true,

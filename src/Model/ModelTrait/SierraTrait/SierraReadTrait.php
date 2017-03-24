@@ -2,6 +2,7 @@
 namespace NYPL\Starter\Model\ModelTrait\SierraTrait;
 
 use NYPL\Starter\APIException;
+use NYPL\Starter\Filter;
 use NYPL\Starter\Model;
 use NYPL\Starter\ModelSet;
 
@@ -21,6 +22,18 @@ trait SierraReadTrait
      */
     protected function getSierraResponse($ignoreNoRecord = false)
     {
+        if ($this->getFilters()) {
+            /**
+             * @var Filter $filter
+             */
+            $filter = current($this->getFilters());
+
+            return $this->sendRequest(
+                $this->getSierraPath($filter->getId()),
+                $ignoreNoRecord
+            );
+        }
+
         return $this->sendRequest(
             $this->getSierraPath(),
             $ignoreNoRecord
@@ -73,7 +86,7 @@ trait SierraReadTrait
     /**
      * @return string
      */
-    public function getBody()
+    public function getBody(): string
     {
         return $this->body;
     }
@@ -81,7 +94,7 @@ trait SierraReadTrait
     /**
      * @param string $body
      */
-    public function setBody($body = '')
+    public function setBody(string $body)
     {
         $this->body = $body;
     }

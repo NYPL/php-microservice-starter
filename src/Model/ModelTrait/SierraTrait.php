@@ -137,8 +137,8 @@ trait SierraTrait
             Config::get('SIERRA_OAUTH_TOKEN_URI'),
             [
                 'auth' => [
-                    Config::get('SIERRA_OAUTH_CLIENT_ID'),
-                    Config::get('SIERRA_OAUTH_CLIENT_SECRET')
+                    Config::get('SIERRA_OAUTH_CLIENT_ID', null, true),
+                    Config::get('SIERRA_OAUTH_CLIENT_SECRET', null, true)
                 ],
                 'form_params' => [
                     'grant_type' => 'client_credentials'

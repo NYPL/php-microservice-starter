@@ -13,7 +13,7 @@ trait SierraReadTrait
     /**
      * @var string
      */
-    protected $body = '';
+    private $body = '';
 
     /**
      * @param bool $ignoreNoRecord
@@ -86,7 +86,7 @@ trait SierraReadTrait
     /**
      * @return string
      */
-    public function getBody(): string
+    public function getBody()
     {
         return $this->body;
     }
@@ -94,7 +94,7 @@ trait SierraReadTrait
     /**
      * @param string $body
      */
-    public function setBody(string $body)
+    public function setBody($body = '')
     {
         $this->body = $body;
     }

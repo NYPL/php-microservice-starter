@@ -1,6 +1,7 @@
 <?php
 namespace NYPL\Starter;
 
+use Monolog\Handler\ErrorLogHandler;
 use Monolog\Handler\SlackHandler;
 use Monolog\Logger;
 
@@ -37,6 +38,8 @@ class APILogger
             null,
             Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
         ));
+
+        $log->pushHandler(new ErrorLogHandler());
 
         self::setLogger($log);
     }

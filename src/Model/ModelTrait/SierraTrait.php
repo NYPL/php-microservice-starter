@@ -83,9 +83,9 @@ trait SierraTrait
      */
     protected function saveToken(array $token = [])
     {
-        $token["expire_time"] = time() + $token["expires_in"];
+        $token['expire_time'] = time() + $token['expires_in'];
 
-        Cache::getCache()->set(self::$cacheKey, serialize($token));
+        Cache::getCache()->set($this->getCacheKey(), serialize($token));
     }
 
     /**
@@ -93,7 +93,7 @@ trait SierraTrait
      */
     protected function getCachedAccessToken()
     {
-        $token = Cache::getCache()->get(self::$cacheKey);
+        $token = Cache::getCache()->get($this->getCacheKey());
 
         if (!$token) {
             return false;
@@ -122,7 +122,7 @@ trait SierraTrait
 
         $this->saveToken($token);
 
-        return $token["access_token"];
+        return $token['access_token'];
     }
 
     /**
@@ -149,5 +149,13 @@ trait SierraTrait
         );
 
         return (string) $request->getBody();
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCacheKey()
+    {
+        return (string) $this->getCacheKey() . ':' . md5(Config::get('SIERRA_BASE_API_URL'));
     }
 }

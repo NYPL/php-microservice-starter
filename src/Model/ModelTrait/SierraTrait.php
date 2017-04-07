@@ -156,6 +156,6 @@ trait SierraTrait
      */
     protected function getCacheKey()
     {
-        return (string) $this->getCacheKey() . ':' . md5(Config::get('SIERRA_BASE_API_URL'));
+        return (string) self::$cacheKey . ':' . md5(Config::get('SIERRA_BASE_API_URL'));
     }
 }

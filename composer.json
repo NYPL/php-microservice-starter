@@ -9,9 +9,7 @@
   ],
   "require": {
     "slim/slim": "3.5.0",
-    "filp/whoops": "2.1.3",
     "slim/pdo": "1.9.9",
-    "kwn/php-rdkafka-stubs": "0.0.5",
     "monolog/monolog": "1.21.0",
     "danielstjules/stringy": "2.3.2",
     "zircote/swagger-php": "2.0.7",

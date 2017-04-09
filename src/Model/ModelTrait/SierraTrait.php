@@ -3,6 +3,7 @@ namespace NYPL\Starter\Model\ModelTrait;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 use NYPL\Starter\Cache;
 use NYPL\Starter\Config;
 use NYPL\Starter\APIException;
@@ -10,7 +11,8 @@ use NYPL\Starter\APIException;
 trait SierraTrait
 {
     protected static $cacheKey = 'PatronService:Sierra:Token';
-    protected static $timeoutSeconds = 10;
+
+    private $timeoutSeconds = 10;
 
     /**
      * @param string $id
@@ -60,8 +62,14 @@ trait SierraTrait
                     'verify' => false,
                     'headers' => $headers,
                     'body' => $this->getBody(),
-                    'timeout' => self::$timeoutSeconds
+                    'timeout' => $this->getTimeoutSeconds()
                 ]
+            );
+        } catch (ConnectException $connectException) {
+            throw new APIException(
+                'Error connecting to ' . $connectException->getRequest()->getUri() . ': ' .
+                $connectException->getMessage(),
+                $connectException
             );
         } catch (ClientException $clientException) {
             if (!$ignoreNoRecord) {
@@ -127,6 +135,7 @@ trait SierraTrait
 
     /**
      * @return string
+     * @throws APIException
      */
     protected function getNewToken()
     {
@@ -144,7 +153,7 @@ trait SierraTrait
                     'grant_type' => 'client_credentials'
                 ],
                 'verify' => false,
-                'timeout' => self::$timeoutSeconds
+                'timeout' => $this->getTimeoutSeconds()
             ]
         );
 
@@ -157,5 +166,21 @@ trait SierraTrait
     protected function getCacheKey()
     {
         return (string) self::$cacheKey . ':' . md5(Config::get('SIERRA_BASE_API_URL'));
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimeoutSeconds()
+    {
+        return $this->timeoutSeconds;
+    }
+
+    /**
+     * @param int $timeoutSeconds
+     */
+    public function setTimeoutSeconds($timeoutSeconds)
+    {
+        $this->timeoutSeconds = (int) $timeoutSeconds;
     }
 }

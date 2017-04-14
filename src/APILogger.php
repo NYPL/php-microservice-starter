@@ -1,6 +1,7 @@
 <?php
 namespace NYPL\Starter;
 
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Handler\SlackHandler;
 use Monolog\Logger;
@@ -30,16 +31,21 @@ class APILogger
     {
         $log = new Logger('API');
 
-        $log->pushHandler(new SlackHandler(
+        $handler = new SlackHandler(
             Config::get('SLACK_TOKEN', null, true),
             Config::get('SLACK_CHANNEL'),
             Config::get('SLACK_USERNAME'),
             true,
             null,
             Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
-        ));
+        );
 
-        $log->pushHandler(new ErrorLogHandler());
+        $log->pushHandler($handler);
+
+        $handler = new ErrorLogHandler();
+        $handler->setFormatter(new JsonFormatter());
+
+        $log->pushHandler($handler);
 
         self::setLogger($log);
     }

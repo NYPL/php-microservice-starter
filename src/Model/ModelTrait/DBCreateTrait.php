@@ -3,7 +3,6 @@ namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
 use NYPL\Starter\DB;
-use NYPL\Starter\Model;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
 use NYPL\Starter\Model\ModelInterface\DeleteInterface;
 use NYPL\Starter\Model\LocalDateTime;
@@ -84,7 +83,7 @@ trait DBCreateTrait
             ->into($this->getTableName())
             ->values(array_values($insertValues));
 
-        $insertStatement->execute(true);
+        $insertStatement->execute(false);
 
         if ($this->getSequenceId()) {
             $insertId = DB::getDatabase()->lastInsertId($this->getSequenceId());

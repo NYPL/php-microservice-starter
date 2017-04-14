@@ -1,6 +1,8 @@
 <?php
 namespace NYPL\Starter\Model;
 
+use NYPL\Starter\APILogger;
+
 /**
  * @SWG\Definition(name="BulkError", type="object")
  */
@@ -31,6 +33,11 @@ class BulkError
      */
     public function __construct($index = 0, $message = '', array $data = [])
     {
+        APILogger::addError(
+            'Bulk posting error: ' . $message,
+            $data
+        );
+
         $this->setIndex($index);
 
         $this->setMessage($message);

@@ -59,11 +59,9 @@ exports.handler = function(event, context) {
 
     const php = spawn('./php-cgi', ['index.php'], options);
 
-    if (php.stderr) {
+    if (php.stderr.length) {
         php.stderr.toString().split("\n").map(function (message) {
-            if (message.trim().length) {
-                console.log(message);
-            }
+            if (message.trim().length) console.log(message);
         });
     }
 

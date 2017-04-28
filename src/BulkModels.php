@@ -16,6 +16,11 @@ class BulkModels
     public $models = [];
 
     /**
+     * @var Model[]
+     */
+    public $successModels = [];
+
+    /**
      * @var BulkError[]
      */
     public $bulkErrors = [];
@@ -92,6 +97,30 @@ class BulkModels
     }
 
     /**
+     * @return Model[]
+     */
+    public function getSuccessModels()
+    {
+        return $this->successModels;
+    }
+
+    /**
+     * @param Model[] $successModels
+     */
+    public function setSuccessModels($successModels)
+    {
+        $this->successModels = $successModels;
+    }
+
+    /**
+     * @param Model $model
+     */
+    public function addSuccessModel(Model $model)
+    {
+        $this->successModels[] = $model;
+    }
+
+    /**
      * @param bool $useId
      * @throws \InvalidArgumentException|\AvroIOException
      */
@@ -107,6 +136,8 @@ class BulkModels
                 }
 
                 $model->create($useId);
+
+                $this->addSuccessModel($model);
             } catch (\Exception $exception) {
                 $this->addBulkError(new BulkError(
                     $count,
@@ -117,7 +148,7 @@ class BulkModels
         }
 
         $this->bulkPublishMessages(
-            $this->getModels()
+            $this->getSuccessModels()
         );
     }
 }

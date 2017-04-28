@@ -13,7 +13,7 @@ abstract class Model implements \JsonSerializable
     /**
      * @var array
      */
-    public $excludeProperties = ['filters', 'excludeProperties', 'rawData', 'bulk'];
+    public $excludeProperties = ['filters', 'excludeProperties', 'rawData', 'bulk', 'topic'];
 
     /**
      * @var array

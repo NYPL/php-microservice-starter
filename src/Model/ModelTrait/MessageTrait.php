@@ -11,7 +11,7 @@ trait MessageTrait
     /**
      * @var string
      */
-    private $topic = '';
+    protected $topic = '';
 
     /**
      * @var KinesisClient

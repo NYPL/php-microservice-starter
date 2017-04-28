@@ -2,7 +2,6 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
-use NYPL\Starter\Model;
 use NYPL\Starter\Model\LocalDateTime;
 
 trait CreateTrait

@@ -13,12 +13,17 @@ abstract class Model implements \JsonSerializable
     /**
      * @var array
      */
-    public $excludeProperties = ["filters", "excludeProperties", "rawData"];
+    public $excludeProperties = ['filters', 'excludeProperties', 'rawData', 'bulk'];
 
     /**
      * @var array
      */
     public $rawData = [];
+
+    /**
+     * @var bool
+     */
+    public $bulk = false;
 
     public function getJsonObjectValue($value)
     {
@@ -118,5 +123,21 @@ abstract class Model implements \JsonSerializable
     public function setRawData($rawData)
     {
         $this->rawData = $rawData;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBulk()
+    {
+        return $this->bulk;
+    }
+
+    /**
+     * @param bool $bulk
+     */
+    public function setBulk($bulk)
+    {
+        $this->bulk = (bool) $bulk;
     }
 }

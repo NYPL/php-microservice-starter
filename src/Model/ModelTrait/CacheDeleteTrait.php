@@ -2,7 +2,6 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\Cache;
-use NYPL\Starter\Model;
 
 trait CacheDeleteTrait
 {

@@ -3,7 +3,6 @@ namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
 use NYPL\Starter\Cache;
-use NYPL\Starter\Model;
 
 trait CacheReadTrait
 {

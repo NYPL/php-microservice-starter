@@ -124,9 +124,11 @@ trait DBReadTrait
         }
 
         if ($filter->isJsonColumn()) {
-            $sqlStatement->whereLike(
-                $this->translateDbName($filter->getFilterColumn()),
-                '%"' . $filter->getFilterValue() . '"%'
+            // See: https://dba.stackexchange.com/questions/90002/postgresql-operator-uses-index-but-underlying-function-does-not
+            $sqlStatement->where(
+                'jsonb_contains(' . $this->translateDbName($filter->getFilterColumn()) . ', \'' . $filter->getFilterValue() . '\')',
+                '=',
+                'true'
             );
 
             return true;

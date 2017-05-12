@@ -2,7 +2,11 @@ const spawn = require('child_process').spawnSync;
 const parser = require('http-string-parser');
 const querystring = require('querystring');
 
-exports.handler = function(event, context) {
+exports.handler = function(event, context, callback) {
+    if (!event.requestContext) {
+        return false;
+    }
+
     var serverName = event.headers ? event.headers.Host : '';
     var requestMethod = event.httpMethod || 'GET';
 

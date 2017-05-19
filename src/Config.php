@@ -6,7 +6,8 @@ use Dotenv\Dotenv;
 
 class Config
 {
-    const CONFIG_FILE = '.env';
+    const ENVIRONMENT_FILE = '.env';
+    const CONFIG_FILE = 'config';
 
     protected static $initialized = false;
 
@@ -96,8 +97,13 @@ class Config
 
     protected static function loadConfiguration()
     {
-        $dotEnv = new Dotenv(self::getConfigDirectory(), self::CONFIG_FILE);
+        $dotEnv = new Dotenv(self::getConfigDirectory(), self::ENVIRONMENT_FILE);
         $dotEnv->load();
+
+        if (file_exists(self::getConfigDirectory() . '/' . self::CONFIG_FILE)) {
+            $dotEnv = new Dotenv(self::getConfigDirectory(), self::CONFIG_FILE);
+            $dotEnv->load();
+        }
 
         $dotEnv->required(self::getRequired());
 

@@ -54,8 +54,6 @@ abstract class BulkResponse extends Response
         if ($successModels) {
             $this->setCount(count($successModels));
         }
-
-        $this->initializeDebug();
     }
 
     /**

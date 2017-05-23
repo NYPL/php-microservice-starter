@@ -12,6 +12,8 @@ class Service extends App
 
     public function __construct(Container $container = null)
     {
+        $_SERVER['SCRIPT_NAME'] = 'index.php';
+
         set_error_handler(ErrorHandler::class . "::errorFunction");
         register_shutdown_function(ErrorHandler::class . "::shutdownFunction");
 
@@ -19,12 +21,6 @@ class Service extends App
 
         if (!$container) {
             $container = new DefaultContainer();
-        }
-
-        if (extension_loaded('xhprof') && Config::get('XH_PROF_DIRECTORY')) {
-            include_once Config::get('XH_PROF_DIRECTORY') . '/xhprof_lib/utils/xhprof_lib.php';
-            include_once Config::get('XH_PROF_DIRECTORY') . '/xhprof_lib/utils/xhprof_runs.php';
-            xhprof_enable();
         }
 
         parent::__construct($container);

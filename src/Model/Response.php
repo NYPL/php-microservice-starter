@@ -27,25 +27,6 @@ abstract class Response
         $this->debugInfo = $debugInfo;
     }
 
-    protected function initializeDebug()
-    {
-        if (extension_loaded('xhprof') && Config::get('XH_PROF_BASE_URL')) {
-            $profilerNamespace = 'Service';
-            $xhprofData = xhprof_disable();
-            $xhprofRuns = new \XHProfRuns_Default();
-            $runID = $xhprofRuns->save_run($xhprofData, $profilerNamespace);
-
-            $this->addDebugInfo(
-                'performanceReport',
-                sprintf(
-                    Config::get('XH_PROF_BASE_URL') . '?run=%s&source=%s&sort=excl_wt',
-                    $runID,
-                    $profilerNamespace
-                )
-            );
-        }
-    }
-
     /**
      * @param string $type
      * @param mixed $debugInfo

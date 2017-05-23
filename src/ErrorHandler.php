@@ -51,9 +51,11 @@ class ErrorHandler
 
     public static function errorFunction($errorNumber, $errorString, $errorFile, $errorLine, array $errorContext = [])
     {
-        APILogger::addError(
-            $errorString . ' (' . $errorNumber . ') in ' . $errorFile . ' on line ' . $errorLine
-        );
+        if (!self::isIgnoreError()) {
+            APILogger::addError(
+                $errorString . ' (' . $errorNumber . ') in ' . $errorFile . ' on line ' . $errorLine
+            );
+        }
     }
 
     public static function shutdownFunction()

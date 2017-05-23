@@ -18,10 +18,6 @@ class Config
             'SLACK_TOKEN', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'
         ];
 
-    protected static $environmentName = 'ENVIRONMENT';
-
-    protected static $localEnvironmentValue = 'local';
-
     protected static $addedRequired = [];
 
     /**
@@ -72,15 +68,16 @@ class Config
     }
 
     /**
+     * @throws APIException
      * @return bool
      */
     protected static function isEncryptedEnvironment()
     {
-        if (self::get(self::$environmentName) == self::$localEnvironmentValue) {
-            return false;
+        if (Config::get('LAMBDA_TASK_ROOT') !== false) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**

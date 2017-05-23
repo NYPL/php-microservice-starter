@@ -76,26 +76,26 @@ class APILogger
 
     /**
      * @param string $error
-     * @param array $context
+     * @param array|object $context
      *
      * @return bool
      */
-    public static function addInfo($error = '', array $context = [])
+    public static function addInfo($error = '', $context = [])
     {
-        self::getLogger()->addInfo($error, $context);
+        self::getLogger()->addInfo($error, (array) $context);
 
         return true;
     }
 
     /**
      * @param string $error
-     * @param array $context
+     * @param array|object $context
      *
      * @return bool
      */
-    public static function addError($error = '', array $context = [])
+    public static function addError($error = '', $context = [])
     {
-        self::getLogger()->addError($error, $context);
+        self::getLogger()->addError($error, (array) $context);
 
         return true;
     }

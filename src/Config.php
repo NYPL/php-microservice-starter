@@ -73,7 +73,7 @@ class Config
      */
     protected static function isEncryptedEnvironment()
     {
-        if (Config::get('LAMBDA_TASK_ROOT') !== false) {
+        if (Config::get('LAMBDA_TASK_ROOT')) {
             return true;
         }
 

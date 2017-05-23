@@ -50,6 +50,24 @@ class DefaultContainer extends Container
         return $errorResponse;
     }
 
+    /**
+     * @param Request $request
+     * @param \Exception|\Throwable $exception
+     */
+    protected function logError(Request $request, $exception)
+    {
+        APILogger::addLog(
+            $this->getStatusCode($exception),
+            $exception->getMessage(),
+            [
+                $request->getHeaderLine('X-NYPL-Log-Stream-Name'),
+                $request->getHeaderLine('X-NYPL-Request-ID'),
+                (string) $request->getUri(),
+                $request->getParsedBody()
+            ]
+        );
+    }
+
     public function __construct()
     {
         parent::__construct();
@@ -62,6 +80,20 @@ class DefaultContainer extends Container
                     ->withStatus(404)
                     ->withHeader("Content-Type", "text/html")
                     ->write("Page not found");
+            };
+        };
+
+        $this["errorHandler"] = function (Container $container) {
+            return function (Request $request, Response $response, \Throwable $exception) use ($container) {
+                $this->logError($request, $exception);
+
+                return $container["response"]
+                    ->withStatus($this->getStatusCode($exception))
+                    ->withJson($this->getErrorResponse($exception))
+                    ->withHeader(
+                        "Access-Control-Allow-Origin",
+                        "*"
+                    );
             };
         };
     }

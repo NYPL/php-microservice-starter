@@ -10,7 +10,7 @@ class ErrorHandler
      */
     protected static $ignoreError = false;
 
-    public static function processError($errorString = '', array $context = [])
+    public static function processShutdownError($errorString = '', array $context = [])
     {
         if (!self::isIgnoreError()) {
             $exception = new APIException($errorString, $context);
@@ -61,7 +61,7 @@ class ErrorHandler
         $error = error_get_last();
 
         if ($error !== null) {
-            self::processError($error['message'], $error);
+            self::processShutdownError($error['message'], $error);
         }
     }
 }

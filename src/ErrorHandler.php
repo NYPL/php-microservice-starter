@@ -10,7 +10,11 @@ class ErrorHandler
      */
     protected static $ignoreError = false;
 
-    public static function processShutdownError($errorString = '', array $context = [])
+    /**
+     * @param string $errorString
+     * @param array|object $context
+     */
+    public static function processShutdownError($errorString = '', $context = [])
     {
         if (!self::isIgnoreError()) {
             $exception = new APIException($errorString, $context);

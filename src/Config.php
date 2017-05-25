@@ -7,7 +7,7 @@ use Dotenv\Dotenv;
 class Config
 {
     const ENVIRONMENT_FILE = '.env';
-    const CONFIG_FILE = 'config';
+    const CONFIG_FILE = 'var_app';
 
     protected static $initialized = false;
 
@@ -15,7 +15,7 @@ class Config
 
     protected static $required =
         [
-            'SLACK_TOKEN', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'
+            'SLACK_TOKEN', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'TIME_ZONE'
         ];
 
     protected static $addedRequired = [];
@@ -97,8 +97,8 @@ class Config
         $dotEnv = new Dotenv(self::getConfigDirectory(), self::ENVIRONMENT_FILE);
         $dotEnv->load();
 
-        if (file_exists(self::getConfigDirectory() . '/' . self::CONFIG_FILE)) {
-            $dotEnv = new Dotenv(self::getConfigDirectory(), self::CONFIG_FILE);
+        if (file_exists(self::getConfigDirectory() . '/config/' . self::CONFIG_FILE)) {
+            $dotEnv = new Dotenv(self::getConfigDirectory() . '/config', self::CONFIG_FILE);
             $dotEnv->load();
         }
 
@@ -112,7 +112,7 @@ class Config
     /**
      * @return bool
      */
-    protected static function isInitialized()
+    public static function isInitialized()
     {
         return self::$initialized;
     }

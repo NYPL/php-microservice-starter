@@ -4,6 +4,7 @@ const querystring = require('querystring');
 
 exports.handler = function(event, context, callback) {
     if (!event.requestContext) {
+        console.log('No request context in event.');
         return false;
     }
 
@@ -61,17 +62,21 @@ exports.handler = function(event, context, callback) {
         env: Object.assign(process.env, headers)
     };
 
-    const php = spawn('./php-cgi', ['index.php'], options);
+
+    if (process.env.LAMBDA_TASK_ROOT) {
+        var php = spawn('./php-cgi', ['-n', '-d expose_php=Off', 'index.php'], options);
+    } else {
+        var php = spawn('php-cgi', ['-n', '-d expose_php=Off', 'index.php'], options);
+    }
 
     if (php.stderr.length) {
         php.stderr.toString().split("\n").map(function (message) {
             if (message.trim().length) console.log(message);
         });
     }
-
     var parsedResponse = parser.parseResponse(php.stdout.toString());
 
-    context.succeed({
+    callback(null, {
         statusCode: parsedResponse.statusCode || 200,
         headers: parsedResponse.headers,
         body: parsedResponse.body

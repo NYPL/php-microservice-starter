@@ -31,16 +31,18 @@ class APILogger
     {
         $log = new Logger('API');
 
-        $handler = new SlackHandler(
-            Config::get('SLACK_TOKEN', null, true),
-            Config::get('SLACK_CHANNEL'),
-            Config::get('SLACK_USERNAME'),
-            true,
-            null,
-            Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
-        );
+        if (Config::isInitialized()) {
+            $handler = new SlackHandler(
+                Config::get('SLACK_TOKEN', null, true),
+                Config::get('SLACK_CHANNEL'),
+                Config::get('SLACK_USERNAME'),
+                true,
+                null,
+                Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
+            );
 
-        $log->pushHandler($handler);
+            $log->pushHandler($handler);
+        }
 
         $handler = new ErrorLogHandler();
         $handler->setFormatter(new JsonFormatter());

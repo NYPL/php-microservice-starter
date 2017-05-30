@@ -66,7 +66,7 @@ exports.handler = function(event, context, callback) {
     if (process.env.LAMBDA_TASK_ROOT) {
         var php = spawn('./php-cgi', ['-n', '-d expose_php=Off', 'index.php'], options);
     } else {
-        var php = spawn('php-cgi', ['-n', '-d expose_php=Off', 'index.php'], options);
+        var php = spawn('php-cgi', ['-d expose_php=Off', 'index.php'], options);
     }
 
     if (php.stderr.length) {

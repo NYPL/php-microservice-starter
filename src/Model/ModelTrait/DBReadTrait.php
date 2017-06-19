@@ -142,6 +142,28 @@ trait DBReadTrait
             return true;
         }
 
+        $this->applyWhere($filter, $sqlStatement);
+
+        return true;
+    }
+
+    /**
+     * @param Filter $filter
+     * @param StatementContainer $sqlStatement
+     *
+     * @return bool
+     */
+    protected function applyWhere(Filter $filter, StatementContainer $sqlStatement)
+    {
+        if (strpos($filter->getFilterValue(), ',') !== false) {
+            $sqlStatement->whereIn(
+                $this->translateDbName($filter->getFilterColumn()),
+                explode(',', $filter->getFilterValue())
+            );
+
+            return true;
+        }
+
         $sqlStatement->where(
             $this->translateDbName($filter->getFilterColumn()),
             $this->getOperator($filter),

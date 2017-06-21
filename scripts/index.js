@@ -69,11 +69,17 @@ exports.handler = function(event, context, callback) {
         var php = spawn('php-cgi', ['-d expose_php=Off', 'index.php'], options);
     }
 
+    if (php.error) {
+        callback(php.error);
+        return false;
+    }
+
     if (php.stderr) {
         php.stderr.toString().split("\n").map(function (message) {
             if (message.trim().length) console.log(message);
         });
     }
+
     var parsedResponse = parser.parseResponse(php.stdout.toString());
 
     callback(null, {

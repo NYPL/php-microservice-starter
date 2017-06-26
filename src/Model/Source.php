@@ -9,10 +9,19 @@ class Source extends Model
 {
     use TranslateTrait, DBCreateTrait;
 
+    /**
+     * @var string
+     */
     public $id = '';
 
+    /**
+     * @var string
+     */
     public $sourceCode = '';
 
+    /**
+     * @var string
+     */
     public $sourceId = '';
 
     /**
@@ -20,14 +29,28 @@ class Source extends Model
      */
     private $createdDate;
 
+    /**
+     * @return string
+     */
     public function getIdName()
     {
         return "id";
     }
 
+    /**
+     * @return string
+     */
     public function getSequenceId()
     {
         return "source_id_seq";
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreamName()
+    {
+        return 'Source';
     }
 
     /**

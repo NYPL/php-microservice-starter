@@ -14,6 +14,11 @@ trait MessageTrait
     protected $topic = '';
 
     /**
+     * @var string
+     */
+    protected $stream = '';
+
+    /**
      * @var KinesisClient
      */
     protected static $client;
@@ -25,15 +30,17 @@ trait MessageTrait
 
     /**
      * @param string $topic
+     * @param string $stream
      * @param string $message'
      *
      * @throws \InvalidArgumentException
      */
-    protected function publishMessage($topic = '', $message = '')
+    protected function publishMessage($topic = '', $stream = '', $message = '')
     {
         $this->setTopic($topic);
+        $this->setStream($stream);
 
-        $this->publishMessageAsKinesis($topic, $message);
+        $this->publishMessageAsKinesis($stream, $message);
     }
 
     /**
@@ -51,6 +58,9 @@ trait MessageTrait
             if (!$this->getTopic()) {
                 $this->setTopic($model->getObjectName());
             }
+            if (!$this->getStream()) {
+                $this->setStream($model->getStreamName());
+            }
 
             $records[] =  [
                 'Data' => $model->createMessage(),
@@ -60,21 +70,21 @@ trait MessageTrait
 
         self::getClient()->putRecords([
             'Records' => $records,
-            'StreamName' => $this->getTopic()
+            'StreamName' => $this->getStream()
         ]);
     }
 
     /**
-     * @param string $topic
+     * @param string $stream
      * @param string $message
      * @throws \InvalidArgumentException
      */
-    protected function publishMessageAsKinesis($topic = '', $message = '')
+    protected function publishMessageAsKinesis($stream = '', $message = '')
     {
         self::getClient()->putRecord([
             'Data' => $message,
             'PartitionKey' => uniqid(),
-            'StreamName' => $topic
+            'StreamName' => $stream
         ]);
     }
 
@@ -175,5 +185,21 @@ trait MessageTrait
     public function setTopic($topic)
     {
         $this->topic = $topic;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStream()
+    {
+        return $this->stream;
+    }
+
+    /**
+     * @param string $stream
+     */
+    public function setStream($stream)
+    {
+        $this->stream = $stream;
     }
 }

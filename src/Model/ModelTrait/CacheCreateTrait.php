@@ -39,7 +39,7 @@ trait CacheCreateTrait
 
         try {
             if ($this instanceof MessageInterface) {
-                $this->publishMessage($this->getObjectName(), $this->createMessage());
+                $this->publishMessage($this->getObjectName(), $this->getStreamName(), $this->createMessage());
             }
         } catch (\Exception $exception) {
             if ($this instanceof DeleteInterface) {

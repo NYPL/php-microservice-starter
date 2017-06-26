@@ -13,7 +13,7 @@ abstract class Model implements \JsonSerializable
     /**
      * @var array
      */
-    public $excludeProperties = ['filters', 'excludeProperties', 'rawData', 'bulk', 'topic'];
+    public $excludeProperties = ['filters', 'excludeProperties', 'rawData', 'bulk', 'topic', 'stream'];
 
     /**
      * @var array
@@ -25,6 +25,10 @@ abstract class Model implements \JsonSerializable
      */
     public $bulk = false;
 
+    /**
+     * @param $value
+     * @return string
+     */
     public function getJsonObjectValue($value)
     {
         if ($value instanceof \DateTime) {

@@ -101,4 +101,17 @@ class APILogger
 
         return true;
     }
+
+    /**
+     * @param string $error
+     * @param array|object $context
+     *
+     * @return bool
+     */
+    public static function addNotice($error = '', $context = [])
+    {
+        self::getLogger()->addNotice($error, (array) $context);
+
+        return true;
+    }
 }

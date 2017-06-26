@@ -21,6 +21,8 @@ abstract class Controller
 
     const JSON_CONTENT_TYPE = 'application/json';
 
+    const IDENTITY_HEADER = 'X-NYPL-Identity';
+
     /**
      * @var Request
      */
@@ -180,9 +182,9 @@ abstract class Controller
      */
     public function initializeIdentityHeader()
     {
-        if ($this->getRequest()->hasHeader(Config::get('IDENTITY_HEADER'))) {
+        if ($this->getRequest()->hasHeader(self::IDENTITY_HEADER)) {
             $this->setIdentityHeader(new IdentityHeader(
-                $this->getRequest()->getHeaderLine(Config::get('IDENTITY_HEADER'))
+                $this->getRequest()->getHeaderLine(self::IDENTITY_HEADER)
             ));
 
             return true;

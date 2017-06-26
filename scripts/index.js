@@ -64,7 +64,11 @@ exports.handler = function(event, context, callback) {
 
 
     if (process.env.LAMBDA_TASK_ROOT) {
-        var php = spawn('./php-cgi', ['-n', '-d expose_php=Off', 'index.php'], options);
+        var php = spawn(
+            process.env.LAMBDA_TASK_ROOT + '/php-cgi',
+            ['-n', '-d expose_php=Off', '-d opcache.file_cache=/tmp', '-d zend_extension=' + process.env.LAMBDA_TASK_ROOT + '/lib/opcache.so', 'index.php'],
+            options
+        );
     } else {
         var php = spawn('php-cgi', ['-d expose_php=Off', 'index.php'], options);
     }

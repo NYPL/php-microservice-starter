@@ -99,4 +99,30 @@ class APILogger
 
         return true;
     }
+
+    /**
+     * @param string $error
+     * @param array $context
+     *
+     * @return bool
+     */
+    public static function addDebug($error = '', array $context = [])
+    {
+        self::getLogger()->addDebug($error, $context);
+
+        return true;
+    }
+
+    /**
+     * @param string $error
+     * @param array $context
+     *
+     * @return bool
+     */
+    public static function addNotice($error = '', array $context = [])
+    {
+        self::getLogger()->addNotice($error, $context);
+
+        return true;
+    }
 }

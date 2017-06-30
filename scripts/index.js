@@ -1,5 +1,5 @@
 const spawn = require('child_process').spawnSync;
-const parser = require('http-string-parser');
+const parser = require('./parser');
 const querystring = require('querystring');
 
 exports.handler = function(event, context, callback) {
@@ -52,8 +52,8 @@ exports.handler = function(event, context, callback) {
     if (event.body) {
         headers['CONTENT_LENGTH'] = Buffer.byteLength(event.body, 'utf8');
 
-        if (event.headers['Content-Type']) {
-            headers['CONTENT_TYPE'] = event.headers['Content-Type'];
+        if (event.headers['Content-type']) {
+            headers['CONTENT_TYPE'] = event.headers['Content-type'];
         }
     }
 
@@ -61,7 +61,6 @@ exports.handler = function(event, context, callback) {
         input: event.body,
         env: Object.assign(process.env, headers)
     };
-
 
     if (process.env.LAMBDA_TASK_ROOT) {
         var php = spawn(

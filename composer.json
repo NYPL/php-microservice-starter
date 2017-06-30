@@ -26,7 +26,8 @@
   },
   "scripts": {
     "post-update-cmd": [
-      "php -r \"copy('scripts/index.js', 'index.js');\""
+      "php -r \"copy('scripts/index.js', 'index.js');\"",
+      "php -r \"copy('scripts/parser.js', 'parser.js');\""
     ]
   }
 }

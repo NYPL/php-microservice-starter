@@ -112,7 +112,7 @@ class APILogger
      *
      * @return bool
      */
-    public static function addDebug($error = '', array $context = [])
+    public static function addDebug($error = '', $context = [])
     {
         self::getLogger()->addDebug($error, (array) $context);
 
@@ -125,7 +125,7 @@ class APILogger
      *
      * @return bool
      */
-    public static function addNotice($error = '', array $context = [])
+    public static function addNotice($error = '', $context = [])
     {
         self::getLogger()->addNotice($error, (array) $context);
 

@@ -23,11 +23,5 @@
     "psr-4": {
       "NYPL\\Starter\\": [ "src/" ]
     }
-  },
-  "scripts": {
-    "post-package-update": [
-      "php -r \"copy('scripts/index.js', 'index.js');\"",
-      "php -r \"copy('scripts/parser.js', 'parser.js');\""
-    ]
   }
 }

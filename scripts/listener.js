@@ -6,8 +6,7 @@ var listenerResult = {
     message: ''
 };
 
-function setListenerResult(processed, success, message)
-{
+function setListenerResult(processed, success, message) {
     listenerResult = {
         processed : processed,
         success: success,
@@ -41,8 +40,16 @@ function initializeResult(result) {
     listenerResult = result;
 }
 
-function getPhp(options) {
+function getPhp() {
     if (process.env.LAMBDA_TASK_ROOT) {
+        var headers = {
+            LD_LIBRARY_PATH: process.env['LD_LIBRARY_PATH']
+        };
+
+        var options = {
+            env: Object.assign(process.env, headers)
+        };
+
         return spawn('./php', ['-n', '-d expose_php=Off', 'listener.php'], options);
     }
 
@@ -50,15 +57,7 @@ function getPhp(options) {
 }
 
 exports.handler = function (event, context, callback) {
-    var headers = {
-        LD_LIBRARY_PATH: process.env['LD_LIBRARY_PATH']
-    };
-
-    var options = {
-        env: Object.assign(process.env, headers)
-    };
-
-    var php = getPhp(options);
+    var php = getPhp();
 
     php.stdin.setEncoding = 'utf-8';
     php.stdin.write(JSON.stringify(event));

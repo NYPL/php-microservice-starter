@@ -32,16 +32,20 @@ class APILogger
         $log = new Logger('API');
 
         if (Config::isInitialized()) {
-            $handler = new SlackHandler(
-                Config::get('SLACK_TOKEN', null, true),
-                Config::get('SLACK_CHANNEL'),
-                Config::get('SLACK_USERNAME'),
-                true,
-                null,
-                Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
-            );
+            $slackToken = Config::get('SLACK_TOKEN', null, true);
 
-            $log->pushHandler($handler);
+            if ($slackToken) {
+                $handler = new SlackHandler(
+                    Config::get('SLACK_TOKEN', null, true),
+                    Config::get('SLACK_CHANNEL'),
+                    Config::get('SLACK_USERNAME'),
+                    true,
+                    null,
+                    Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
+                );
+
+                $log->pushHandler($handler);
+            }
         }
 
         $handler = new ErrorLogHandler();
@@ -110,7 +114,7 @@ class APILogger
      */
     public static function addDebug($error = '', array $context = [])
     {
-        self::getLogger()->addDebug($error, $context);
+        self::getLogger()->addDebug($error, (array) $context);
 
         return true;
     }
@@ -123,7 +127,7 @@ class APILogger
      */
     public static function addNotice($error = '', array $context = [])
     {
-        self::getLogger()->addNotice($error, $context);
+        self::getLogger()->addNotice($error, (array) $context);
 
         return true;
     }

@@ -96,27 +96,6 @@ abstract class Listener
     }
 
     /**
-     * @param array $record
-     *
-     * @return bool
-     * @throws APIException
-     */
-    protected function addEvent(array $record)
-    {
-        if (!$this->getListenerEvents()->isInitialized()) {
-            $this->getListenerEvents()->initializeEvents($record);
-            $this->getListenerEvents()->setInitialized(true);
-        }
-
-        $this->getListenerEvents()->addEvent(
-            $this->getListenerEvents()->translateEvent(
-                $record,
-                $this->getSchemaName()
-            )
-        );
-    }
-
-    /**
      * @throws APIException
      */
     protected function initializeListenerEvents()
@@ -139,7 +118,10 @@ abstract class Listener
 
         foreach ($buffer['Records'] as $record) {
             try {
-                $this->addEvent($record);
+                $this->getListenerEvents()->addEvent(
+                    $record,
+                    $this->getSchemaName()
+                );
             } catch (\Exception $exception) {
                 APILogger::addError(
                     $exception->getMessage(),

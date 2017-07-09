@@ -80,7 +80,7 @@ exports.handler = function (event, context, callback) {
     });
 
     php.stderr.on('data', function (data) {
-        console.log(data.toString());
+        console.log(data.toString() + "\n");
     });
 
     php.on('exit', function (code) {

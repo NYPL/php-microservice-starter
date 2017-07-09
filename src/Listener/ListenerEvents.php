@@ -1,12 +1,14 @@
 <?php
 namespace NYPL\Starter\Listener;
 
+use NYPL\Starter\APILogger;
+
 abstract class ListenerEvents
 {
     /**
      * @param array $record
      */
-    abstract public function initializeEvents(array $record);
+    abstract public function translateEvents(array $record);
 
     /**
      * @param array $record
@@ -43,14 +45,6 @@ abstract class ListenerEvents
     }
 
     /**
-     * @param ListenerEvent $listenerEvent
-     */
-    public function addEvent(ListenerEvent $listenerEvent)
-    {
-        $this->events[] = $listenerEvent;
-    }
-
-    /**
      * @return bool
      */
     public function isInitialized()
@@ -64,5 +58,35 @@ abstract class ListenerEvents
     public function setInitialized($initialized)
     {
         $this->initialized = (bool) $initialized;
+    }
+
+    /**
+     * @param array $record
+     * @param string $schemaName
+     */
+    public function addEvent(array $record, $schemaName = '')
+    {
+        if (!$this->isInitialized()) {
+            $this->initializeEvents($record);
+        }
+
+        APILogger::addInfo('Adding event', $record);
+
+        $this->events[] = $this->translateEvent(
+            $record,
+            $schemaName
+        );
+    }
+
+    /**
+     * @param array $record
+     */
+    public function initializeEvents(array $record)
+    {
+        APILogger::addInfo('Initializing events', $record);
+
+        $this->translateEvents($record);
+
+        $this->setInitialized(true);
     }
 }

@@ -3,7 +3,6 @@ namespace NYPL\Starter\Listener\ListenerEvents;
 
 use NYPL\Starter\APILogger;
 use NYPL\Starter\Listener\ListenerData;
-use NYPL\Starter\Listener\ListenerEvent;
 use NYPL\Starter\Listener\ListenerEvent\KinesisEvent;
 use NYPL\Starter\Listener\ListenerEvents;
 
@@ -22,7 +21,7 @@ class KinesisEvents extends ListenerEvents
     /**
      * @param array $record
      */
-    public function initializeEvents(array $record)
+    public function translateEvents(array $record)
     {
         $this->setEventSourceARN($record['eventSourceARN']);
     }

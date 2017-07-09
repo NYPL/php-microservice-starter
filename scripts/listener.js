@@ -51,7 +51,11 @@ function getPhp() {
             env: Object.assign(process.env, headers)
         };
 
-        return spawn('./php', ['-n', '-d expose_php=Off', 'listener.php'], options);
+        return spawn(
+            process.env.LAMBDA_TASK_ROOT + '/php',
+            ['-n', '-d expose_php=Off', '-d opcache.file_cache=/tmp', '-d zend_extension=' + process.env.LAMBDA_TASK_ROOT + '/lib/opcache.so', 'listener.php'],
+            options
+        );
     }
 
     return spawn('php', ['-d expose_php=Off', 'listener.php'], options);

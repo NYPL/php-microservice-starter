@@ -1,12 +1,10 @@
 <?php
 namespace NYPL\Starter\Listener;
 
-use NYPL\Starter\AvroDeserializer;
 use NYPL\Starter\Listener\ListenerEvent\KinesisEvent;
 use NYPL\Starter\Listener\ListenerEvents\KinesisEvents;
 use NYPL\Starter\APIException;
 use NYPL\Starter\APILogger;
-use NYPL\Starter\SchemaClient;
 
 abstract class Listener
 {
@@ -123,10 +121,8 @@ abstract class Listener
         $this->getListenerEvents()->addEvent(
             new KinesisEvent(
                 new ListenerData(
-                    AvroDeserializer::deserializeWithSchema(
-                        SchemaClient::getSchema($this->getSchemaName()),
-                        base64_decode($record['kinesis']['data'])
-                    )
+                    base64_decode($record['kinesis']['data']),
+                    $this->getSchemaName()
                 ),
                 $this->getStreamNameFromArn($record['eventSourceARN'])
             )

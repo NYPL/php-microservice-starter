@@ -1,10 +1,11 @@
 <?php
 namespace NYPL\Starter;
 
-use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\MissingExtensionException;
 use Monolog\Handler\SlackHandler;
 use Monolog\Logger;
+use NYPL\Starter\Formatter\NyplLogFormatter;
 
 class APILogger
 {
@@ -30,34 +31,47 @@ class APILogger
 
     public static function initializeLogger()
     {
-        $log = new Logger('API');
+        $logger = new Logger('NYPL');
 
-        if (Config::isInitialized()) {
-            $slackToken = Config::get('SLACK_TOKEN', null, true);
+        self::addSlackLogging($logger);
+        self::addJsonLogging($logger);
 
-            if ($slackToken) {
-                $handler = new SlackHandler(
-                    Config::get('SLACK_TOKEN', null, true),
-                    Config::get('SLACK_CHANNEL'),
-                    Config::get('SLACK_USERNAME'),
-                    true,
-                    null,
-                    Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
-                );
+        self::setLogger($logger);
+    }
 
-                $log->pushHandler($handler);
-            }
+    /**
+     * @param Logger $logger
+     * @throws APIException|MissingExtensionException
+     */
+    protected static function addSlackLogging(Logger $logger)
+    {
+        if (Config::isInitialized() && $slackToken = Config::get('SLACK_TOKEN', null, true)) {
+            $handler = new SlackHandler(
+                $slackToken,
+                Config::get('SLACK_CHANNEL'),
+                Config::get('SLACK_USERNAME'),
+                true,
+                null,
+                Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
+            );
+
+            $logger->pushHandler($handler);
         }
+    }
 
+    /**
+     * @param Logger $logger
+     * @throws APIException|MissingExtensionException
+     */
+    protected static function addJsonLogging(Logger $logger)
+    {
         $handler = new ErrorLogHandler(
             ErrorLogHandler::OPERATING_SYSTEM,
             Config::get('DEFAULT_LOGGING_LEVEL', self::DEFAULT_LOGGING_LEVEL)
         );
-        $handler->setFormatter(new JsonFormatter());
+        $handler->setFormatter(new NyplLogFormatter());
 
-        $log->pushHandler($handler);
-
-        self::setLogger($log);
+        $logger->pushHandler($handler);
     }
 
     /**

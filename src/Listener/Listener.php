@@ -22,46 +22,6 @@ abstract class Listener
     abstract protected function processListenerEvents();
 
     /**
-     * Listener constructor.
-     */
-    public function __construct()
-    {
-        set_error_handler(self::class . "::errorHandler");
-
-        register_shutdown_function(self::class . '::fatalHandler');
-    }
-
-    public static function fatalHandler()
-    {
-        $error = error_get_last();
-
-        if ($error !== null) {
-            error_log(
-                json_encode([
-                    'message' => $error['message'],
-                    'level' => 500,
-                    'level_name' => 'ERROR'
-                ])
-            );
-        }
-    }
-
-    /**
-     * @param int $errorNumber
-     * @param string $errorString
-     * @param string $errorFile
-     * @param string $errorLine
-     * @param array $errorContext
-     */
-    public static function errorHandler($errorNumber = 0, $errorString = '', $errorFile = '', $errorLine = '', array $errorContext)
-    {
-        APILogger::addError(
-            'Error ' . $errorNumber . ': ' . $errorString . ' in ' . $errorFile . ' on line ' . $errorLine,
-            $errorContext
-        );
-    }
-
-    /**
      * @return ListenerEvents
      */
     protected function getListenerEvents()

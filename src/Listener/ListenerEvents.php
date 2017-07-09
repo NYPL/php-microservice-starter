@@ -70,7 +70,7 @@ abstract class ListenerEvents
             $this->initializeEvents($record);
         }
 
-        APILogger::addInfo('Adding event', $record);
+        APILogger::addDebug('Adding event', $record);
 
         $this->events[] = $this->translateEvent(
             $record,
@@ -83,7 +83,7 @@ abstract class ListenerEvents
      */
     public function initializeEvents(array $record)
     {
-        APILogger::addInfo('Initializing events', $record);
+        APILogger::addDebug('Initializing events', $record);
 
         $this->translateEvents($record);
 

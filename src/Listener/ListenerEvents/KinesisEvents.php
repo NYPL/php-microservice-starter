@@ -88,7 +88,7 @@ class KinesisEvents extends ListenerEvents
 
         $streamName = $streamComponents[count($streamComponents) - 1];
 
-        APILogger::addInfo(
+        APILogger::addDebug(
             'Processing record in ' . $streamName . ' stream.'
         );
 

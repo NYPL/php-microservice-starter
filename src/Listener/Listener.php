@@ -1,8 +1,6 @@
 <?php
 namespace NYPL\Starter\Listener;
 
-use NYPL\Starter\Listener\ListenerEvent\KinesisEvent;
-use NYPL\Starter\Listener\ListenerEvents\KinesisEvents;
 use NYPL\Starter\APIException;
 use NYPL\Starter\APILogger;
 
@@ -100,7 +98,7 @@ abstract class Listener
      */
     protected function initializeListenerEvents()
     {
-        APILogger::addInfo('Decoding buffer using file_get_contents()');
+        APILogger::addDebug('Decoding buffer using file_get_contents()');
 
         $buffer = json_decode(
             file_get_contents('php://stdin'),
@@ -114,20 +112,13 @@ abstract class Listener
             );
         }
 
-        APILogger::addInfo('Decoding ' . count($buffer['Records']) . ' records');
+        APILogger::addDebug('Decoding ' . count($buffer['Records']) . ' records');
 
         foreach ($buffer['Records'] as $record) {
-            try {
-                $this->getListenerEvents()->addEvent(
-                    $record,
-                    $this->getSchemaName()
-                );
-            } catch (\Exception $exception) {
-                APILogger::addError(
-                    $exception->getMessage(),
-                    $exception
-                );
-            }
+            $this->getListenerEvents()->addEvent(
+                $record,
+                $this->getSchemaName()
+            );
         }
     }
 

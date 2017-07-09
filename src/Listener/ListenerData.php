@@ -38,7 +38,7 @@ class ListenerData
             $this->setSchemaName($schemaName);
         }
 
-        APILogger::addInfo('Decoding Avro data using ' . $schemaName . ' schema');
+        APILogger::addDebug('Decoding Avro data using ' . $schemaName . ' schema');
 
         $this->setData(
             AvroDeserializer::deserializeWithSchema(

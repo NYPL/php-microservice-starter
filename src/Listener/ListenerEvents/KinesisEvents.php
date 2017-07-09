@@ -3,6 +3,7 @@ namespace NYPL\Starter\Listener\ListenerEvents;
 
 use NYPL\Starter\APILogger;
 use NYPL\Starter\Listener\ListenerData;
+use NYPL\Starter\Listener\ListenerEvent;
 use NYPL\Starter\Listener\ListenerEvent\KinesisEvent;
 use NYPL\Starter\Listener\ListenerEvents;
 
@@ -17,6 +18,29 @@ class KinesisEvents extends ListenerEvents
      * @var string
      */
     public $streamName = '';
+
+    /**
+     * @param array $record
+     */
+    public function initializeEvents(array $record)
+    {
+        $this->setEventSourceARN($record['eventSourceARN']);
+    }
+
+    /**
+     * @param array $record
+     * @param string $schemaName
+     * @return KinesisEvent
+     */
+    public function translateEvent(array $record, $schemaName = '')
+    {
+        return new KinesisEvent(
+            new ListenerData(
+                base64_decode($record['kinesis']['data']),
+                $schemaName
+            )
+        );
+    }
 
     /**
      * @return string

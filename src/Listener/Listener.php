@@ -103,22 +103,16 @@ abstract class Listener
      */
     protected function addEvent(array $record)
     {
-        if ($this->getListenerEvents() instanceof KinesisEvents) {
-            /**
-             * @var KinesisEvents $kinesisEvents
-             */
-            $kinesisEvents = $this->getListenerEvents();
-
-            $kinesisEvents->setEventSourceARN($record['eventSourceARN']);
-            $kinesisEvents->addKinesisEvent(
-                base64_decode($record['kinesis']['data']),
-                $this->getSchemaName()
-            );
-            return true;
+        if (!$this->getListenerEvents()->isInitialized()) {
+            $this->getListenerEvents()->initializeEvents($record);
+            $this->getListenerEvents()->setInitialized(true);
         }
 
-        throw new APIException(
-            'Listener event type was not found'
+        $this->getListenerEvents()->addEvent(
+            $this->getListenerEvents()->translateEvent(
+                $record,
+                $this->getSchemaName()
+            )
         );
     }
 

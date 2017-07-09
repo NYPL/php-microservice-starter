@@ -94,17 +94,4 @@ class KinesisEvents extends ListenerEvents
 
         return $streamName;
     }
-
-    /**
-     * @param string $rawAvroData
-     * @param string $schemaName
-     */
-    public function addKinesisEvent($rawAvroData = '', $schemaName = '')
-    {
-        $this->addEvent(
-            new KinesisEvent(
-                new ListenerData($rawAvroData, $schemaName)
-            )
-        );
-    }
 }

@@ -1,4 +1,4 @@
-const spawn = require('child_process').spawn;
+const spawn = require('child_process').spawnSync;
 
 var listenerResult = {
     processed : false,
@@ -41,16 +41,17 @@ function initializeResult(result) {
     listenerResult = parsedResult;
 }
 
-function getPhp() {
+function getPhp(event) {
+    var options = {
+        input: JSON.stringify(event),
+        env: Object.assign(process.env, headers)
+    };
+
+    var headers = {
+        LD_LIBRARY_PATH: process.env['LD_LIBRARY_PATH']
+    };
+
     if (process.env.LAMBDA_TASK_ROOT) {
-        var headers = {
-            LD_LIBRARY_PATH: process.env['LD_LIBRARY_PATH']
-        };
-
-        var options = {
-            env: Object.assign(process.env, headers)
-        };
-
         return spawn(
             process.env.LAMBDA_TASK_ROOT + '/php',
             ['-n', '-d expose_php=Off', '-d opcache.file_cache=/tmp', '-d zend_extension=' + process.env.LAMBDA_TASK_ROOT + '/lib/opcache.so', 'listener.php'],
@@ -58,39 +59,41 @@ function getPhp() {
         );
     }
 
-    return spawn('php', ['-d expose_php=Off', 'listener.php'], options);
+    return spawn(
+        'php',
+        ['-d expose_php=Off', 'listener.php'],
+        options
+    );
 }
 
 exports.handler = function (event, context, callback) {
-    var php = getPhp();
+    var php = getPhp(event);
 
-    php.stdin.setEncoding = 'utf-8';
-    php.stdin.write(JSON.stringify(event));
-    php.stdin.end();
-
-    php.on('error', function (code) {
-        const message = 'Lambda was unable to execute PHP (' + code + ')';
+    if (php.error) {
+        const message = 'Lambda was unable to execute PHP (' + php.error + ')';
         logMessage('CRITICAL', message);
         callback(message);
         return false;
-    });
+    }
 
-    php.stdout.on('data', function (data) {
-        initializeResult(data.toString());
-    });
+    if (php.stderr) {
+        php.stderr.toString().split("\n").map(function (message) {
+            message = message.trim();
 
-    php.stderr.on('data', function (data) {
-        console.log(data.toString() + "\n");
-    });
+            if (message) {
+                console.log(message);
+            }
+        });
+    }
 
-    php.on('exit', function (code) {
-        if (listenerResult.success) {
-            callback(null, listenerResult.message);
-            return true;
-        }
+    initializeResult(php.stdout.toString());
 
-        logMessage('CRITICAL', listenerResult.message);
-        callback(listenerResult.message);
-        return false;
-    });
+    if (listenerResult.success) {
+        callback(null, listenerResult.message);
+        return true;
+    }
+
+    logMessage('CRITICAL', listenerResult.message);
+    callback(listenerResult.message);
+    return false;
 };

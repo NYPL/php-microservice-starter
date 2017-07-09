@@ -64,7 +64,7 @@ class SchemaClient
 
         self::$schemaCache[$schemaName] = $schema;
 
-        APILogger::addInfo(
+        APILogger::addDebug(
             'Got schema for ' . $schemaName,
             (array) $schema->getSchema()
         );

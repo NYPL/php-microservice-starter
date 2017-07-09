@@ -28,16 +28,17 @@ function initializeResult(result) {
     }
 
     try {
-        result = JSON.parse(result);
+        var parsedResult = JSON.parse(result);
     } catch (e) {
         setListenerResult(true, false, result);
+        return false;
     }
 
-    if (!result.processed) {
+    if (!parsedResult.processed) {
         logMessage('NOTICE', 'Processed key was not found in Listener result.');
     }
 
-    listenerResult = result;
+    listenerResult = parsedResult;
 }
 
 function getPhp() {

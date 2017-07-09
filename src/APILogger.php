@@ -8,6 +8,7 @@ use Monolog\Logger;
 
 class APILogger
 {
+    const DEFAULT_LOGGING_LEVEL = Logger::DEBUG;
     const DEFAULT_SLACK_LOGGING_LEVEL = Logger::ERROR;
 
     /**
@@ -48,7 +49,10 @@ class APILogger
             }
         }
 
-        $handler = new ErrorLogHandler();
+        $handler = new ErrorLogHandler(
+            ErrorLogHandler::OPERATING_SYSTEM,
+            Config::get('DEFAULT_LOGGING_LEVEL', self::DEFAULT_LOGGING_LEVEL)
+        );
         $handler->setFormatter(new JsonFormatter());
 
         $log->pushHandler($handler);

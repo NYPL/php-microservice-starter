@@ -1,6 +1,7 @@
 <?php
 namespace NYPL\Starter\Listener;
 
+use NYPL\Starter\APILogger;
 use NYPL\Starter\AvroDeserializer;
 use NYPL\Starter\SchemaClient;
 
@@ -36,6 +37,8 @@ class ListenerData
         if ($schemaName) {
             $this->setSchemaName($schemaName);
         }
+
+        APILogger::addInfo('Decoding Avro data using ' . $schemaName . ' schema');
 
         $this->setData(
             AvroDeserializer::deserializeWithSchema(

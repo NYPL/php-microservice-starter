@@ -104,28 +104,21 @@ abstract class Listener
     protected function addEvent(array $record)
     {
         if ($this->getListenerEvents() instanceof KinesisEvents) {
-            $this->addKinesisEvent($record);
+            /**
+             * @var KinesisEvents $kinesisEvents
+             */
+            $kinesisEvents = $this->getListenerEvents();
+
+            $kinesisEvents->setEventSourceARN($record['eventSourceARN']);
+            $kinesisEvents->addKinesisEvent(
+                base64_decode($record['kinesis']['data']),
+                $this->getSchemaName()
+            );
             return true;
         }
 
         throw new APIException(
             'Listener event type was not found'
-        );
-    }
-
-    /**
-     * @param array $record
-     */
-    protected function addKinesisEvent(array $record)
-    {
-        $this->getListenerEvents()->addEvent(
-            new KinesisEvent(
-                new ListenerData(
-                    base64_decode($record['kinesis']['data']),
-                    $this->getSchemaName()
-                ),
-                $this->getStreamNameFromArn($record['eventSourceARN'])
-            )
         );
     }
 
@@ -160,24 +153,6 @@ abstract class Listener
                 );
             }
         }
-    }
-
-    /**
-     * @param string $streamArn
-     *
-     * @return string
-     */
-    protected function getStreamNameFromArn($streamArn = '')
-    {
-        $streamComponents = explode('/', $streamArn);
-
-        $streamName = $streamComponents[count($streamComponents) - 1];
-
-        APILogger::addInfo(
-            'Processing record in ' . $streamName . ' stream.'
-        );
-
-        return $streamName;
     }
 
     /**

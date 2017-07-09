@@ -1,10 +1,18 @@
 <?php
 namespace NYPL\Starter\Listener\ListenerEvents;
 
+use NYPL\Starter\APILogger;
+use NYPL\Starter\Listener\ListenerData;
+use NYPL\Starter\Listener\ListenerEvent\KinesisEvent;
 use NYPL\Starter\Listener\ListenerEvents;
 
 class KinesisEvents extends ListenerEvents
 {
+    /**
+     * @var string
+     */
+    public $eventSourceARN = '';
+
     /**
      * @var string
      */
@@ -24,5 +32,56 @@ class KinesisEvents extends ListenerEvents
     public function setStreamName($streamName)
     {
         $this->streamName = $streamName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEventSourceARN(): string
+    {
+        return $this->eventSourceARN;
+    }
+
+    /**
+     * @param string $eventSourceARN
+     */
+    public function setEventSourceARN(string $eventSourceARN)
+    {
+        $this->eventSourceARN = $eventSourceARN;
+
+        $this->setStreamName(
+            $this->getStreamNameFromArn($eventSourceARN)
+        );
+    }
+
+    /**
+     * @param string $streamArn
+     *
+     * @return string
+     */
+    protected function getStreamNameFromArn($streamArn = '')
+    {
+        $streamComponents = explode('/', $streamArn);
+
+        $streamName = $streamComponents[count($streamComponents) - 1];
+
+        APILogger::addInfo(
+            'Processing record in ' . $streamName . ' stream.'
+        );
+
+        return $streamName;
+    }
+
+    /**
+     * @param string $rawAvroData
+     * @param string $schemaName
+     */
+    public function addKinesisEvent($rawAvroData = '', $schemaName = '')
+    {
+        $this->addEvent(
+            new KinesisEvent(
+                new ListenerData($rawAvroData, $schemaName)
+            )
+        );
     }
 }

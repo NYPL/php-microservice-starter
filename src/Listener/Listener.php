@@ -88,6 +88,7 @@ abstract class Listener
      */
     public function process(ListenerEvents $listenerEvents, $schemaName = '')
     {
+
         try {
             $this->setSchemaName($schemaName);
             $this->setListenerEvents($listenerEvents);
@@ -98,19 +99,24 @@ abstract class Listener
 
             if (!$listenerResult instanceof ListenerResult) {
                 throw new APIException(
-                    'Listener did not return a proper result'
+                    'Listener did not return a ListenerResult object',
+                    ['ListenerResult' => $listenerResult]
                 );
             }
 
             echo json_encode($listenerResult);
-        } catch (\Throwable $exception) {
+        } catch (\Exception $exception) {
+            APILogger::addError($exception->getMessage(), $exception);
+
             echo json_encode(
                 new ListenerResult(
                     false,
                     $exception->getMessage()
                 )
             );
-        } catch (\Exception $exception) {
+        } catch (\Throwable $exception) {
+            APILogger::addError($exception->getMessage(), $exception);
+
             echo json_encode(
                 new ListenerResult(
                     false,

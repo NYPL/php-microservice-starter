@@ -14,7 +14,7 @@ class APIException extends \Exception
     /**
      * @var int
      */
-    public $httpCode = 500;
+    protected $httpCode = 500;
 
     /**
      * @var ErrorResponse

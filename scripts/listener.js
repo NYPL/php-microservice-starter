@@ -1,13 +1,7 @@
 const spawn = require('child_process').spawnSync;
 
-var listenerResult = {
-    processed : false,
-    success: null,
-    message: ''
-};
-
-function setListenerResult(processed, success, message) {
-    listenerResult = {
+function getListenerResult(processed, success, message) {
+    return {
         processed : processed,
         success: success,
         message: message
@@ -22,33 +16,27 @@ function logMessage(level, message) {
 }
 
 function initializeResult(result) {
-    if (listenerResult.processed) {
-        logMessage('NOTICE', 'Listener result was already set.');
-        return false;
-    }
-
     try {
         var parsedResult = JSON.parse(result);
     } catch (e) {
-        setListenerResult(true, false, result);
-        return false;
+        return getListenerResult(true, false, e);
     }
 
     if (!parsedResult.processed) {
-        logMessage('NOTICE', 'Processed key was not found in Listener result.');
+        return getListenerResult(true, false, 'Processed key was not found in Listener result');
     }
 
-    listenerResult = parsedResult;
+    return parsedResult;
 }
 
 function getPhp(event) {
+    var headers = {
+        LD_LIBRARY_PATH: process.env['LD_LIBRARY_PATH']
+    };
+
     var options = {
         input: JSON.stringify(event),
         env: Object.assign(process.env, headers)
-    };
-
-    var headers = {
-        LD_LIBRARY_PATH: process.env['LD_LIBRARY_PATH']
     };
 
     if (process.env.LAMBDA_TASK_ROOT) {
@@ -71,29 +59,27 @@ exports.handler = function (event, context, callback) {
 
     if (php.error) {
         const message = 'Lambda was unable to execute PHP (' + php.error + ')';
-        logMessage('CRITICAL', message);
+        logMessage('ERROR', message);
         callback(message);
         return false;
     }
 
     if (php.stderr) {
         php.stderr.toString().split("\n").map(function (message) {
-            message = message.trim();
-
-            if (message) {
+            if (message.trim()) {
                 console.log(message);
             }
         });
     }
 
-    initializeResult(php.stdout.toString());
+    var listenerResult = initializeResult(php.stdout.toString());
 
     if (listenerResult.success) {
         callback(null, listenerResult.message);
         return true;
     }
 
-    logMessage('CRITICAL', listenerResult.message);
+    logMessage('ERROR', listenerResult.message);
     callback(listenerResult.message);
     return false;
 };

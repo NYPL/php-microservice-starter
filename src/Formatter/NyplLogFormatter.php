@@ -5,7 +5,12 @@ use Monolog\Formatter\JsonFormatter;
 
 class NyplLogFormatter extends JsonFormatter
 {
-    protected function translageLevelToInteger($level = '')
+    /**
+     * @param string $level
+     *
+     * @return int
+     */
+    protected function translateLevelToInteger($level = '')
     {
         switch ($level) {
             case 'DEBUG':
@@ -27,7 +32,11 @@ class NyplLogFormatter extends JsonFormatter
         }
     }
 
-
+    /**
+     * @param int $level
+     *
+     * @return string
+     */
     protected function translateMonologLevelToString($level = 0)
     {
         switch ($level) {
@@ -59,7 +68,7 @@ class NyplLogFormatter extends JsonFormatter
     {
         $record['level'] = $this->translateMonologLevelToString($record['level']);
 
-        $record['levelCode'] = $this->translageLevelToInteger($record['level']);
+        $record['levelCode'] = $this->translateLevelToInteger($record['level']);
 
         $record['datetime'] = date('c');
 

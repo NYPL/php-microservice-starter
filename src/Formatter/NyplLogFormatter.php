@@ -41,7 +41,7 @@ class NyplLogFormatter extends JsonFormatter
     {
         switch ($level) {
             case 100:
-                return 'DEBUGS';
+                return 'DEBUG';
             case 200:
                 return 'INFO';
             case 250:

@@ -2,7 +2,6 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
-use NYPL\Starter\Config;
 use NYPL\Starter\Model\LocalDateTime;
 
 trait CreateTrait
@@ -30,14 +29,6 @@ trait CreateTrait
         $reflection = new \ReflectionClass($this);
 
         return $reflection->getShortName();
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getStreamName()
-    {
-        return Config::get('DEFAULT_STREAM');
     }
 
     /**

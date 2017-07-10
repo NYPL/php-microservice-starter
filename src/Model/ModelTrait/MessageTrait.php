@@ -11,12 +11,7 @@ trait MessageTrait
     /**
      * @var string
      */
-    protected $topic = '';
-
-    /**
-     * @var string
-     */
-    protected $stream = '';
+    protected $streamName = '';
 
     /**
      * @var KinesisClient
@@ -29,18 +24,16 @@ trait MessageTrait
     protected static $schemaCache = [];
 
     /**
-     * @param string $topic
-     * @param string $stream
+     * @param string $streamName
      * @param string $message'
      *
      * @throws \InvalidArgumentException
      */
-    protected function publishMessage($topic = '', $stream = '', $message = '')
+    protected function publishMessage($streamName = '', $message = '')
     {
-        $this->setTopic($topic);
-        $this->setStream($stream);
+        $this->setStreamName($streamName);
 
-        $this->publishMessageAsKinesis($stream, $message);
+        $this->publishMessageAsKinesis($streamName, $message);
     }
 
     /**
@@ -55,11 +48,8 @@ trait MessageTrait
          * @var $model MessageTrait
          */
         foreach ($models as $model) {
-            if (!$this->getTopic()) {
-                $this->setTopic($model->getObjectName());
-            }
-            if (!$this->getStream()) {
-                $this->setStream($model->getStreamName());
+            if (!$this->getStreamName()) {
+                $this->setStreamName($model->getStreamName());
             }
 
             $records[] =  [
@@ -70,7 +60,7 @@ trait MessageTrait
 
         self::getClient()->putRecords([
             'Records' => $records,
-            'StreamName' => $this->getStream()
+            'StreamName' => $this->getStreamName()
         ]);
     }
 
@@ -155,8 +145,8 @@ trait MessageTrait
      */
     public function getAvroSchema()
     {
-        if (isset(self::$schemaCache[$this->getTopic()])) {
-            return self::$schemaCache[$this->getTopic()];
+        if (isset(self::$schemaCache[$this->getStreamName()])) {
+            return self::$schemaCache[$this->getStreamName()];
         }
 
         /**
@@ -166,7 +156,7 @@ trait MessageTrait
 
         $schema = \AvroSchema::parse($jsonSchema);
 
-        self::$schemaCache[$this->getTopic()] = $schema;
+        self::$schemaCache[$this->getStreamName()] = $schema;
 
         return $schema;
     }
@@ -174,32 +164,23 @@ trait MessageTrait
     /**
      * @return string
      */
-    public function getTopic()
+    public function getStreamName()
     {
-        return $this->topic;
+        // If no stream name is specified, get the default stream name
+        if (!$this->streamName) {
+            $this->setStreamName(
+                Config::get('DEFAULT_STREAM', $this->getObjectName())
+            );
+        }
+
+        return $this->streamName;
     }
 
     /**
-     * @param string $topic
+     * @param string $streamName
      */
-    public function setTopic($topic)
+    public function setStreamName($streamName)
     {
-        $this->topic = $topic;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStream()
-    {
-        return $this->stream;
-    }
-
-    /**
-     * @param string $stream
-     */
-    public function setStream($stream)
-    {
-        $this->stream = $stream;
+        $this->streamName = $streamName;
     }
 }

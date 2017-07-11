@@ -138,7 +138,7 @@ trait MessageTrait
             self::setClient(
                 new KinesisClient([
                     'version' => 'latest',
-                    'region'  => Config::get('AWS_DEFAULT_REGION'),
+                    'region'  => Config::get('AWS_REGION'),
                     'credentials' => [
                         'key' => Config::get('AWS_ACCESS_KEY_ID'),
                         'secret' => Config::get('AWS_SECRET_ACCESS_KEY'),

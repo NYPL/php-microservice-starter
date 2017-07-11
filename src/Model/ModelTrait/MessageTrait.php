@@ -40,7 +40,7 @@ trait MessageTrait
 
     /**
      * @param array $models
-     * @throws \AvroIOException|\InvalidArgumentException
+     * @throws \AvroIOException|\InvalidArgumentException|APIException
      */
     protected function bulkPublishMessages(array $models = [])
     {
@@ -66,21 +66,36 @@ trait MessageTrait
         ]);
 
         if ($result->get('FailedRecordCount')) {
-            $this->processBulkError($result);
+            throw new APIException(
+                'Error executing Kinesis PutRecords',
+                $this->getBulkErrors($result)
+            );
+        }
+
+        if (count($records) !== count($result->get('Records'))) {
+            throw new APIException(
+                'Mismatched count in Kinesis PutRecords: expected ' .
+                count($records) . ' and got ' . count($result->get('Records'))
+            );
         }
     }
 
-    protected function processBulkError(Result $result)
+    /**
+     * @param Result $result
+     *
+     * @return array
+     */
+    protected function getBulkErrors(Result $result)
     {
         $bulkErrors = [];
 
         foreach ((array) $result->get('Records') as $record) {
             if (isset($record['ErrorCode'])) {
-                $bulkErrors = $record;
+                $bulkErrors[] = $record;
             }
         }
 
-        throw new APIException('Error executing PutRecords', $bulkErrors);
+        return $bulkErrors;
     }
 
     /**
@@ -138,7 +153,7 @@ trait MessageTrait
             self::setClient(
                 new KinesisClient([
                     'version' => 'latest',
-                    'region'  => Config::get('AWS_REGION'),
+                    'region'  => Config::get('AWS_DEFAULT_REGION'),
                     'credentials' => [
                         'key' => Config::get('AWS_ACCESS_KEY_ID'),
                         'secret' => Config::get('AWS_SECRET_ACCESS_KEY'),

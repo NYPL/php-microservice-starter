@@ -19,7 +19,7 @@ class ErrorHandler
         if (!self::isIgnoreError()) {
             $exception = new APIException($errorString, $context);
 
-            APILogger::addError($errorString, (array) $exception);
+            APILogger::addError($errorString, $exception);
 
             $apiResponse = new ErrorResponse(
                 500,
@@ -57,7 +57,11 @@ class ErrorHandler
     {
         if (!self::isIgnoreError()) {
             APILogger::addError(
-                $errorString . ' (' . $errorNumber . ') in ' . $errorFile . ' on line ' . $errorLine
+                $errorString,
+                [
+                    'file' => $errorFile,
+                    'line' => $errorLine,
+                ]
             );
         }
     }

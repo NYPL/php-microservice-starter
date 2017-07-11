@@ -3,6 +3,7 @@ namespace NYPL\Starter\Listener;
 
 use NYPL\Starter\APIException;
 use NYPL\Starter\APILogger;
+use NYPL\Starter\ErrorHandler;
 
 abstract class Listener
 {
@@ -15,6 +16,11 @@ abstract class Listener
      * @var string
      */
     protected $schemaName = '';
+
+    public function __construct()
+    {
+        set_error_handler(ErrorHandler::class . "::errorFunction");
+    }
 
     /**
      * @return ListenerResult
@@ -88,7 +94,6 @@ abstract class Listener
      */
     public function process(ListenerEvents $listenerEvents, $schemaName = '')
     {
-
         try {
             $this->setSchemaName($schemaName);
             $this->setListenerEvents($listenerEvents);

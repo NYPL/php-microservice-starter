@@ -98,6 +98,25 @@ class APILogger
         return self::addError($error, $context);
     }
 
+    protected static function formatContext($context)
+    {
+        if ($context instanceof \Throwable) {
+            return [
+                'file' => $context->getFile(),
+                'line' => $context->getLine(),
+                'trace' => $context->getTraceAsString(),
+            ];
+        }
+
+        if (is_object($context)) {
+            return (array) $context;
+        }
+
+        if (is_array($context)) {
+            return $context;
+        }
+    }
+
     /**
      * @param string $error
      * @param array|object $context
@@ -106,7 +125,7 @@ class APILogger
      */
     public static function addInfo($error = '', $context = [])
     {
-        self::getLogger()->addInfo($error, (array) $context);
+        self::getLogger()->addInfo($error, self::formatContext($context));
 
         return true;
     }
@@ -119,7 +138,7 @@ class APILogger
      */
     public static function addError($error = '', $context = [])
     {
-        self::getLogger()->addError($error, (array) $context);
+        self::getLogger()->addError($error, self::formatContext($context));
 
         return true;
     }
@@ -132,7 +151,7 @@ class APILogger
      */
     public static function addDebug($error = '', $context = [])
     {
-        self::getLogger()->addDebug($error, (array) $context);
+        self::getLogger()->addDebug($error, self::formatContext($context));
 
         return true;
     }
@@ -145,7 +164,7 @@ class APILogger
      */
     public static function addNotice($error = '', $context = [])
     {
-        self::getLogger()->addNotice($error, (array) $context);
+        self::getLogger()->addNotice($error, self::formatContext($context));
 
         return true;
     }

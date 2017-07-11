@@ -2,6 +2,8 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use Aws\Kinesis\KinesisClient;
+use Aws\Result;
+use NYPL\Starter\APIException;
 use NYPL\Starter\AvroLoader;
 use NYPL\Starter\Config;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
@@ -58,10 +60,27 @@ trait MessageTrait
             ];
         }
 
-        self::getClient()->putRecords([
+        $result = self::getClient()->putRecords([
             'Records' => $records,
             'StreamName' => $this->getTopic()
         ]);
+
+        if ($result->get('FailedRecordCount')) {
+            $this->processBulkError($result);
+        }
+    }
+
+    protected function processBulkError(Result $result)
+    {
+        $bulkErrors = [];
+
+        foreach ((array) $result->get('Records') as $record) {
+            if (isset($record['ErrorCode'])) {
+                $bulkErrors = $record;
+            }
+        }
+
+        throw new APIException('Error executing PutRecords', $bulkErrors);
     }
 
     /**

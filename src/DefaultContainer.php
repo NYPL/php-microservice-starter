@@ -95,13 +95,13 @@ class DefaultContainer extends Container
 
         $this['phpErrorHandler'] = function ($container) {
             return function (Request $request, Response $response, \Throwable $exception) use ($container) {
-                $this->handleError($container, $request, $exception);
+                return $this->handleError($container, $request, $exception);
             };
         };
 
         $this["errorHandler"] = function (Container $container) {
             return function (Request $request, Response $response, \Throwable $exception) use ($container) {
-                $this->handleError($container, $request, $exception);
+                return $this->handleError($container, $request, $exception);
             };
         };
     }

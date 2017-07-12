@@ -98,6 +98,25 @@ class APILogger
         return self::addError($error, $context);
     }
 
+    /**
+     * @param mixed $message
+     *
+     * @return string
+     */
+    protected static function formatMessage($message)
+    {
+        if (is_string($message)) {
+            return $message;
+        }
+
+        return json_encode($message);
+    }
+
+    /**
+     * @param  mixed  $context
+     *
+     * @return array
+     */
     protected static function formatContext($context)
     {
         if ($context instanceof \Throwable) {
@@ -127,7 +146,7 @@ class APILogger
      */
     public static function addInfo($error = '', $context = [])
     {
-        self::getLogger()->addInfo($error, self::formatContext($context));
+        self::getLogger()->addInfo(self::formatMessage($error), self::formatContext($context));
 
         return true;
     }
@@ -140,7 +159,7 @@ class APILogger
      */
     public static function addError($error = '', $context = [])
     {
-        self::getLogger()->addError($error, self::formatContext($context));
+        self::getLogger()->addError(self::formatMessage($error), self::formatContext($context));
 
         return true;
     }
@@ -153,7 +172,7 @@ class APILogger
      */
     public static function addDebug($error = '', $context = [])
     {
-        self::getLogger()->addDebug($error, self::formatContext($context));
+        self::getLogger()->addDebug(self::formatMessage($error), self::formatContext($context));
 
         return true;
     }
@@ -166,7 +185,7 @@ class APILogger
      */
     public static function addNotice($error = '', $context = [])
     {
-        self::getLogger()->addNotice($error, self::formatContext($context));
+        self::getLogger()->addNotice(self::formatMessage($error), self::formatContext($context));
 
         return true;
     }

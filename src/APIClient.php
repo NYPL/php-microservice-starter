@@ -1,9 +1,7 @@
 <?php
-namespace NYPL\KafkaStarter;
+namespace NYPL\Starter;
 
 use GuzzleHttp\Client;
-use NYPL\Starter\Config;
-use NYPL\Starter\OAuthClient;
 
 abstract class APIClient
 {
@@ -12,16 +10,25 @@ abstract class APIClient
     /**
      * @var Client
      */
-    protected static $client;
+    protected $client;
+
+    protected $isRequiresAuth = false;
+
+    /**
+     * @return bool
+     */
+    abstract protected function isRequiresAuth();
 
     /**
      * @param array $options
      *
      * @return array
      */
-    protected static function getOptions(array $options = [])
+    protected function getOptions(array $options = [])
     {
-        $options['headers']['Authorization'] = 'Bearer ' . OAuthClient::getAccessToken();
+        if ($this->isRequiresAuth()) {
+            $options['headers']['Authorization'] = 'Bearer ' . OAuthClient::getAccessToken();
+        }
 
         return $options;
     }
@@ -29,26 +36,26 @@ abstract class APIClient
     /**
      * @return Client
      */
-    protected static function getClient()
+    protected function getClient()
     {
-        if (!self::$client) {
-            self::initializeClient();
+        if (!$this->client) {
+            $this->initializeClient();
         }
 
-        return self::$client;
+        return $this->client;
     }
 
     /**
      * @param Client $client
      */
-    protected static function setClient($client)
+    protected function setClient($client)
     {
-        self::$client = $client;
+        $this->client = $client;
     }
 
-    protected static function initializeClient()
+    protected function initializeClient()
     {
-        self::setClient(new Client([
+        $this->setClient(new Client([
             'base_uri' => Config::get('API_BASE_URL'),
             'timeout'  => self::CLIENT_TIMEOUT,
         ]));
@@ -60,11 +67,11 @@ abstract class APIClient
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public static function get($uri = '', array $options = [])
+    public function get($uri = '', array $options = [])
     {
-        return self::getClient()->get(
+        return $this->getClient()->get(
             $uri,
-            self::getOptions($options)
+            $this->getOptions($options)
         );
     }
 
@@ -74,11 +81,11 @@ abstract class APIClient
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public static function post($uri = '', array $options = [])
+    public function post($uri = '', array $options = [])
     {
-        return self::getClient()->post(
+        return $this->getClient()->post(
             $uri,
-            self::getOptions($options)
+            $this->getOptions($options)
         );
     }
 
@@ -88,11 +95,11 @@ abstract class APIClient
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public static function put($uri = '', array $options = [])
+    public function put($uri = '', array $options = [])
     {
-        return self::getClient()->put(
+        return $this->getClient()->put(
             $uri,
-            self::getOptions($options)
+            $this->getOptions($options)
         );
     }
 
@@ -102,11 +109,11 @@ abstract class APIClient
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public static function patch($uri = '', array $options = [])
+    public function patch($uri = '', array $options = [])
     {
-        return self::getClient()->patch(
+        return $this->getClient()->patch(
             $uri,
-            self::getOptions($options)
+            $this->getOptions($options)
         );
     }
 }

@@ -1,11 +1,21 @@
 <?php
 namespace NYPL\Starter;
 
-use NYPL\KafkaStarter\APIClient;
+use NYPL\Starter\CacheModel\BaseJob\Job;
+use NYPL\Starter\CacheModel\JobNotice;
+use NYPL\Starter\CacheModel\JobStatus;
 use NYPL\Starter\JobStatus\JobStatusSuccess;
 
 class JobClient extends APIClient
 {
+    /**
+     * @return bool
+     */
+    protected function isRequiresAuth()
+    {
+        return false;
+    }
+
     /**
      * @param Job $job
      * @param JobNotice $jobNotice
@@ -13,14 +23,14 @@ class JobClient extends APIClient
      * @return bool
      * @throws APIException
      */
-    public static function addNotice(Job $job, JobNotice $jobNotice)
+    public function addNotice(Job $job, JobNotice $jobNotice)
     {
         if (!$job->getId()) {
             return false;
         }
 
         try {
-            self::post(
+            $this->post(
                 'jobs/' . $job->getId() . '/notices',
                 [
                     'body' => json_encode($jobNotice),
@@ -46,14 +56,14 @@ class JobClient extends APIClient
      * @return bool
      * @throws APIException
      */
-    public static function startJob(Job $job, JobStatus $jobStatus)
+    public function startJob(Job $job, JobStatus $jobStatus)
     {
         if (!$job->getId()) {
             return false;
         }
 
         try {
-            self::put(
+            $this->put(
                 'jobs/' . $job->getId() . '/start',
                 [
                     'body' => json_encode($jobStatus),
@@ -79,14 +89,14 @@ class JobClient extends APIClient
      * @return bool
      * @throws APIException
      */
-    public static function success(Job $job, JobStatusSuccess $jobStatusSuccess)
+    public function success(Job $job, JobStatusSuccess $jobStatusSuccess)
     {
         if (!$job->getId()) {
             return false;
         }
 
         try {
-            self::put(
+            $this->put(
                 'jobs/' . $job->getId() . '/success',
                 [
                     'body' => json_encode($jobStatusSuccess),
@@ -112,14 +122,14 @@ class JobClient extends APIClient
      * @return bool
      * @throws APIException
      */
-    public static function failure(Job $job, JobStatus $jobStatus)
+    public function failure(Job $job, JobStatus $jobStatus)
     {
         if (!$job->getId()) {
             return false;
         }
 
         try {
-            self::put(
+            $this->put(
                 'jobs/' . $job->getId() . '/failure',
                 [
                     'body' => json_encode($jobStatus),

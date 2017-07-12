@@ -115,6 +115,8 @@ class APILogger
         if (is_array($context)) {
             return $context;
         }
+
+        return [$context];
     }
 
     /**

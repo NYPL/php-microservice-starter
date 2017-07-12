@@ -1,7 +1,7 @@
 <?php
 namespace NYPL\Starter\JobStatus;
 
-use NYPL\Starter\JobStatus;
+use NYPL\Starter\CacheModel\JobStatus;
 
 class JobStatusSuccess extends JobStatus
 {

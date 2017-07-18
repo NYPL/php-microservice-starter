@@ -69,7 +69,7 @@ trait MessageTrait
             throw new APIException(
                 'Error executing Kinesis PutRecords with ' .
                 $result->get('FailedRecordCount') . ' failed records',
-                $this->getFailedRecords($result)
+                $result
             );
         }
 
@@ -79,24 +79,6 @@ trait MessageTrait
                 count($records) . ' and got ' . count($result->get('Records'))
             );
         }
-    }
-
-    /**
-     * @param Result $result
-     *
-     * @return array
-     */
-    protected function getFailedRecords(Result $result)
-    {
-        $bulkErrors = [];
-
-        foreach ((array) $result->get('Records') as $record) {
-            if (isset($record['ErrorCode'])) {
-                $bulkErrors[] = $record;
-            }
-        }
-
-        return $bulkErrors;
     }
 
     /**

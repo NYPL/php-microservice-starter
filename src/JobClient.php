@@ -9,11 +9,52 @@ use NYPL\Starter\JobStatus\JobStatusSuccess;
 class JobClient extends APIClient
 {
     /**
+     * @return Job
+     */
+    public static function createNewJob()
+    {
+        $job = new Job();
+
+        $jobClient = new JobClient();
+
+        return $jobClient->createJob($job);
+    }
+
+    /**
      * @return bool
      */
     protected function isRequiresAuth()
     {
         return false;
+    }
+
+    /**
+     * @param Job $job
+     *
+     * @return Job
+     * @throws APIException
+     */
+    public function createJob(Job $job)
+    {
+        try {
+            $response = $this->post(
+                'jobs',
+                [
+                    'body' => json_encode($job),
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                    ]
+                ]
+            );
+
+            $body = json_decode($response->getBody(), true);
+
+            $job->setId($body['data']['id']);
+
+            return $job;
+        } catch (\Exception $exception) {
+            throw new APIException($exception->getMessage());
+        }
     }
 
     /**

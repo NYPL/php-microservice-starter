@@ -1,9 +1,8 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
-use NYPL\Services\Model\CacheModel\JobStatus;
+use NYPL\Starter\CacheModel\JobStatus;
 use NYPL\Starter\Cache;
-use NYPL\Starter\Model;
 
 trait CacheLockTrait
 {

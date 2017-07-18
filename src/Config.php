@@ -6,8 +6,8 @@ use Dotenv\Dotenv;
 
 class Config
 {
-    const ENVIRONMENT_FILE = '.env';
-    const CONFIG_FILE = 'var_app';
+    const LOCAL_ENVIRONMENT_FILE = '.env';
+    const GLOBAL_ENVIRONMENT_FILE = 'var_app';
 
     protected static $initialized = false;
 
@@ -15,7 +15,7 @@ class Config
 
     protected static $required =
         [
-            'SLACK_TOKEN', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'TIME_ZONE'
+            'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'TIME_ZONE'
         ];
 
     protected static $addedRequired = [];
@@ -94,11 +94,13 @@ class Config
 
     protected static function loadConfiguration()
     {
-        $dotEnv = new Dotenv(self::getConfigDirectory(), self::ENVIRONMENT_FILE);
-        $dotEnv->load();
+        if (file_exists(self::getConfigDirectory() . '/' . self::LOCAL_ENVIRONMENT_FILE)) {
+            $dotEnv = new Dotenv(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
+            $dotEnv->load();
+        }
 
-        if (file_exists(self::getConfigDirectory() . '/config/' . self::CONFIG_FILE)) {
-            $dotEnv = new Dotenv(self::getConfigDirectory() . '/config', self::CONFIG_FILE);
+        if (file_exists(self::getConfigDirectory() . '/config/' . self::GLOBAL_ENVIRONMENT_FILE)) {
+            $dotEnv = new Dotenv(self::getConfigDirectory() . '/config', self::GLOBAL_ENVIRONMENT_FILE);
             $dotEnv->load();
         }
 

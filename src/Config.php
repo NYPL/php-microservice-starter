@@ -8,6 +8,7 @@ class Config
 {
     const LOCAL_ENVIRONMENT_FILE = '.env';
     const GLOBAL_ENVIRONMENT_FILE = 'var_app';
+    const DEFAULT_TIME_ZONE = 'America/New_York';
 
     protected static $initialized = false;
 
@@ -15,7 +16,7 @@ class Config
 
     protected static $required =
         [
-            'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'TIME_ZONE'
+            'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'
         ];
 
     protected static $addedRequired = [];
@@ -40,6 +41,10 @@ class Config
         self::loadConfiguration();
 
         self::setInitialized(true);
+
+        date_default_timezone_set(
+            Config::get('TIME_ZONE', self::DEFAULT_TIME_ZONE)
+        );
     }
 
     /**

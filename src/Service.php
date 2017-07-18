@@ -17,8 +17,6 @@ class Service extends App
         set_error_handler(ErrorHandler::class . "::errorFunction");
         register_shutdown_function(ErrorHandler::class . "::shutdownFunction");
 
-        date_default_timezone_set(Config::get('TIME_ZONE'));
-
         if (!$container) {
             $container = new DefaultContainer();
         }

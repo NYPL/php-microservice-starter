@@ -33,12 +33,16 @@ class KinesisEvents extends ListenerEvents
      */
     public function translateEvent(array $record, $schemaName = '')
     {
-        return new KinesisEvent(
+        $kinesisEvent = new KinesisEvent(
             new ListenerData(
                 base64_decode($record['kinesis']['data']),
                 $schemaName
             )
         );
+
+        $kinesisEvent->setSequenceNumber($record['kinesis']['sequenceNumber']);
+
+        return $kinesisEvent;
     }
 
     /**

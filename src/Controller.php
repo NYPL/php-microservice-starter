@@ -329,6 +329,27 @@ abstract class Controller
         return false;
     }
 
+    /**
+     * @param array $allowedScopes
+     *
+     * @throws APIException
+     * @return bool
+     */
+    public function checkScopes($allowedScopes = [])
+    {
+        if (!$this->getIdentityHeader()->isExists()) {
+            return true;
+        }
+
+        if (array_intersect($allowedScopes, $this->getIdentityHeader()->getScopes())) {
+            return true;
+        }
+
+        $this->denyAccess(
+            'Does not contain required scope (' . implode(', ', $allowedScopes) . ')'
+        );
+    }
+
 
     /**
      * @param string $message

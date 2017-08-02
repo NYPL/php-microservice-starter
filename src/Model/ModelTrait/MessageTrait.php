@@ -4,6 +4,7 @@ namespace NYPL\Starter\Model\ModelTrait;
 use Aws\Kinesis\KinesisClient;
 use Aws\Result;
 use NYPL\Starter\APIException;
+use NYPL\Starter\APILogger;
 use NYPL\Starter\AvroLoader;
 use NYPL\Starter\Config;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
@@ -66,10 +67,14 @@ trait MessageTrait
         ]);
 
         if ($result->get('FailedRecordCount')) {
+            APILogger::addError(
+                'Failed PutRecords',
+                $this->getFailedRecords($result)
+            );
+
             throw new APIException(
                 'Error executing Kinesis PutRecords with ' .
-                $result->get('FailedRecordCount') . ' failed records',
-                $this->getFailedRecords($result)
+                $result->get('FailedRecordCount') . ' failed records'
             );
         }
 
@@ -90,9 +95,9 @@ trait MessageTrait
     {
         $bulkErrors = [];
 
-        foreach ((array) $result->get('Records') as $record) {
-            if (isset($record['ErrorCode'])) {
-                $bulkErrors[] = $record;
+        foreach ((array) $result->get('Records') as $result) {
+            if (isset($result['ErrorCode'])) {
+                $bulkErrors[] = $result;
             }
         }
 

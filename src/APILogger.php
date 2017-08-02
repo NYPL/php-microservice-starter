@@ -11,6 +11,7 @@ class APILogger
 {
     const DEFAULT_LOGGING_LEVEL = Logger::DEBUG;
     const DEFAULT_SLACK_LOGGING_LEVEL = Logger::ERROR;
+    const MAXIMUM_MESSAGE_LENGTH = 250000;
 
     /**
      * @var Logger
@@ -99,6 +100,20 @@ class APILogger
     }
 
     /**
+     * @param string $message
+     *
+     * @return string
+     */
+    protected static function shortenLongStrings($message = '')
+    {
+        if (strlen($message) > self::MAXIMUM_MESSAGE_LENGTH) {
+            return substr($message, 0, self::MAXIMUM_MESSAGE_LENGTH);
+        }
+
+        return $message;
+    }
+
+    /**
      * @param mixed $message
      *
      * @return string
@@ -106,10 +121,10 @@ class APILogger
     protected static function formatMessage($message)
     {
         if (is_string($message)) {
-            return $message;
+            return self::shortenLongStrings($message);
         }
 
-        return json_encode($message);
+        return self::shortenLongStrings(json_encode($message));
     }
 
     /**

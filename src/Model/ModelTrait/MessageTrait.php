@@ -51,10 +51,6 @@ trait MessageTrait
          * @var $model MessageTrait
          */
         foreach ($models as $model) {
-            if (!$this->getStreamName()) {
-                $this->setStreamName($model->getStreamName());
-            }
-
             $records[] =  [
                 'Data' => $model->createMessage(),
                 'PartitionKey' => uniqid()
@@ -63,7 +59,7 @@ trait MessageTrait
 
         $result = self::getClient()->putRecords([
             'Records' => $records,
-            'StreamName' => $this->getStreamName()
+            'StreamName' => $model->getStreamName()
         ]);
 
         if ($result->get('FailedRecordCount')) {
@@ -207,7 +203,6 @@ trait MessageTrait
      */
     public function getStreamName()
     {
-        // If no stream name is specified, get the default stream name
         if (!$this->streamName) {
             $this->setStreamName(
                 Config::get('DEFAULT_STREAM', $this->getObjectName())

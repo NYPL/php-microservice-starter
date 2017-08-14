@@ -6,8 +6,9 @@ use Dotenv\Dotenv;
 
 class Config
 {
-    const ENVIRONMENT_FILE = '.env';
-    const CONFIG_FILE = 'var_app';
+    const LOCAL_ENVIRONMENT_FILE = '.env';
+    const GLOBAL_ENVIRONMENT_FILE = 'var_app';
+    const DEFAULT_TIME_ZONE = 'America/New_York';
 
     protected static $initialized = false;
 
@@ -15,7 +16,7 @@ class Config
 
     protected static $required =
         [
-            'SLACK_TOKEN', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'TIME_ZONE'
+            'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'
         ];
 
     protected static $addedRequired = [];
@@ -40,6 +41,10 @@ class Config
         self::loadConfiguration();
 
         self::setInitialized(true);
+
+        date_default_timezone_set(
+            Config::get('TIME_ZONE', self::DEFAULT_TIME_ZONE)
+        );
     }
 
     /**
@@ -94,11 +99,13 @@ class Config
 
     protected static function loadConfiguration()
     {
-        $dotEnv = new Dotenv(self::getConfigDirectory(), self::ENVIRONMENT_FILE);
-        $dotEnv->load();
+        if (file_exists(self::getConfigDirectory() . '/' . self::LOCAL_ENVIRONMENT_FILE)) {
+            $dotEnv = new Dotenv(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
+            $dotEnv->load();
+        }
 
-        if (file_exists(self::getConfigDirectory() . '/config/' . self::CONFIG_FILE)) {
-            $dotEnv = new Dotenv(self::getConfigDirectory() . '/config', self::CONFIG_FILE);
+        if (file_exists(self::getConfigDirectory() . '/config/' . self::GLOBAL_ENVIRONMENT_FILE)) {
+            $dotEnv = new Dotenv(self::getConfigDirectory() . '/config', self::GLOBAL_ENVIRONMENT_FILE);
             $dotEnv->load();
         }
 

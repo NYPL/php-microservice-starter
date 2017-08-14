@@ -139,4 +139,18 @@ class IdentityHeader
     {
         $this->exists = $exists;
     }
+
+    /**
+     * @param string $scope
+     *
+     * @return bool
+     */
+    public function isAllowableScope($scope = '')
+    {
+        if (in_array($scope, $this->getScopes(), true)) {
+            return true;
+        }
+
+        return false;
+    }
 }

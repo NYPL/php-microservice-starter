@@ -17,8 +17,6 @@ class Service extends App
         set_error_handler(ErrorHandler::class . "::errorFunction");
         register_shutdown_function(ErrorHandler::class . "::shutdownFunction");
 
-        date_default_timezone_set(Config::get('TIME_ZONE'));
-
         if (!$container) {
             $container = new DefaultContainer();
         }
@@ -31,7 +29,8 @@ class Service extends App
     protected function setupDefaultRoutes()
     {
         $this->add(function (Request $request, Response $response, callable $next) {
-            $response = $response
+            $response = $next($request, $response);
+            return $response
                 ->withHeader(
                     "Access-Control-Allow-Headers",
                     "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
@@ -47,13 +46,9 @@ class Service extends App
                 ->withHeader(
                     "Access-Control-Allow-Credentials",
                     "true"
-                );
-
-            $response = $response
+                )
                 ->withHeader('X-NYPL-Original-Request', $request->getUri())
                 ->withHeader('X-NYPL-Response-Date', date('c'));
-
-            return $next($request, $response);
         });
 
         $this->options("[/{params:.*}]", function (Request $request, Response $response) {

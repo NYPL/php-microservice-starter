@@ -1,14 +1,17 @@
 <?php
 namespace NYPL\Starter;
 
-use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\MissingExtensionException;
 use Monolog\Handler\SlackHandler;
 use Monolog\Logger;
+use NYPL\Starter\Formatter\NyplLogFormatter;
 
 class APILogger
 {
+    const DEFAULT_LOGGING_LEVEL = Logger::DEBUG;
     const DEFAULT_SLACK_LOGGING_LEVEL = Logger::ERROR;
+    const MAXIMUM_MESSAGE_LENGTH = 250000;
 
     /**
      * @var Logger
@@ -29,11 +32,23 @@ class APILogger
 
     public static function initializeLogger()
     {
-        $log = new Logger('API');
+        $logger = new Logger('NYPL');
 
-        if (Config::isInitialized()) {
+        self::addSlackLogging($logger);
+        self::addJsonLogging($logger);
+
+        self::setLogger($logger);
+    }
+
+    /**
+     * @param Logger $logger
+     * @throws APIException|MissingExtensionException
+     */
+    protected static function addSlackLogging(Logger $logger)
+    {
+        if (Config::isInitialized() && $slackToken = Config::get('SLACK_TOKEN', null, true)) {
             $handler = new SlackHandler(
-                Config::get('SLACK_TOKEN', null, true),
+                $slackToken,
                 Config::get('SLACK_CHANNEL'),
                 Config::get('SLACK_USERNAME'),
                 true,
@@ -41,15 +56,23 @@ class APILogger
                 Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
             );
 
-            $log->pushHandler($handler);
+            $logger->pushHandler($handler);
         }
+    }
 
-        $handler = new ErrorLogHandler();
-        $handler->setFormatter(new JsonFormatter());
+    /**
+     * @param Logger $logger
+     * @throws APIException|MissingExtensionException
+     */
+    protected static function addJsonLogging(Logger $logger)
+    {
+        $handler = new ErrorLogHandler(
+            ErrorLogHandler::OPERATING_SYSTEM,
+            Config::get('DEFAULT_LOGGING_LEVEL', self::DEFAULT_LOGGING_LEVEL)
+        );
+        $handler->setFormatter(new NyplLogFormatter());
 
-        $log->pushHandler($handler);
-
-        self::setLogger($log);
+        $logger->pushHandler($handler);
     }
 
     /**
@@ -77,6 +100,60 @@ class APILogger
     }
 
     /**
+     * @param string $message
+     *
+     * @return string
+     */
+    protected static function shortenLongStrings($message = '')
+    {
+        if (strlen($message) > self::MAXIMUM_MESSAGE_LENGTH) {
+            return substr($message, 0, self::MAXIMUM_MESSAGE_LENGTH);
+        }
+
+        return $message;
+    }
+
+    /**
+     * @param mixed $message
+     *
+     * @return string
+     */
+    protected static function formatMessage($message)
+    {
+        if (is_string($message)) {
+            return self::shortenLongStrings($message);
+        }
+
+        return self::shortenLongStrings(json_encode($message));
+    }
+
+    /**
+     * @param  mixed  $context
+     *
+     * @return array
+     */
+    protected static function formatContext($context)
+    {
+        if ($context instanceof \Throwable) {
+            return [
+                'file' => $context->getFile(),
+                'line' => $context->getLine(),
+                'trace' => $context->getTraceAsString(),
+            ];
+        }
+
+        if (is_object($context)) {
+            return (array) $context;
+        }
+
+        if (is_array($context)) {
+            return $context;
+        }
+
+        return [$context];
+    }
+
+    /**
      * @param string $error
      * @param array|object $context
      *
@@ -84,7 +161,7 @@ class APILogger
      */
     public static function addInfo($error = '', $context = [])
     {
-        self::getLogger()->addInfo($error, (array) $context);
+        self::getLogger()->addInfo(self::formatMessage($error), self::formatContext($context));
 
         return true;
     }
@@ -97,7 +174,33 @@ class APILogger
      */
     public static function addError($error = '', $context = [])
     {
-        self::getLogger()->addError($error, (array) $context);
+        self::getLogger()->addError(self::formatMessage($error), self::formatContext($context));
+
+        return true;
+    }
+
+    /**
+     * @param string $error
+     * @param array $context
+     *
+     * @return bool
+     */
+    public static function addDebug($error = '', $context = [])
+    {
+        self::getLogger()->addDebug(self::formatMessage($error), self::formatContext($context));
+
+        return true;
+    }
+
+    /**
+     * @param string $error
+     * @param array $context
+     *
+     * @return bool
+     */
+    public static function addNotice($error = '', $context = [])
+    {
+        self::getLogger()->addNotice(self::formatMessage($error), self::formatContext($context));
 
         return true;
     }

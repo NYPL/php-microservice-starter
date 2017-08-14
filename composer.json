@@ -13,7 +13,7 @@
     "monolog/monolog": "1.21.0",
     "danielstjules/stringy": "2.3.2",
     "zircote/swagger-php": "2.0.7",
-    "aws/aws-sdk-php": "3.26.5",
+    "aws/aws-sdk-php": "3.31.4",
     "vlucas/phpdotenv": "2.4.0",
     "guzzlehttp/guzzle": "6.2.3"
   },
@@ -23,10 +23,5 @@
     "psr-4": {
       "NYPL\\Starter\\": [ "src/" ]
     }
-  },
-  "scripts": {
-    "post-update-cmd": [
-      "php -r \"copy('scripts/index.js', 'index.js');\""
-    ]
   }
 }

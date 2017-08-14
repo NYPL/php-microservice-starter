@@ -1,5 +1,5 @@
 const spawn = require('child_process').spawnSync;
-const parser = require('http-string-parser');
+const parser = require('./parser');
 const querystring = require('querystring');
 
 exports.handler = function(event, context, callback) {
@@ -52,8 +52,8 @@ exports.handler = function(event, context, callback) {
     if (event.body) {
         headers['CONTENT_LENGTH'] = Buffer.byteLength(event.body, 'utf8');
 
-        if (event.headers['Content-Type']) {
-            headers['CONTENT_TYPE'] = event.headers['Content-Type'];
+        if (event.headers['Content-type']) {
+            headers['CONTENT_TYPE'] = event.headers['Content-type'];
         }
     }
 
@@ -62,11 +62,14 @@ exports.handler = function(event, context, callback) {
         env: Object.assign(process.env, headers)
     };
 
-
     if (process.env.LAMBDA_TASK_ROOT) {
-        var php = spawn('./php-cgi', ['-n', '-d expose_php=Off', 'index.php'], options);
+        var php = spawn(
+            process.env.LAMBDA_TASK_ROOT + '/php-cgi',
+            ['-n', '-d expose_php=Off', '-d memory_limit=512M', '-d opcache.file_cache=/tmp', '-d zend_extension=' + process.env.LAMBDA_TASK_ROOT + '/lib/opcache.so', 'index.php'],
+            options
+        );
     } else {
-        var php = spawn('php-cgi', ['-d expose_php=Off', 'index.php'], options);
+        var php = spawn('php-cgi', ['-d expose_php=Off', '-d memory_limit=512M', 'index.php'], options);
     }
 
     if (php.error) {

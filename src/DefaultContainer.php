@@ -68,6 +68,16 @@ class DefaultContainer extends Container
         );
     }
 
+    protected function handleError(Container $container, Request $request, \Throwable $exception)
+    {
+        $this->logError($request, $exception);
+
+        return $container["response"]
+            ->withStatus($this->getStatusCode($exception))
+            ->withJson($this->getErrorResponse($exception))
+            ->withHeader("Access-Control-Allow-Origin", "*");
+    }
+
     public function __construct()
     {
         parent::__construct();
@@ -83,17 +93,15 @@ class DefaultContainer extends Container
             };
         };
 
+        $this['phpErrorHandler'] = function ($container) {
+            return function (Request $request, Response $response, \Throwable $exception) use ($container) {
+                return $this->handleError($container, $request, $exception);
+            };
+        };
+
         $this["errorHandler"] = function (Container $container) {
             return function (Request $request, Response $response, \Throwable $exception) use ($container) {
-                $this->logError($request, $exception);
-
-                return $container["response"]
-                    ->withStatus($this->getStatusCode($exception))
-                    ->withJson($this->getErrorResponse($exception))
-                    ->withHeader(
-                        "Access-Control-Allow-Origin",
-                        "*"
-                    );
+                return $this->handleError($container, $request, $exception);
             };
         };
     }

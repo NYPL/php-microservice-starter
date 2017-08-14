@@ -2,6 +2,9 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use Aws\Kinesis\KinesisClient;
+use Aws\Result;
+use NYPL\Starter\APIException;
+use NYPL\Starter\APILogger;
 use NYPL\Starter\AvroLoader;
 use NYPL\Starter\Config;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
@@ -38,7 +41,7 @@ trait MessageTrait
 
     /**
      * @param array $models
-     * @throws \AvroIOException|\InvalidArgumentException
+     * @throws \AvroIOException|\InvalidArgumentException|APIException
      */
     protected function bulkPublishMessages(array $models = [])
     {
@@ -58,10 +61,47 @@ trait MessageTrait
             ];
         }
 
-        self::getClient()->putRecords([
+        $result = self::getClient()->putRecords([
             'Records' => $records,
             'StreamName' => $this->getStreamName()
         ]);
+
+        if ($result->get('FailedRecordCount')) {
+            APILogger::addError(
+                'Failed PutRecords',
+                $this->getFailedRecords($result)
+            );
+
+            throw new APIException(
+                'Error executing Kinesis PutRecords with ' .
+                $result->get('FailedRecordCount') . ' failed records'
+            );
+        }
+
+        if (count($records) !== count($result->get('Records'))) {
+            throw new APIException(
+                'Mismatched count in Kinesis PutRecords: expected ' .
+                count($records) . ' and got ' . count($result->get('Records'))
+            );
+        }
+    }
+
+    /**
+     * @param Result $result
+     *
+     * @return array
+     */
+    protected function getFailedRecords(Result $result)
+    {
+        $bulkErrors = [];
+
+        foreach ((array) $result->get('Records') as $result) {
+            if (isset($result['ErrorCode'])) {
+                $bulkErrors[] = $result;
+            }
+        }
+
+        return $bulkErrors;
     }
 
     /**

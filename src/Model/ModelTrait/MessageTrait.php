@@ -65,16 +65,17 @@ trait MessageTrait
     }
 
     /**
-     * @param string $stream
+     * @param string $streamName
      * @param string $message
+     *
      * @throws \InvalidArgumentException
      */
-    protected function publishMessageAsKinesis($stream = '', $message = '')
+    protected function publishMessageAsKinesis($streamName = '', $message = '')
     {
         self::getClient()->putRecord([
             'Data' => $message,
             'PartitionKey' => uniqid(),
-            'StreamName' => $stream
+            'StreamName' => $streamName
         ]);
     }
 

@@ -19,7 +19,7 @@ trait CacheUpdateTrait
         );
 
         if ($this instanceof MessageInterface) {
-            $this->publishMessage($this->getObjectName(), $this->createMessage());
+            $this->publishMessage($this->getStreamName(), $this->createMessage());
         }
     }
 }

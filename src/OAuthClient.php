@@ -5,34 +5,31 @@ use GuzzleHttp\Client;
 
 class OAuthClient
 {
-    /**
-     * @var string
-     */
-    public static $accessToken = '';
+    const CACHE_KEY = 'OAuthClient:Token';
 
     /**
      * @return string
      */
     public static function getAccessToken()
     {
-        if (!self::$accessToken) {
-            $accessToken = self::initializeAccessToken();
+        if ($accessToken = AppCache::get(self::CACHE_KEY)) {
+            $accessToken = unserialize($accessToken);
 
-            self::setAccessToken($accessToken);
+            return $accessToken['access_token'];
         }
 
-        return self::$accessToken;
+        $accessToken = self::retrieveAccessToken();
+
+        AppCache::set(
+            self::CACHE_KEY,
+            serialize($accessToken),
+            $accessToken['expires_in']
+        );
+
+        return $accessToken['access_token'];
     }
 
-    /**
-     * @param string $accessToken
-     */
-    public static function setAccessToken($accessToken = '')
-    {
-        self::$accessToken = $accessToken;
-    }
-
-    protected static function initializeAccessToken()
+    protected static function retrieveAccessToken()
     {
         $client = new Client();
 
@@ -48,6 +45,6 @@ class OAuthClient
             ]
         );
 
-        return json_decode($response->getBody(), true)['access_token'];
+        return json_decode($response->getBody(), true);
     }
 }

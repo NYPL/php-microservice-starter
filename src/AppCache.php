@@ -24,8 +24,6 @@ class AppCache
     {
         self::initialize();
 
-        echo $ttl;
-
         self::$memoryCache[$key] = $data;
 
         FileSystemCache::store(

@@ -4,9 +4,9 @@ namespace NYPL\Starter\Model\ModelTrait;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
-use NYPL\Starter\Cache;
 use NYPL\Starter\Config;
 use NYPL\Starter\APIException;
+use NYPL\Starter\AppCache;
 
 trait SierraTrait
 {
@@ -91,9 +91,7 @@ trait SierraTrait
      */
     protected function saveToken(array $token = [])
     {
-        $token['expire_time'] = time() + $token['expires_in'];
-
-        Cache::getCache()->set($this->getCacheKey(), serialize($token));
+        AppCache::set(self::$cacheKey, serialize($token), $token['expires_in']);
     }
 
     /**
@@ -101,19 +99,13 @@ trait SierraTrait
      */
     protected function getCachedAccessToken()
     {
-        $token = Cache::getCache()->get($this->getCacheKey());
+        $token = AppCache::get(self::$cacheKey);
 
         if (!$token) {
             return false;
         }
 
-        $token = unserialize($token);
-
-        if ($token['expire_time'] <= time()) {
-            return false;
-        }
-
-        return $token;
+        return unserialize($token);
     }
 
     /**
@@ -121,7 +113,6 @@ trait SierraTrait
      */
     protected function getAccessToken()
     {
-
         if ($token = $this->getCachedAccessToken()) {
             return $token['access_token'];
         }

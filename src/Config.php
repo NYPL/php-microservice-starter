@@ -9,6 +9,7 @@ class Config
     const LOCAL_ENVIRONMENT_FILE = '.env';
     const GLOBAL_ENVIRONMENT_FILE = 'var_app';
     const DEFAULT_TIME_ZONE = 'America/New_York';
+    const CACHE_PREFIX = 'Config:';
 
     protected static $initialized = false;
 
@@ -92,9 +93,19 @@ class Config
      */
     protected static function decryptEnvironmentVariable($name = '')
     {
-        return (string) self::getKeyClient()->decrypt([
+        $cacheKey = self::CACHE_PREFIX . $name;
+
+        if ($decryptedValue = AppCache::get($cacheKey)) {
+            return $decryptedValue;
+        }
+
+        $decryptedValue = (string) self::getKeyClient()->decrypt([
             'CiphertextBlob' => base64_decode(getenv($name)),
         ])['Plaintext'];
+
+        AppCache::set($cacheKey, $decryptedValue);
+
+        return $decryptedValue;
     }
 
     protected static function loadConfiguration()

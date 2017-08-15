@@ -28,8 +28,8 @@ class AppCache
 
         self::$memoryCache[$key] = $data;
 
-        \FileSystemCache::store(
-            \FileSystemCache::generateCacheKey($key),
+        FileSystemCache::store(
+            FileSystemCache::generateCacheKey($key),
             $data,
             (int) $ttl
         );
@@ -43,15 +43,15 @@ class AppCache
             return self::$memoryCache[$key];
         }
 
-        return \FileSystemCache::retrieve(
-            \FileSystemCache::generateCacheKey($key)
+        return FileSystemCache::retrieve(
+            FileSystemCache::generateCacheKey($key)
         );
     }
 
     protected static function initialize()
     {
         if (!self::isInitialized()) {
-            \FileSystemCache::$cacheDir = sys_get_temp_dir() . '/' . self::$cacheDir;
+            FileSystemCache::$cacheDir = sys_get_temp_dir() . '/' . self::$cacheDir;
 
             self::setInitialized(true);
         }

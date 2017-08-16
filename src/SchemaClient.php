@@ -5,15 +5,13 @@ use GuzzleHttp\Client;
 
 class SchemaClient
 {
+    const BASE_CACHE_KEY = 'SchemaClient:';
+    const DEFAULT_SCHEMA_EXPIRATION_SECONDS = 360;
+
     /**
      * @var Client
      */
     protected static $client;
-
-    /**
-     * @var array
-     */
-    protected static $schemaCache = [];
 
     /**
      * @return Client
@@ -40,20 +38,46 @@ class SchemaClient
     /**
      * @param string $schemaName
      *
+     * @return mixed
+     */
+    protected static function getSchemaResponse($schemaName = '')
+    {
+        $cacheKey = self::BASE_CACHE_KEY . 'Response:' . $schemaName;
+
+        if ($schemaResponse = AppCache::get($cacheKey)) {
+            return unserialize($schemaResponse);
+        }
+
+        $schemaResponse = json_decode(
+            self::getClient()->get(Config::get('SCHEMA_BASE_URL') . '/' . $schemaName)->getBody(),
+            true
+        );
+
+        AppCache::set(
+            $cacheKey,
+            serialize($schemaResponse),
+            self::DEFAULT_SCHEMA_EXPIRATION_SECONDS
+        );
+
+        return $schemaResponse;
+    }
+
+    /**
+     * @param string $schemaName
+     *
      * @return Schema
      */
     public static function getSchema($schemaName = '')
     {
-        if (isset(self::$schemaCache[$schemaName])) {
-            return self::$schemaCache[$schemaName];
+        $cacheKey = self::BASE_CACHE_KEY . 'Schema:' . $schemaName;
+
+        if ($schema = AppCache::get($cacheKey)) {
+            return unserialize($schema);
         }
 
         AvroLoader::load();
 
-        $response = json_decode(
-            self::getClient()->get(Config::get('SCHEMA_BASE_URL') . '/' . $schemaName)->getBody(),
-            true
-        );
+        $response = self::getSchemaResponse($schemaName);
 
         $schema = new Schema(
             $schemaName,
@@ -62,7 +86,11 @@ class SchemaClient
             $response['data']['schemaObject']
         );
 
-        self::$schemaCache[$schemaName] = $schema;
+        AppCache::set(
+            $cacheKey,
+            serialize($schema),
+            self::DEFAULT_SCHEMA_EXPIRATION_SECONDS
+        );
 
         APILogger::addDebug(
             'Got schema for ' . $schemaName,

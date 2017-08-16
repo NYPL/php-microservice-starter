@@ -38,28 +38,14 @@ class SchemaClient
     /**
      * @param string $schemaName
      *
-     * @return mixed
+     * @return array
      */
     protected static function getSchemaResponse($schemaName = '')
     {
-        $cacheKey = self::BASE_CACHE_KEY . 'Response:' . $schemaName;
-
-        if ($schemaResponse = AppCache::get($cacheKey)) {
-            return unserialize($schemaResponse);
-        }
-
-        $schemaResponse = json_decode(
+        return json_decode(
             self::getClient()->get(Config::get('SCHEMA_BASE_URL') . '/' . $schemaName)->getBody(),
             true
         );
-
-        AppCache::set(
-            $cacheKey,
-            serialize($schemaResponse),
-            self::DEFAULT_SCHEMA_EXPIRATION_SECONDS
-        );
-
-        return $schemaResponse;
     }
 
     /**

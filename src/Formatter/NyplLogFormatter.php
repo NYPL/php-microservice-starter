@@ -70,7 +70,7 @@ class NyplLogFormatter extends JsonFormatter
 
         $record['levelCode'] = $this->translateLevelToInteger($record['level']);
 
-        $record['datetime'] = date('c');
+        $record['timestamp'] = date('c');
 
         unset($record['level_name'], $record['channel']);
 

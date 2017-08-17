@@ -122,10 +122,20 @@ class BulkModels
 
     /**
      * @param bool $useId
-     * @throws \InvalidArgumentException|\AvroIOException
+     * @throws \InvalidArgumentException|\AvroIOException|APIException
      */
     public function create($useId = false)
     {
+        if (!$this->getModels()) {
+            throw new APIException(
+                'No records provided for create operation.',
+                null,
+                0,
+                null,
+                400
+            );
+        }
+
         /**
          * @var $model Model|DBCreateTrait
          */

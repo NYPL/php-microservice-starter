@@ -30,6 +30,7 @@ class Config
     /**
      * @param string $configDirectory
      * @param array $required
+     * @throws APIException
      */
     public static function initialize($configDirectory = '', array $required = [])
     {
@@ -44,7 +45,7 @@ class Config
         self::setInitialized(true);
 
         date_default_timezone_set(
-            Config::get('TIME_ZONE', self::DEFAULT_TIME_ZONE)
+            self::get('TIME_ZONE', self::DEFAULT_TIME_ZONE)
         );
     }
 
@@ -77,9 +78,22 @@ class Config
      * @throws APIException
      * @return bool
      */
+    public static function isLocalEnvironment()
+    {
+        if (self::get('LAMBDA_TASK_ROOT')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @throws APIException
+     * @return bool
+     */
     protected static function isEncryptedEnvironment()
     {
-        if (Config::get('LAMBDA_TASK_ROOT')) {
+        if (self::get('LAMBDA_TASK_ROOT')) {
             return true;
         }
 
@@ -192,11 +206,11 @@ class Config
     {
         return new KmsClient([
             'version' => 'latest',
-            'region'  => Config::get('AWS_DEFAULT_REGION'),
+            'region'  => self::get('AWS_DEFAULT_REGION'),
             'credentials' => [
-                'key' => Config::get('AWS_ACCESS_KEY_ID'),
-                'secret' => Config::get('AWS_SECRET_ACCESS_KEY'),
-                'token' => Config::get('AWS_SESSION_TOKEN')
+                'key' => self::get('AWS_ACCESS_KEY_ID'),
+                'secret' => self::get('AWS_SECRET_ACCESS_KEY'),
+                'token' => self::get('AWS_SESSION_TOKEN')
             ]
         ]);
     }

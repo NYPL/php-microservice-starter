@@ -37,6 +37,10 @@ class AppCache
     {
         self::initialize();
 
+        if (Config::isLocalEnvironment()) {
+            return false;
+        }
+
         if (isset(self::$memoryCache[$key])) {
             return self::$memoryCache[$key];
         }

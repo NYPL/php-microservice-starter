@@ -33,7 +33,7 @@ trait DBUpdateTrait
         $this->read();
 
         if ($this instanceof MessageInterface && !$this->isBulk()) {
-            $this->publishMessage($this->getObjectName(), $this->createMessage());
+            $this->publishMessage($this->getStreamName(), $this->createMessage());
         }
     }
 

@@ -19,7 +19,7 @@ function initializeResult(result) {
     try {
         var parsedResult = JSON.parse(result);
     } catch (e) {
-        return getListenerResult(true, false, e);
+        return getListenerResult(true, false, {result: result, error: e});
     }
 
     if (!parsedResult.processed) {

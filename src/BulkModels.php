@@ -139,22 +139,14 @@ class BulkModels
         /**
          * @var $model Model|DBCreateTrait
          */
-        foreach ($this->getModels() as $count => $model) {
-            try {
-                if ($this instanceof MessageInterface) {
-                    $this->setPublishMessages(true);
-                }
-
-                $model->create($useId);
-
-                $this->addSuccessModel($model);
-            } catch (\Exception $exception) {
-                $this->addBulkError(new BulkError(
-                    $count,
-                    $exception->getMessage(),
-                    $model->getRawData()
-                ));
+        foreach ($this->getModels() as $model) {
+            if ($this instanceof MessageInterface) {
+                $this->setPublishMessages(true);
             }
+
+            $model->create($useId);
+
+            $this->addSuccessModel($model);
         }
 
         $this->bulkPublishMessages(

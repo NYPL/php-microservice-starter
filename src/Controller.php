@@ -245,16 +245,6 @@ abstract class Controller
         array $queryParameters = []
     ) {
         if ($model instanceof ModelSet) {
-            if (!$model->isNoDefaultSorting()) {
-                if (!$model->getOrderBy()) {
-                    $model->setOrderBy('updatedDate');
-                }
-
-                if (!$model->getOrderDirection()) {
-                    $model->setOrderDirection('DESC');
-                }
-            }
-
             $model->setOffset($this->getRequest()->getParam('offset'));
 
             $model->setLimit($this->getRequest()->getParam('limit'));

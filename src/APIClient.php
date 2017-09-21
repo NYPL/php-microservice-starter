@@ -13,11 +13,18 @@ abstract class APIClient
     protected $client;
 
     protected $isRequiresAuth = false;
+    
+    protected $isRequiresJSON = false;
 
     /**
      * @return bool
      */
     abstract protected function isRequiresAuth();
+    
+    /**
+     * @return bool
+     */
+    abstracted protected function isRequiresJSON();
 
     /**
      * @param array $options
@@ -28,6 +35,10 @@ abstract class APIClient
     {
         if ($this->isRequiresAuth()) {
             $options['headers']['Authorization'] = 'Bearer ' . OAuthClient::getAccessToken();
+        }
+        
+        if ($this->isRequiresJSON()) {
+            $options['headers']['Content-type'] = 'application/json';
         }
 
         return $options;

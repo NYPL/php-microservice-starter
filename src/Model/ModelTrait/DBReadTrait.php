@@ -193,7 +193,9 @@ trait DBReadTrait
             $selectStatement->offset($this->getOffset());
         }
 
-        $selectStatement->limit($this->getLimit());
+        if ($this->getLimit()) {
+            $selectStatement->limit($this->getLimit());
+        }
 
         if ($this->getOrderBy()) {
             $this->addOrderBy($selectStatement);

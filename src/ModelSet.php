@@ -155,7 +155,7 @@ class ModelSet extends Model implements ReadInterface
      */
     public function setLimit($limit)
     {
-        if ($limit > 0) {
+        if ($limit !== null) {
             $this->limit = (int) $limit;
         }
     }

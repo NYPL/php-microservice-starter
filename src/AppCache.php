@@ -50,6 +50,18 @@ class AppCache
         );
     }
 
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public static function delete($key = '')
+    {
+        self::initialize();
+
+        return FileSystemCache::invalidate($key);
+    }
+
     protected static function initialize()
     {
         if (!self::isInitialized()) {

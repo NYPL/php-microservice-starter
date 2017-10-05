@@ -72,6 +72,8 @@ trait SierraTrait
                 $connectException
             );
         } catch (ClientException $clientException) {
+            $this->handleClientException($clientException);
+
             if (!$ignoreNoRecord) {
                 throw new APIException(
                     (string) $clientException->getMessage(),
@@ -84,6 +86,20 @@ trait SierraTrait
         }
 
         return (string) $request->getBody();
+    }
+
+    /**
+     * @param ClientException $clientException
+     */
+    protected function handleClientException(ClientException $clientException)
+    {
+        if ($clientException->getResponse()) {
+            $statusCode = $clientException->getResponse()->getStatusCode();
+
+            if ($statusCode === 400 || $statusCode === 403) {
+                $this->clearToken();
+            }
+        }
     }
 
     /**
@@ -110,6 +126,7 @@ trait SierraTrait
 
     /**
      * @return string
+     * @throws APIException
      */
     protected function getAccessToken()
     {
@@ -118,6 +135,10 @@ trait SierraTrait
         }
 
         $token = json_decode($this->getNewToken(), true);
+
+        if (!isset($token['access_token'])) {
+            throw new APIException('Unable to retrieve valid Sierra API token');
+        }
 
         $this->saveToken($token);
 
@@ -149,6 +170,11 @@ trait SierraTrait
         );
 
         return (string) $request->getBody();
+    }
+
+    protected function clearToken()
+    {
+        AppCache::delete(self::$cacheKey);
     }
 
     /**

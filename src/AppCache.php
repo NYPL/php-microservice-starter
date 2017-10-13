@@ -59,7 +59,9 @@ class AppCache
     {
         self::initialize();
 
-        return FileSystemCache::invalidate($key);
+        return FileSystemCache::invalidate(
+            FileSystemCache::generateCacheKey($key)
+        );
     }
 
     protected static function initialize()

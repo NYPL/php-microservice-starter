@@ -46,17 +46,24 @@ class APILogger
      */
     protected static function addSlackLogging(Logger $logger)
     {
-        if (Config::isInitialized() && $slackToken = Config::get('SLACK_TOKEN', null, true)) {
-            $handler = new SlackHandler(
-                $slackToken,
-                Config::get('SLACK_CHANNEL'),
-                Config::get('SLACK_USERNAME'),
-                true,
-                null,
-                Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
-            );
+        try {
+            if (Config::isInitialized() && $slackToken = Config::get('SLACK_TOKEN', null, true)) {
+                $handler = new SlackHandler(
+                    $slackToken,
+                    Config::get('SLACK_CHANNEL'),
+                    Config::get('SLACK_USERNAME'),
+                    true,
+                    null,
+                    Config::get('SLACK_LOGGING_LEVEL', self::DEFAULT_SLACK_LOGGING_LEVEL)
+                );
 
-            $logger->pushHandler($handler);
+                $logger->pushHandler($handler);
+            }
+        } catch (\Exception $exception) {
+            self::manuallyLogError(
+                'Unable to decrypt Slack token: ' . $exception->getMessage(),
+                $exception->getTraceAsString()
+            );
         }
     }
 
@@ -66,13 +73,20 @@ class APILogger
      */
     protected static function addJsonLogging(Logger $logger)
     {
-        $handler = new ErrorLogHandler(
-            ErrorLogHandler::OPERATING_SYSTEM,
-            Config::get('DEFAULT_LOGGING_LEVEL', self::DEFAULT_LOGGING_LEVEL)
-        );
-        $handler->setFormatter(new NyplLogFormatter());
+        try {
+            $handler = new ErrorLogHandler(
+                ErrorLogHandler::OPERATING_SYSTEM,
+                Config::get('DEFAULT_LOGGING_LEVEL', self::DEFAULT_LOGGING_LEVEL)
+            );
+            $handler->setFormatter(new NyplLogFormatter());
 
-        $logger->pushHandler($handler);
+            $logger->pushHandler($handler);
+        } catch (\Exception $exception) {
+            self::manuallyLogError(
+                'Unable to add JSON logger: ' . $exception->getMessage(),
+                $exception->getTraceAsString()
+            );
+        }
     }
 
     /**
@@ -203,5 +217,20 @@ class APILogger
         self::getLogger()->addNotice(self::formatMessage($error), self::formatContext($context));
 
         return true;
+    }
+
+    /**
+     * @param string $errorMessage
+     * @param string $context
+     */
+    protected static function manuallyLogError($errorMessage = '', $context = '')
+    {
+        error_log(json_encode([
+            'message' => $errorMessage,
+            'level' => 'ERROR',
+            'levelCode' => 3,
+            'timestamp' => date('c'),
+            'debug' => $context
+        ]));
     }
 }

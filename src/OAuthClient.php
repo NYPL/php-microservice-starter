@@ -23,7 +23,7 @@ class OAuthClient
         AppCache::set(
             self::CACHE_KEY,
             serialize($accessToken),
-            $accessToken['expires_in']
+            $accessToken['expires_in'] - 60
         );
 
         return $accessToken['access_token'];

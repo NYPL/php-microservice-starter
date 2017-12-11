@@ -107,6 +107,10 @@ class Config
      */
     protected static function decryptEnvironmentVariable($name = '')
     {
+        if (!getenv($name)) {
+            return '';
+        }
+
         $cacheKey = self::CACHE_PREFIX . $name;
 
         if ($decryptedValue = AppCache::get($cacheKey)) {

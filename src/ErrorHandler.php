@@ -28,7 +28,10 @@ class ErrorHandler
                 $exception
             );
 
-            ob_clean();
+            if (ob_get_length()) {
+                ob_clean();
+            }
+
             http_response_code(500);
             header('Content-Type: application/json');
             header('Access-Control-Allow-Origin: *');

@@ -7,19 +7,21 @@ class QueryFilter extends Filter
 {
     protected function getQueryParameterValue($queryParameterValue = null)
     {
-        if ($queryParameterValue == 'null') {
+        if ($queryParameterValue === 'null') {
             return null;
         }
 
         return $queryParameterValue;
     }
 
-    public function __construct($queryParameterName = '', $queryParameterValue = null, $isJsonColumn = false)
+    public function __construct($queryParameterName = '', $queryParameterValue = null, $isJsonColumn = false, $operator = null)
     {
         parent::__construct(
             $queryParameterName,
             $this->getQueryParameterValue($queryParameterValue),
-            $isJsonColumn
+            $isJsonColumn,
+            '',
+            $operator
         );
     }
 }

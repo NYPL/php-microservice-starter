@@ -149,8 +149,29 @@ class BulkModels
             $this->addSuccessModel($model);
         }
 
-        $this->bulkPublishMessages(
-            $this->getSuccessModels()
-        );
+        $this->publish();
+    }
+
+    /**
+     * @throws APIException
+     */
+    public function publish()
+    {
+        if (!$this->getSuccessModels()) {
+            throw new APIException('No success records provided for publish operation');
+        }
+
+        try {
+            $this->bulkPublishMessages(
+                $this->getSuccessModels()
+            );
+        } catch (\Exception $exception) {
+            throw new APIException(
+                'Unable to publish messages: ' . $exception->getMessage(),
+                null,
+                0,
+                $exception
+            );
+        }
     }
 }

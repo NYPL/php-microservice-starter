@@ -57,11 +57,13 @@ trait SierraReadTrait
                 $data['entries'][] = $data;
             }
 
+            $className = $this->getBaseModel();
+
             foreach ($data['entries'] as $result) {
                 /**
                  * @var Model\ModelTrait\TranslateTrait $model
                  */
-                $model = clone $this->getBaseModel();
+                $model = new $className;
                 $model->translate($result);
 
                 $this->addModel($model);

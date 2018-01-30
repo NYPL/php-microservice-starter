@@ -26,7 +26,6 @@ trait DBReadTrait
         return $selectStatement;
     }
 
-
     /**
      * @param bool $ignoreNoRecord
      *
@@ -212,11 +211,13 @@ trait DBReadTrait
         }
 
         if ($selectStatement->rowCount()) {
+            $className = get_class($this->getBaseModel());
+
             foreach ($selectStatement->fetchAll() as $result) {
                 /**
                  * @var Model|TranslateTrait $model
                  */
-                $model = clone $this->getBaseModel();
+                $model = new $className;
                 $model->translate($result);
 
                 $this->addModel($model);

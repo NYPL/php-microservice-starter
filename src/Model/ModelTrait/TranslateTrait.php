@@ -2,6 +2,7 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
+use NYPL\Starter\CachedStringy;
 use NYPL\Starter\Model;
 use Stringy\Stringy;
 
@@ -32,7 +33,7 @@ trait TranslateTrait
      */
     public function translateToObjectName($name = '')
     {
-        return (string) Stringy::create($name)->camelize();
+        return CachedStringy::camelize($name);
     }
 
     /**
@@ -42,9 +43,7 @@ trait TranslateTrait
      */
     public function translateDbName($key = "")
     {
-        $key = (string) Stringy::create($key)->underscored();
-
-        return $key;
+        return CachedStringy::underscored($key);
     }
 
     /**
@@ -113,12 +112,14 @@ trait TranslateTrait
 
         $modelArray = [];
 
+        $className = get_class($model);
+
         foreach ($data as $key => $value) {
             if ($value) {
                 /**
                  * @var TranslateTrait $newModel
                  */
-                $newModel = clone $model;
+                $newModel = new $className;
                 $newModel->translate($value);
 
                 $modelArray[(int) $key] = $newModel;

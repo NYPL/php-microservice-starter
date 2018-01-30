@@ -27,6 +27,11 @@ trait MessageTrait
     protected static $schemaCache = [];
 
     /**
+     * @var array
+     */
+    protected static $avroCache = [];
+
+    /**
      * @param string $streamName
      * @param string $message'
      *
@@ -104,7 +109,7 @@ trait MessageTrait
      * @param string $streamName
      * @param string $message
      *
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException|APIException
      */
     protected function publishMessageAsKinesis($streamName = '', $message = '')
     {
@@ -116,22 +121,76 @@ trait MessageTrait
     }
 
     /**
-     * @throws \AvroIOException
+     * @return \AvroStringIO
+     */
+    protected function getAvroIo()
+    {
+        $streamName = $this->getStreamName();
+
+        if (isset(self::$avroCache[$streamName]['io'])) {
+            return self::$avroCache[$streamName]['io'];
+        }
+
+        $io = new \AvroStringIO();
+
+        self::$avroCache[$streamName]['io'] = $io;
+
+        return $io;
+    }
+
+    /**
+     * @return \AvroIODatumWriter
+     */
+    protected function getAvroWriter()
+    {
+        $streamName = $this->getStreamName();
+
+        if (isset(self::$avroCache[$streamName]['writer'])) {
+            return self::$avroCache[$streamName]['writer'];
+        }
+
+        $writer = new \AvroIODatumWriter($this->getAvroSchema());
+
+        self::$avroCache[$streamName]['writer'] = $writer;
+
+        return $writer;
+    }
+
+    /**
+     * @return \AvroIOBinaryEncoder
+     */
+    protected function getAvroEncoder()
+    {
+        $streamName = $this->getStreamName();
+
+        if (isset(self::$avroCache[$streamName]['encoder'])) {
+            return self::$avroCache[$streamName]['encoder'];
+        }
+
+        $encoder = new \AvroIOBinaryEncoder(self::getAvroIo());
+
+        self::$avroCache[$streamName]['encoder'] = $encoder;
+
+        return $encoder;
+    }
+
+    /**
      * @return string
      */
     protected function encodeMessageAsAvro()
     {
         AvroLoader::load();
 
-        $io = new \AvroStringIO();
-        $writer = new \AvroIODatumWriter($this->getAvroSchema());
-        $encoder = new \AvroIOBinaryEncoder($io);
+        self::getAvroWriter()->write(
+            json_decode(json_encode($this), true),
+            self::getAvroEncoder()
+        );
 
-        $dataArray = json_decode(json_encode($this), true);
+        $encodedString = self::getAvroIo()->string();
 
-        $writer->write($dataArray, $encoder);
+        self::getAvroIo()->truncate();
 
-        return $io->string();
+        return $encodedString;
     }
 
     /**
@@ -140,14 +199,11 @@ trait MessageTrait
      */
     public function createMessage()
     {
-        /**
-         * @var MessageInterface $this
-         */
         return $this->encodeMessageAsAvro();
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException|APIException
      * @return KinesisClient
      */
     public static function getClient()
@@ -199,6 +255,7 @@ trait MessageTrait
     }
 
     /**
+     * @throws APIException
      * @return string
      */
     public function getStreamName()

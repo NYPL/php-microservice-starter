@@ -64,7 +64,7 @@ class CachedStringy
     public static function camelize($string = '')
     {
         return self::runStringy(__METHOD__, $string, function ($string) {
-            return Stringy::create($string)->camelize();
+            return (string) Stringy::create($string)->camelize();
         });
     }
 
@@ -76,7 +76,7 @@ class CachedStringy
     public static function underscored($string = '')
     {
         return self::runStringy(__METHOD__, $string, function ($string) {
-            return Stringy::create($string)->underscored();
+            return (string) Stringy::create($string)->underscored();
         });
     }
 }

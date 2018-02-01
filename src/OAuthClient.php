@@ -29,9 +29,21 @@ class OAuthClient
         return $accessToken['access_token'];
     }
 
+    /**
+     * @return array
+     * @throws APIException
+     */
     protected static function retrieveAccessToken()
     {
         $client = new Client();
+
+        if (!Config::get('OAUTH_TOKEN_URI')) {
+            throw new APIException('OAUTH_TOKEN_URI was not specified');
+        }
+
+        if (!Config::get('OAUTH_CLIENT_ID') || !Config::get('OAUTH_CLIENT_SECRET')) {
+            throw new APIException('OAUTH_CLIENT_ID or OAUTH_CLIENT_SECRET was not specified');
+        }
 
         $response = $client->post(
             Config::get('OAUTH_TOKEN_URI'),

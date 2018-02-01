@@ -38,10 +38,15 @@ class SchemaClient
     /**
      * @param string $schemaName
      *
+     * @throws APIException
      * @return array
      */
     protected static function getSchemaResponse($schemaName = '')
     {
+        if (!Config::get('SCHEMA_BASE_URL')) {
+            throw new APIException('SCHEMA_BASE_URL was not specified');
+        }
+
         return json_decode(
             self::getClient()->get(Config::get('SCHEMA_BASE_URL') . '/' . $schemaName)->getBody(),
             true

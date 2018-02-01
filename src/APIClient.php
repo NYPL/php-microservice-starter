@@ -34,6 +34,7 @@ abstract class APIClient
     }
 
     /**
+     * @throws APIException
      * @return Client
      */
     protected function getClient()
@@ -53,8 +54,15 @@ abstract class APIClient
         $this->client = $client;
     }
 
+    /**
+     * @throws APIException
+     */
     protected function initializeClient()
     {
+        if (!Config::get('API_BASE_URL')) {
+            throw new APIException('API_BASE_URL was not specified');
+        }
+
         $this->setClient(new Client([
             'base_uri' => Config::get('API_BASE_URL'),
             'timeout'  => self::CLIENT_TIMEOUT,

@@ -46,9 +46,10 @@ trait MessageTrait
 
     /**
      * @param array $models
+     * @param string $streamName
      * @throws \AvroIOException|\InvalidArgumentException|APIException
      */
-    protected function bulkPublishMessages(array $models = [])
+    protected function bulkPublishMessages(array $models = [], $streamName = '')
     {
         $records = [];
 
@@ -62,9 +63,13 @@ trait MessageTrait
             ];
         }
 
+        if (!$streamName) {
+            $streamName = $model->getStreamName();
+        }
+
         $result = self::getClient()->putRecords([
             'Records' => $records,
-            'StreamName' => $model->getStreamName()
+            'StreamName' => $streamName
         ]);
 
         if ($result->get('FailedRecordCount')) {

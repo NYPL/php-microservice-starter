@@ -153,9 +153,10 @@ class BulkModels
     }
 
     /**
+     * @param string $streamName
      * @throws APIException
      */
-    public function publish()
+    public function publish($streamName = '')
     {
         if (!$this->getSuccessModels()) {
             throw new APIException('No success records provided for publish operation');
@@ -163,7 +164,8 @@ class BulkModels
 
         try {
             $this->bulkPublishMessages(
-                $this->getSuccessModels()
+                $this->getSuccessModels(),
+                $streamName
             );
         } catch (\Exception $exception) {
             throw new APIException(

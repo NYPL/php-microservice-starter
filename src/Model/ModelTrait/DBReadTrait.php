@@ -163,11 +163,23 @@ trait DBReadTrait
         $range = explode(',', substr($filter->getFilterValue(), 1, -1));
 
         if (!isset($range[0])) {
-            throw new APIException('No start value was found in range for field (' . $filter->getFilterColumn() . ')');
+            throw new APIException(
+                'No start value was found in range for field (' . $filter->getFilterColumn() . ')',
+                null,
+                0,
+                null,
+                400
+            );
         }
 
         if (!isset($range[1])) {
-            throw new APIException('No end value was found in range for field (' . $filter->getFilterColumn() . ')');
+            throw new APIException(
+                'No end value was found in range for field (' . $filter->getFilterColumn() . ')',
+                null,
+                0,
+                null,
+                400
+            );
         }
 
         $sqlStatement->whereBetween(

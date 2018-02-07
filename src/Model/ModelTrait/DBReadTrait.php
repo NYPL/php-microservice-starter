@@ -141,10 +141,41 @@ trait DBReadTrait
             return true;
         }
 
+        if ($filter->isRangeFilter()) {
+            $this->applyRange($filter, $sqlStatement);
+
+            return true;
+        }
+
         $this->applyWhere($filter, $sqlStatement);
 
         return true;
     }
+
+    /**
+     * @param Filter $filter
+     * @param StatementContainer $sqlStatement
+     *
+     * @throws APIException
+     */
+    protected function applyRange(Filter $filter, StatementContainer $sqlStatement)
+    {
+        $range = explode(',', substr($filter->getFilterValue(), 1, -1));
+
+        if (!isset($range[0])) {
+            throw new APIException('No start value was found in range for field (' . $filter->getFilterColumn() . ')');
+        }
+
+        if (!isset($range[1])) {
+            throw new APIException('No end value was found in range for field (' . $filter->getFilterColumn() . ')');
+        }
+
+        $sqlStatement->whereBetween(
+            $this->translateDbName($filter->getFilterColumn()),
+            $range
+        );
+    }
+
 
     /**
      * @param Filter $filter

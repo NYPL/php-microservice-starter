@@ -93,6 +93,14 @@ class Filter
     }
 
     /**
+     * @return bool
+     */
+    public function isRangeFilter()
+    {
+        return strpos($this->getFilterValue(), '[') !== false && strpos($this->getFilterValue(), ']') !== false;
+    }
+
+    /**
      * @param bool $jsonColumn
      */
     public function setJsonColumn($jsonColumn)

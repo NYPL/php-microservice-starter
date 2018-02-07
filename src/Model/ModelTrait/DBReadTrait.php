@@ -174,6 +174,8 @@ trait DBReadTrait
             $this->translateDbName($filter->getFilterColumn()),
             $range
         );
+
+        $this->setOrderBy($this->translateDbName($filter->getFilterColumn()));
     }
 
 
@@ -219,20 +221,20 @@ trait DBReadTrait
         $selectStatement = DB::getDatabase()->select()
             ->from($baseModel->translateDbName($baseModel->getTableName()));
 
-        if ($this->getOffset()) {
-            $selectStatement->offset($this->getOffset());
-        }
-
-        if ($this->getLimit()) {
-            $selectStatement->limit($this->getLimit());
+        if ($this->getFilters()) {
+            $this->applyFilters($this->getFilters(), $selectStatement);
         }
 
         if ($this->getOrderBy()) {
             $this->addOrderBy($selectStatement);
         }
 
-        if ($this->getFilters()) {
-            $this->applyFilters($this->getFilters(), $selectStatement);
+        if ($this->getOffset()) {
+            $selectStatement->offset($this->getOffset());
+        }
+
+        if ($this->getLimit()) {
+            $selectStatement->limit($this->getLimit());
         }
 
         $selectStatement = $selectStatement->execute();

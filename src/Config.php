@@ -6,8 +6,8 @@ use Dotenv\Dotenv;
 
 class Config
 {
-    const LOCAL_ENVIRONMENT_FILE = '.env';
-    const GLOBAL_ENVIRONMENT_FILE = 'var_app';
+    const LOCAL_ENVIRONMENT_FILE = 'local.env';
+    const GLOBAL_ENVIRONMENT_FILE = 'global.env';
     const DEFAULT_TIME_ZONE = 'America/New_York';
     const CACHE_PREFIX = 'Config:';
 
@@ -133,8 +133,8 @@ class Config
             $dotEnv->load();
         }
 
-        if (file_exists(self::getConfigDirectory() . '/config/' . self::GLOBAL_ENVIRONMENT_FILE)) {
-            $dotEnv = new Dotenv(self::getConfigDirectory() . '/config', self::GLOBAL_ENVIRONMENT_FILE);
+        if (file_exists(self::getConfigDirectory() . '/' . self::GLOBAL_ENVIRONMENT_FILE)) {
+            $dotEnv = new Dotenv(self::getConfigDirectory() . '/', self::GLOBAL_ENVIRONMENT_FILE);
             $dotEnv->load();
         }
 

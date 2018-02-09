@@ -6,21 +6,14 @@ use Dotenv\Dotenv;
 
 class Config
 {
-    const LOCAL_ENVIRONMENT_FILE = 'local.env';
-    const GLOBAL_ENVIRONMENT_FILE = 'global.env';
-    const DEFAULT_TIME_ZONE = 'America/New_York';
-    const CACHE_PREFIX = 'Config:';
+    protected const LOCAL_ENVIRONMENT_FILE = 'local.env';
+    protected const GLOBAL_ENVIRONMENT_FILE = 'global.env';
+    protected const DEFAULT_TIME_ZONE = 'America/New_York';
+    protected const CACHE_PREFIX = 'Config:';
 
     protected static $initialized = false;
 
     protected static $configDirectory = '';
-
-    protected static $required =
-        [
-            'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'
-        ];
-
-    protected static $addedRequired = [];
 
     /**
      * @var KmsClient
@@ -29,16 +22,11 @@ class Config
 
     /**
      * @param string $configDirectory
-     * @param array $required
-     * @throws APIException
+     * @throws APIException|\InvalidArgumentException
      */
-    public static function initialize($configDirectory = '', array $required = [])
+    public static function initialize($configDirectory = '')
     {
         self::setConfigDirectory($configDirectory);
-
-        if ($required) {
-            self::setAddedRequired($required);
-        }
 
         self::loadConfiguration();
 
@@ -54,15 +42,11 @@ class Config
      * @param null $defaultValue
      * @param bool $isEncrypted
      *
+     * @throws APIException|\InvalidArgumentException
      * @return null|string
-     * @throws APIException
      */
     public static function get($name = '', $defaultValue = null, $isEncrypted = false)
     {
-        if (!self::isInitialized()) {
-            throw new APIException('Configuration has not been initialized');
-        }
-
         if (getenv($name) !== false) {
             if ($isEncrypted && self::isEncryptedEnvironment()) {
                 return self::decryptEnvironmentVariable($name);
@@ -103,6 +87,7 @@ class Config
     /**
      * @param string $name
      *
+     * @throws APIException|\InvalidArgumentException
      * @return string
      */
     protected static function decryptEnvironmentVariable($name = '')
@@ -126,21 +111,36 @@ class Config
         return $decryptedValue;
     }
 
+    /**
+     * @throws APIException
+     */
+    protected static function loadLocalEnvironment()
+    {
+        $localEnvironmentFile = self::getConfigDirectory() . '/' . self::LOCAL_ENVIRONMENT_FILE;
+
+        if (!file_exists($localEnvironmentFile)) {
+            throw new APIException(
+                'Unable to load local environment configuration file (' . $localEnvironmentFile . ')'
+            );
+        }
+
+        $dotEnv = new Dotenv(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
+        $dotEnv->load();
+    }
+
+    /**
+     * @throws APIException
+     */
     protected static function loadConfiguration()
     {
-        if (file_exists(self::getConfigDirectory() . '/' . self::LOCAL_ENVIRONMENT_FILE)) {
-            $dotEnv = new Dotenv(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
-            $dotEnv->load();
+        if (self::isLocalEnvironment()) {
+            self::loadLocalEnvironment();
         }
 
         if (file_exists(self::getConfigDirectory() . '/' . self::GLOBAL_ENVIRONMENT_FILE)) {
-            $dotEnv = new Dotenv(self::getConfigDirectory() . '/', self::GLOBAL_ENVIRONMENT_FILE);
+            $dotEnv = new Dotenv(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
             $dotEnv->load();
         }
-
-        $dotEnv->required(self::getRequired());
-
-        $dotEnv->required(self::getAddedRequired());
 
         self::setInitialized(true);
     }
@@ -178,31 +178,6 @@ class Config
     }
 
     /**
-     * @return array
-     */
-    public static function getAddedRequired()
-    {
-        return self::$addedRequired;
-    }
-
-    /**
-     * @param array $addedRequired
-     */
-    public static function setAddedRequired(array $addedRequired)
-    {
-        self::$addedRequired = $addedRequired;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getRequired()
-    {
-        return self::$required;
-    }
-
-
-    /**
      * @throws \InvalidArgumentException|APIException
      * @return KmsClient
      */
@@ -220,6 +195,7 @@ class Config
     }
 
     /**
+     * @throws APIException|\InvalidArgumentException
      * @return KmsClient
      */
     public static function getKeyClient()

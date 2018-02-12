@@ -25,14 +25,11 @@ exports.handler = function(event, context, callback) {
     };
 
     var requestUri = event.path || '';
-    var queryString = '';
 
-    if (event.queryStringParameters) {
-        queryString = querystring.stringify(event.queryStringParameters);
+    var queryString = querystring.stringify(event.queryStringParameters);
 
-        headers['QUERY_STRING'] = queryString;
-        requestUri += '?' + queryString;
-    }
+    headers['QUERY_STRING'] = queryString;
+    requestUri += '?' + queryString;
 
     headers['REQUEST_URI'] = requestUri;
 

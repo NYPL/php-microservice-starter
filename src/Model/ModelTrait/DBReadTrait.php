@@ -40,11 +40,11 @@ trait DBReadTrait
 
         if ($selectStatement->rowCount() || !$ignoreNoRecord) {
             if (!$selectStatement->rowCount()) {
-                throw new APIException("No record found", [], 0, null, 404);
+                throw new APIException('No record found', [], 0, null, 404);
             }
 
             if ($selectStatement->rowCount() > 1) {
-                throw new APIException("Multiple records were returned");
+                throw new APIException('Multiple records were returned');
             }
 
             $this->translate($selectStatement->fetch());
@@ -123,12 +123,7 @@ trait DBReadTrait
         }
 
         if ($filter->isJsonColumn()) {
-            // See: https://dba.stackexchange.com/questions/90002/postgresql-operator-uses-index-but-underlying-function-does-not
-            $sqlStatement->where(
-                'jsonb_contains(' . $this->translateDbName($filter->getFilterColumn()) . ', \'' . $filter->getFilterValue() . '\')',
-                '=',
-                'true'
-            );
+            $this->addJsonWhere($filter, $sqlStatement);
 
             return true;
         }
@@ -154,40 +149,78 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
+     * @param StatementContainer $statementContainer
+     */
+    protected function addJsonWhere(Filter $filter, StatementContainer $statementContainer)
+    {
+        $values = explode(',', $filter->getFilterValue());
+
+        $valueString = '';
+
+        foreach ($values as $value) {
+            $valueString .= DB::getDatabase()->quote($value) . ',';
+        }
+
+        $statementContainer->where(
+            'jsonb_contains_or(' . $this->translateDbName($filter->getFilterColumn()) . ', array[' . substr($valueString, 0, -1) . '])',
+            '=',
+            true
+        );
+
+        return true;
+    }
+
+    /**
+     * @param Filter $filter
      * @param StatementContainer $sqlStatement
      *
+     * @return bool
      * @throws APIException
      */
     protected function applyRange(Filter $filter, StatementContainer $sqlStatement)
     {
+        $this->setOrderBy($this->translateDbName($filter->getFilterColumn()));
+
         $range = explode(',', substr($filter->getFilterValue(), 1, -1));
 
-        if (!isset($range[0])) {
-            throw new APIException(
-                'No start value was found in range for field (' . $filter->getFilterColumn() . ')',
-                null,
-                0,
-                null,
-                400
-            );
+        if (!isset($range[1])) {
+            $range[1] = null;
         }
 
-        if (!isset($range[1])) {
-            throw new APIException(
-                'No end value was found in range for field (' . $filter->getFilterColumn() . ')',
-                null,
-                0,
-                null,
-                400
+        if (!$range[0]) {
+            if (!$range[1]) {
+                throw new APIException(
+                    'No end date was specified for ' . $filter->getFilterColumn() . ' range',
+                    null,
+                    0,
+                    null,
+                    400
+                );
+            }
+
+            $sqlStatement->where(
+                $this->translateDbName($filter->getFilterColumn()),
+                '<',
+                $range[1]
             );
+
+            return true;
+        }
+
+        if (!$range[1]) {
+            $sqlStatement->where(
+                $this->translateDbName($filter->getFilterColumn()),
+                '>=',
+                $range[0]
+            );
+
+            return true;
         }
 
         $sqlStatement->whereBetween(
             $this->translateDbName($filter->getFilterColumn()),
             $range
         );
-
-        $this->setOrderBy($this->translateDbName($filter->getFilterColumn()));
     }
 
 
@@ -252,7 +285,7 @@ trait DBReadTrait
         $selectStatement = $selectStatement->execute();
 
         if (!$selectStatement->rowCount() && !$ignoreNoRecord) {
-            throw new APIException("No records found", [], 0, null, 404);
+            throw new APIException('No records found', [], 0, null, 404);
         }
 
         if ($selectStatement->rowCount()) {

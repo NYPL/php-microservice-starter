@@ -289,6 +289,9 @@ trait DBReadTrait
         }
 
         if ($selectStatement->rowCount()) {
+            if ($this->isIncludeCount()) {
+                $this->setRowCount($selectStatement->rowCount());
+            }
             $className = get_class($this->getBaseModel());
 
             foreach ($selectStatement->fetchAll() as $result) {

@@ -197,7 +197,7 @@ class ModelSet extends Model implements ReadInterface
     /**
      * @param bool $includeCount
      */
-    public function setIncludeCount($includeCount)
+    public function setIncludeCount($includeCount = false)
     {
         $this->includeCount = $includeCount;
     }

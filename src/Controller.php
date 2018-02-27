@@ -249,6 +249,8 @@ abstract class Controller
 
             $model->setLimit($this->getRequest()->getParam('limit'));
 
+            $model->setIncludeCount($this->getRequest()->getParam('include_count'));
+
             if ($filter) {
                 $model->addFilter($filter);
             }

@@ -2,6 +2,7 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
+use NYPL\Starter\APILogger;
 use NYPL\Starter\DB;
 use NYPL\Starter\Filter;
 use NYPL\Starter\Filter\OrFilter;
@@ -289,8 +290,14 @@ trait DBReadTrait
         }
 
         if ($selectStatement->rowCount()) {
-            if ($this->isIncludeCount()) {
-                $this->setRowCount($selectStatement->rowCount());
+            if ($this->isIncludeTotalCount()) {
+                $saveSelectStatement = DB::getDatabase()->select()
+                    ->from($baseModel->translateDbName($baseModel->getTableName()));
+                if ($this->getFilters()) {
+                    $this->applyFilters($this->getFilters(), $saveSelectStatement);
+                }
+                $saveSelectStatement = $saveSelectStatement->execute();
+                $this->setTotalCount($saveSelectStatement->rowCount());
             }
             $className = get_class($this->getBaseModel());
 

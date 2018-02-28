@@ -19,6 +19,11 @@ abstract class SuccessResponse extends Response
     /**
      * @var int
      */
+    public $totalCount = 0;
+
+    /**
+     * @var int
+     */
     public $statusCode;
 
     /**
@@ -37,12 +42,13 @@ abstract class SuccessResponse extends Response
     /**
      * @param Model|Model[] $model
      */
-    public function initializeResponse($model)
+    public function initializeResponse($model, $totalCount = 0)
     {
         $this->setData($model);
 
         if (is_array($model)) {
             $this->setCount(count($model));
+            $this->setTotalCount($totalCount);
         } else {
             $this->setCount(1);
         }
@@ -94,5 +100,21 @@ abstract class SuccessResponse extends Response
     public function setCount($count)
     {
         $this->count = $count;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalCount()
+    {
+        return $this->totalCount;
+    }
+
+    /**
+     * @param int $totalCount
+     */
+    public function setTotalCount($totalCount)
+    {
+        $this->totalCount = $totalCount;
     }
 }

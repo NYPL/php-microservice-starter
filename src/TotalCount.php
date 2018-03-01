@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: holingpoon
- * Date: 2/28/18
- * Time: 1:58 PM
- */
 
 namespace NYPL\Starter;
-
 
 class TotalCount
 {

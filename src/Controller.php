@@ -251,8 +251,6 @@ abstract class Controller
 
             $model->setTotalCount(new TotalCount($this->getRequest()->getParam('include_count')));
 
-            $model->setIncludeTotalCount($this->getRequest()->getParam('include_count'));
-
             if ($filter) {
                 $model->addFilter($filter);
             }

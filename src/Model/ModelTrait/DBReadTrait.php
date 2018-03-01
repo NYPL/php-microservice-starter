@@ -9,6 +9,7 @@ use NYPL\Starter\Filter\OrFilter;
 use NYPL\Starter\Model;
 use NYPL\Starter\ModelSet;
 use NYPL\Starter\OrderBy;
+use NYPL\Starter\TotalCount;
 use Slim\PDO\Statement\SelectStatement;
 use Slim\PDO\Statement\StatementContainer;
 
@@ -297,8 +298,9 @@ trait DBReadTrait
                     $this->applyFilters($this->getFilters(), $saveSelectStatement);
                 }
                 $saveSelectStatement = $saveSelectStatement->execute();
-                $this->setTotalCount($saveSelectStatement->rowCount());
+                $this->setTotalCount(new TotalCount($this->isIncludeTotalCount(),$saveSelectStatement->rowCount()));
             }
+            
             $className = get_class($this->getBaseModel());
 
             foreach ($selectStatement->fetchAll() as $result) {

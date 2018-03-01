@@ -101,14 +101,6 @@ class Filter
     }
 
     /**
-     * @return bool
-     */
-    public function isIncludeCount()
-    {
-        return $this->getFilterColumn() == 'include_count';
-    }
-
-    /**
      * @param bool $jsonColumn
      */
     public function setJsonColumn($jsonColumn)

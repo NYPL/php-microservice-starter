@@ -186,7 +186,7 @@ class ModelSet extends Model implements ReadInterface
      */
     public function isIncludeTotalCount()
     {
-        return $this->getTotalCount()->isIncludeCount();
+        return $this->getTotalCount() ? $this->getTotalCount()->isIncludeCount() : false;
     }
 
     /**

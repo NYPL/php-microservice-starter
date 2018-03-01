@@ -291,7 +291,7 @@ trait DBReadTrait
         }
 
         if ($selectStatement->rowCount()) {
-            if ($this->isIncludeTotalCount()) {
+            if ($this->isIncludeTotalCount() == true) {
                 $saveSelectStatement = DB::getDatabase()->select()
                     ->from($baseModel->translateDbName($baseModel->getTableName()));
                 if ($this->getFilters()) {
@@ -300,7 +300,7 @@ trait DBReadTrait
                 $saveSelectStatement = $saveSelectStatement->execute();
                 $this->setTotalCount(new TotalCount($this->isIncludeTotalCount(),$saveSelectStatement->rowCount()));
             }
-            
+
             $className = get_class($this->getBaseModel());
 
             foreach ($selectStatement->fetchAll() as $result) {

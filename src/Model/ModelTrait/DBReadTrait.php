@@ -2,7 +2,6 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
-use NYPL\Starter\APILogger;
 use NYPL\Starter\DB;
 use NYPL\Starter\Filter;
 use NYPL\Starter\Filter\OrFilter;

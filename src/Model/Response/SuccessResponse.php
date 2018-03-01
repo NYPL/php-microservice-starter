@@ -18,7 +18,7 @@ abstract class SuccessResponse extends Response
     public $count = 0;
 
     /**
-     * @var TotalCount
+     * @var int
      */
     public $totalCount;
 
@@ -50,7 +50,9 @@ abstract class SuccessResponse extends Response
 
         if (is_array($model)) {
             $this->setCount(count($model));
-            $this->setTotalCount($totalCount);
+            if ($totalCount) {
+                $this->setTotalCount($totalCount->getCount());
+            }
         } else {
             $this->setCount(1);
         }
@@ -105,7 +107,7 @@ abstract class SuccessResponse extends Response
     }
 
     /**
-     * @return TotalCount
+     * @return int
      */
     public function getTotalCount()
     {
@@ -113,7 +115,7 @@ abstract class SuccessResponse extends Response
     }
 
     /**
-     * @param TotalCount $totalCount
+     * @param int $totalCount
      */
     public function setTotalCount($totalCount)
     {

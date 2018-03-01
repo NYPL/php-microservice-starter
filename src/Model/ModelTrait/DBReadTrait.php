@@ -292,13 +292,7 @@ trait DBReadTrait
 
         if ($selectStatement->rowCount()) {
             if ($this->isIncludeTotalCount() == true) {
-                $saveSelectStatement = DB::getDatabase()->select()
-                    ->from($baseModel->translateDbName($baseModel->getTableName()));
-                if ($this->getFilters()) {
-                    $this->applyFilters($this->getFilters(), $saveSelectStatement);
-                }
-                $saveSelectStatement = $saveSelectStatement->execute();
-                $this->setTotalCount(new TotalCount($this->isIncludeTotalCount(),$saveSelectStatement->rowCount()));
+                $this->obtainTotalCount();
             }
 
             $className = get_class($this->getBaseModel());
@@ -344,6 +338,27 @@ trait DBReadTrait
             $this->translateDbName($this->getOrderBy()),
             $this->getOrderDirection()
         );
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function obtainTotalCount()
+    {
+        /**
+         * @var DBTrait $baseModel
+         */
+        $baseModel = $this->getBaseModel();
+
+        $saveSelectStatement = DB::getDatabase()->select()
+            ->from($baseModel->translateDbName($baseModel->getTableName()));
+        if ($this->getFilters()) {
+            $this->applyFilters($this->getFilters(), $saveSelectStatement);
+        }
+        $saveSelectStatement = $saveSelectStatement->execute();
+        $this->setTotalCount(new TotalCount($this->isIncludeTotalCount(),$saveSelectStatement->rowCount()));
 
         return true;
     }

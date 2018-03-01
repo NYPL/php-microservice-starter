@@ -69,6 +69,7 @@ abstract class Model implements \JsonSerializable
                 $jsonArray[$this->getJsonObjectName($objectName)] = $this->getJsonObjectValue($objectValue);
             }
         }
+
         return $jsonArray;
     }
 

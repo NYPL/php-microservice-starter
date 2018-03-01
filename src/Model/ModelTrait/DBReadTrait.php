@@ -352,13 +352,13 @@ trait DBReadTrait
          */
         $baseModel = $this->getBaseModel();
 
-        $saveSelectStatement = DB::getDatabase()->select()
+        $selectStatement = DB::getDatabase()->select()
             ->from($baseModel->translateDbName($baseModel->getTableName()));
         if ($this->getFilters()) {
-            $this->applyFilters($this->getFilters(), $saveSelectStatement);
+            $this->applyFilters($this->getFilters(), $selectStatement);
         }
-        $saveSelectStatement = $saveSelectStatement->execute();
-        $this->setTotalCount(new TotalCount($this->isIncludeTotalCount(),$saveSelectStatement->rowCount()));
+        $selectStatement = $selectStatement->execute();
+        $this->setTotalCount(new TotalCount($this->isIncludeTotalCount(),$selectStatement->rowCount()));
 
         return true;
     }

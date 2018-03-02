@@ -1,7 +1,6 @@
 <?php
 namespace NYPL\Starter\Model\Response;
 
-use NYPL\Starter\APILogger;
 use NYPL\Starter\Model;
 use NYPL\Starter\Model\Response;
 use NYPL\Starter\ModelSet;
@@ -47,13 +46,10 @@ abstract class SuccessResponse extends Response
     public function initializeResponse($model)
     {
         if (is_array($model)) {
-            $this->setData($model);
             $this->initializeArrayOfModels($model);
         } else if ($model instanceof ModelSet) {
-            $this->setData($model->getData());
             $this->initializeModelSet($model);
         } else if ($model instanceof Model) {
-            $this->setData($model);
             $this->initializeModel($model);
         }
     }
@@ -63,6 +59,7 @@ abstract class SuccessResponse extends Response
      */
     public function initializeModel($model)
     {
+        $this->setData($model);
         $this->setCount(1);
     }
 
@@ -71,6 +68,7 @@ abstract class SuccessResponse extends Response
      */
     public function initializeArrayOfModels($arrayOfModels)
     {
+        $this->setData($arrayOfModels);
         $this->setCount(count($arrayOfModels));
     }
 
@@ -79,6 +77,7 @@ abstract class SuccessResponse extends Response
      */
     public function initializeModelSet($modelSet)
     {
+        $this->setData($modelSet->getData());
         if ($modelSet->isIncludeTotalCount()) {
             $this->setTotalCount($modelSet->getTotalCount());
         }

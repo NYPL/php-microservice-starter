@@ -1,8 +1,10 @@
 <?php
 namespace NYPL\Starter\Model\Response;
 
+use NYPL\Starter\APILogger;
 use NYPL\Starter\Model;
 use NYPL\Starter\Model\Response;
+use NYPL\Starter\ModelSet;
 
 abstract class SuccessResponse extends Response
 {
@@ -40,20 +42,47 @@ abstract class SuccessResponse extends Response
     }
 
     /**
-     * @param Model|Model[] $model
-     * @param int $totalCount
+     * @param Model|Model[]|ModelSet $model
      */
-    public function initializeResponse($model, $totalCount = 0)
+    public function initializeResponse($model)
     {
         $this->setData($model);
 
         if (is_array($model)) {
-            $this->setCount(count($model));
-            if ($totalCount) {
-                $this->setTotalCount($totalCount);
-            }
-        } else {
-            $this->setCount(1);
+            $this->initializeArrayOfModels($model);
+        } else if ($model instanceof ModelSet) {
+            $this->initializeModelSet($model);
+        } else if ($model instanceof Model) {
+            $this->initializeModel($model);
+        }
+    }
+
+    /**
+     * @param Model $model
+     */
+    public function initializeModel($model)
+    {
+        APILogger::addDebug('Model');
+        $this->setCount(1);
+    }
+
+    /**
+     * @param Model[] $arrayOfModels
+     */
+    public function initializeArrayOfModels($arrayOfModels)
+    {
+        APILogger::addDebug('Array Of Models');
+        $this->setCount(count($arrayOfModels));
+    }
+
+    /**
+     * @param ModelSet $modelSet
+     */
+    public function initializeModelSet($modelSet)
+    {
+        APILogger::addDebug('ModelSet');
+        if ($modelSet->isIncludeTotalCount()) {
+            $this->setTotalCount($modelSet->getTotalCount());
         }
     }
 

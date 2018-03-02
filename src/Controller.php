@@ -266,11 +266,7 @@ abstract class Controller
             }
 
             $model->read();
-            if ($includeTotalCount === true) {
-                $response->initializeResponse($model->getData(), $model->getTotalCount());
-            } else {
-                $response->initializeResponse($model->getData());
-            }
+            $response->initializeResponse($model);
         } else {
             if ($filter) {
                 if ($filter->getId()) {

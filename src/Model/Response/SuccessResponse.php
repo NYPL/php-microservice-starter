@@ -46,13 +46,14 @@ abstract class SuccessResponse extends Response
      */
     public function initializeResponse($model)
     {
-        $this->setData($model);
-
         if (is_array($model)) {
+            $this->setData($model);
             $this->initializeArrayOfModels($model);
         } else if ($model instanceof ModelSet) {
+            $this->setData($model->getData());
             $this->initializeModelSet($model);
         } else if ($model instanceof Model) {
+            $this->setData($model);
             $this->initializeModel($model);
         }
     }

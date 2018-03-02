@@ -62,7 +62,6 @@ abstract class SuccessResponse extends Response
      */
     public function initializeModel($model)
     {
-        APILogger::addDebug('Model');
         $this->setCount(1);
     }
 
@@ -71,7 +70,6 @@ abstract class SuccessResponse extends Response
      */
     public function initializeArrayOfModels($arrayOfModels)
     {
-        APILogger::addDebug('Array Of Models');
         $this->setCount(count($arrayOfModels));
     }
 
@@ -80,7 +78,6 @@ abstract class SuccessResponse extends Response
      */
     public function initializeModelSet($modelSet)
     {
-        APILogger::addDebug('ModelSet');
         if ($modelSet->isIncludeTotalCount()) {
             $this->setTotalCount($modelSet->getTotalCount());
         }

@@ -78,6 +78,7 @@ abstract class SuccessResponse extends Response
     public function initializeModelSet($modelSet)
     {
         $this->setData($modelSet->getData());
+        $this->setCount(count($modelSet->getData()));
         if ($modelSet->isIncludeTotalCount()) {
             $this->setTotalCount($modelSet->getTotalCount());
         }

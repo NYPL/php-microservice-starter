@@ -3,8 +3,6 @@ namespace NYPL\Starter\Model\Response;
 
 use NYPL\Starter\Model;
 use NYPL\Starter\Model\Response;
-use NYPL\Starter\ModelSet;
-use NYPL\Starter\TotalCount;
 
 abstract class SuccessResponse extends Response
 {

@@ -9,7 +9,6 @@ use NYPL\Starter\Filter\OrFilter;
 use NYPL\Starter\Model;
 use NYPL\Starter\ModelSet;
 use NYPL\Starter\OrderBy;
-use NYPL\Starter\TotalCount;
 use Slim\PDO\Statement\SelectStatement;
 use Slim\PDO\Statement\StatementContainer;
 

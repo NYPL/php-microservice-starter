@@ -28,7 +28,7 @@ abstract class SuccessResponse extends Response
     public $statusCode;
 
     /**
-     * @param Model|Model[] $model
+     * @param Model|Model[]|ModelSet $model
      * @param int $code
      */
     public function __construct($model = null, $code = 200)

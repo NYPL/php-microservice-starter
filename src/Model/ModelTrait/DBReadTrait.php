@@ -2,6 +2,7 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
+use NYPL\Starter\APILogger;
 use NYPL\Starter\DB;
 use NYPL\Starter\Filter;
 use NYPL\Starter\Filter\OrFilter;
@@ -290,7 +291,7 @@ trait DBReadTrait
         }
 
         if ($selectStatement->rowCount()) {
-            if ($this->isIncludeTotalCount() == true) {
+            if ($this->isIncludeTotalCount() === true) {
                 $this->obtainTotalCount();
             }
 
@@ -357,7 +358,7 @@ trait DBReadTrait
             $this->applyFilters($this->getFilters(), $selectStatement);
         }
         $selectStatement = $selectStatement->execute();
-        $this->setTotalCount(new TotalCount($this->isIncludeTotalCount(),$selectStatement->rowCount()));
+        $this->setTotalCount($selectStatement->rowCount());
 
         return true;
     }

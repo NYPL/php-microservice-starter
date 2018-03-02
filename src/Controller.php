@@ -249,8 +249,10 @@ abstract class Controller
 
             $model->setLimit($this->getRequest()->getParam('limit'));
 
-            if ($this->getRequest()->getParam('include_count') == 'true') {
-                $model->setTotalCount(new TotalCount($this->getRequest()->getParam('include_count')));
+            $includeTotalCount = $this->getRequest()->getParam('includeTotalCount') === 'true' ? true : false ;
+
+            if ($includeTotalCount === true) {
+                $model->setIncludeTotalCount($includeTotalCount);
             }
 
             if ($filter) {
@@ -264,7 +266,7 @@ abstract class Controller
             }
 
             $model->read();
-            if ($this->getRequest()->getParam('include_count') == 'true') {
+            if ($includeTotalCount === true) {
                 $response->initializeResponse($model->getData(), $model->getTotalCount());
             } else {
                 $response->initializeResponse($model->getData());

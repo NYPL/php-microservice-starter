@@ -3,6 +3,7 @@ namespace NYPL\Starter\Model\Response;
 
 use NYPL\Starter\Model;
 use NYPL\Starter\Model\Response;
+use NYPL\Starter\ModelSet;
 use NYPL\Starter\TotalCount;
 
 abstract class SuccessResponse extends Response
@@ -42,16 +43,16 @@ abstract class SuccessResponse extends Response
 
     /**
      * @param Model|Model[] $model
-     * @param TotalCount $totalCount
+     * @param int $totalCount
      */
-    public function initializeResponse($model, $totalCount = null)
+    public function initializeResponse($model, $totalCount = 0)
     {
         $this->setData($model);
 
         if (is_array($model)) {
             $this->setCount(count($model));
             if ($totalCount) {
-                $this->setTotalCount($totalCount->getCount());
+                $this->setTotalCount($totalCount);
             }
         } else {
             $this->setCount(1);

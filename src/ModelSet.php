@@ -40,9 +40,14 @@ class ModelSet extends Model implements ReadInterface
     public $limit = 25;
 
     /**
-     * @var null|TotalCount
+     * @var int
      */
-    public $totalCount = null;
+    public $totalCount = 0;
+
+    /**
+     * @var bool
+     */
+    public $includeTotalCount = false;
 
     /**
      * @var bool
@@ -186,11 +191,19 @@ class ModelSet extends Model implements ReadInterface
      */
     public function isIncludeTotalCount()
     {
-        return $this->getTotalCount() ? $this->getTotalCount()->isIncludeCount() : false;
+        return $this->includeTotalCount;
     }
 
     /**
-     * @return null|TotalCount
+     * @param bool $includeTotalCount
+     */
+    public function setIncludeTotalCount($includeTotalCount)
+    {
+        $this->includeTotalCount = $includeTotalCount;
+    }
+
+    /**
+     * @return int
      */
     public function getTotalCount()
     {
@@ -198,9 +211,9 @@ class ModelSet extends Model implements ReadInterface
     }
 
     /**
-     * @param null|TotalCount $totalCount
+     * @param int $totalCount
      */
-    public function setTotalCount($totalCount = null)
+    public function setTotalCount($totalCount = 0)
     {
         $this->totalCount = $totalCount;
     }

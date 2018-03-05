@@ -42,15 +42,25 @@ abstract class SuccessResponse extends Response
 
     /**
      * @param Model|Model[]|ModelSet $model
+     * @return bool
      */
     public function initializeResponse($model)
     {
+        // ModelSet needs to be checked first to avoid
+        // returning baseModel data in response
+        if ($model instanceof ModelSet) {
+            $this->initializeModelSet($model);
+            return true;
+        }
+
+        if ($model instanceof Model) {
+            $this->initializeModel($model);
+            return true;
+        }
+
         if (is_array($model)) {
             $this->initializeArrayOfModels($model);
-        } else if ($model instanceof ModelSet) {
-            $this->initializeModelSet($model);
-        } else if ($model instanceof Model) {
-            $this->initializeModel($model);
+            return true;
         }
     }
 

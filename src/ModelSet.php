@@ -199,7 +199,7 @@ class ModelSet extends Model implements ReadInterface
      */
     public function setIncludeTotalCount($includeTotalCount)
     {
-        $this->includeTotalCount = $includeTotalCount;
+        $this->includeTotalCount = (bool) $includeTotalCount;
     }
 
     /**
@@ -215,6 +215,6 @@ class ModelSet extends Model implements ReadInterface
      */
     public function setTotalCount($totalCount = 0)
     {
-        $this->totalCount = $totalCount;
+        $this->totalCount = (int) $totalCount;
     }
 }

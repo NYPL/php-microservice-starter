@@ -2,6 +2,7 @@
 namespace NYPL\Starter\Model\Response;
 
 use NYPL\Starter\Model;
+use NYPL\Starter\ModelSet;
 use NYPL\Starter\Model\Response;
 
 abstract class SuccessResponse extends Response
@@ -19,10 +20,15 @@ abstract class SuccessResponse extends Response
     /**
      * @var int
      */
+    public $totalCount = 0;
+
+    /**
+     * @var int
+     */
     public $statusCode;
 
     /**
-     * @param Model|Model[] $model
+     * @param Model|Model[]|ModelSet $model
      * @param int $code
      */
     public function __construct($model = null, $code = 200)
@@ -35,16 +41,56 @@ abstract class SuccessResponse extends Response
     }
 
     /**
-     * @param Model|Model[] $model
+     * @param Model|Model[]|ModelSet $model
+     * @return bool
      */
     public function initializeResponse($model)
     {
-        $this->setData($model);
+        // ModelSet needs to be checked first to avoid
+        // returning baseModel data in response
+        if ($model instanceof ModelSet) {
+            $this->initializeModelSet($model);
+            return true;
+        }
+
+        if ($model instanceof Model) {
+            $this->initializeModel($model);
+            return true;
+        }
 
         if (is_array($model)) {
-            $this->setCount(count($model));
-        } else {
-            $this->setCount(1);
+            $this->initializeArrayOfModels($model);
+            return true;
+        }
+    }
+
+    /**
+     * @param Model $model
+     */
+    public function initializeModel($model)
+    {
+        $this->setData($model);
+        $this->setCount(1);
+    }
+
+    /**
+     * @param Model[] $arrayOfModels
+     */
+    public function initializeArrayOfModels($arrayOfModels)
+    {
+        $this->setData($arrayOfModels);
+        $this->setCount(count($arrayOfModels));
+    }
+
+    /**
+     * @param ModelSet $modelSet
+     */
+    public function initializeModelSet($modelSet)
+    {
+        $this->setData($modelSet->getData());
+        $this->setCount(count($modelSet->getData()));
+        if ($modelSet->isIncludeTotalCount()) {
+            $this->setTotalCount($modelSet->getTotalCount());
         }
     }
 
@@ -94,5 +140,21 @@ abstract class SuccessResponse extends Response
     public function setCount($count)
     {
         $this->count = $count;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalCount()
+    {
+        return $this->totalCount;
+    }
+
+    /**
+     * @param int $totalCount
+     */
+    public function setTotalCount($totalCount)
+    {
+        $this->totalCount = $totalCount;
     }
 }

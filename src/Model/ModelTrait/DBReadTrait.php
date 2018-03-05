@@ -291,6 +291,10 @@ trait DBReadTrait
         if ($selectStatement->rowCount()) {
             $className = get_class($this->getBaseModel());
 
+            if ($this->isIncludeTotalCount()) {
+                $this->obtainTotalCount();
+            }
+
             foreach ($selectStatement->fetchAll() as $result) {
                 /**
                  * @var Model|TranslateTrait $model
@@ -332,6 +336,30 @@ trait DBReadTrait
             $this->translateDbName($this->getOrderBy()),
             $this->getOrderDirection()
         );
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function obtainTotalCount()
+    {
+        /**
+         * @var DBTrait $baseModel
+         */
+        $baseModel = $this->getBaseModel();
+
+        $selectStatement = DB::getDatabase()->select(['COUNT(*)'])
+            ->from($baseModel->translateDbName($baseModel->getTableName()));
+
+        if ($this->getFilters()) {
+            $this->applyFilters($this->getFilters(), $selectStatement);
+        }
+
+        $selectStatement = $selectStatement->count()->execute();
+
+        $this->setTotalCount($selectStatement->fetchColumn(0));
 
         return true;
     }

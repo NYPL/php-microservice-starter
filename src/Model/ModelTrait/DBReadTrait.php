@@ -351,16 +351,16 @@ trait DBReadTrait
          */
         $baseModel = $this->getBaseModel();
 
-        $selectStatement = DB::getDatabase()->select(['id'])
-            ->from($baseModel->translateDbName($baseModel->getTableName()))
-            ->groupBy('id');
+        $selectStatement = DB::getDatabase()->select(['COUNT(*)'])
+            ->from($baseModel->translateDbName($baseModel->getTableName()));
+
         if ($this->getFilters()) {
             $this->applyFilters($this->getFilters(), $selectStatement);
         }
 
-        $selectStatement = $selectStatement->count('id')->execute();
+        $selectStatement = $selectStatement->count()->execute();
 
-        $this->setTotalCount($selectStatement->rowCount());
+        $this->setTotalCount($selectStatement->fetchColumn(0));
 
         return true;
     }

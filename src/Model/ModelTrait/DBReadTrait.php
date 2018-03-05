@@ -2,6 +2,7 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
+use NYPL\Starter\APILogger;
 use NYPL\Starter\DB;
 use NYPL\Starter\Filter;
 use NYPL\Starter\Filter\OrFilter;
@@ -289,6 +290,10 @@ trait DBReadTrait
         }
 
         if ($selectStatement->rowCount()) {
+            if ($this->isIncludeTotalCount() === true) {
+                $this->obtainTotalCount();
+            }
+
             $className = get_class($this->getBaseModel());
 
             foreach ($selectStatement->fetchAll() as $result) {
@@ -332,6 +337,30 @@ trait DBReadTrait
             $this->translateDbName($this->getOrderBy()),
             $this->getOrderDirection()
         );
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function obtainTotalCount()
+    {
+        /**
+         * @var DBTrait $baseModel
+         */
+        $baseModel = $this->getBaseModel();
+
+        $selectStatement = DB::getDatabase()->select(['COUNT(*)'])
+            ->from($baseModel->translateDbName($baseModel->getTableName()));
+
+        if ($this->getFilters()) {
+            $this->applyFilters($this->getFilters(), $selectStatement);
+        }
+
+        $selectStatement = $selectStatement->count()->execute();
+
+        $this->setTotalCount($selectStatement->fetchColumn(0));
 
         return true;
     }

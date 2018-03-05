@@ -40,6 +40,16 @@ class ModelSet extends Model implements ReadInterface
     public $limit = 25;
 
     /**
+     * @var int
+     */
+    public $totalCount = 0;
+
+    /**
+     * @var bool
+     */
+    public $includeTotalCount = false;
+
+    /**
      * @var bool
      */
     public $noDefaultSorting = false;
@@ -174,5 +184,37 @@ class ModelSet extends Model implements ReadInterface
     public function setNoDefaultSorting($noDefaultSorting)
     {
         $this->noDefaultSorting = (bool) $noDefaultSorting;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIncludeTotalCount()
+    {
+        return $this->includeTotalCount;
+    }
+
+    /**
+     * @param bool $includeTotalCount
+     */
+    public function setIncludeTotalCount($includeTotalCount)
+    {
+        $this->includeTotalCount = (bool) $includeTotalCount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalCount()
+    {
+        return $this->totalCount;
+    }
+
+    /**
+     * @param int $totalCount
+     */
+    public function setTotalCount($totalCount = 0)
+    {
+        $this->totalCount = (int) $totalCount;
     }
 }

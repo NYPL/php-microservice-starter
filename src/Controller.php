@@ -251,7 +251,7 @@ abstract class Controller
 
             $includeTotalCount = $this->getRequest()->getParam('includeTotalCount') === 'true' ? true : false ;
 
-            if ($includeTotalCount === true) {
+            if ($includeTotalCount) {
                 $model->setIncludeTotalCount($includeTotalCount);
             }
 

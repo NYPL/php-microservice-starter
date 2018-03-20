@@ -36,7 +36,7 @@ class DefaultContainer extends Container
         $errorResponse->setType('exception');
         $errorResponse->setMessage($exception->getMessage());
 
-        if (Config::isLocalEnvironment()) {
+        if (!Config::isProductionEnvironment()) {
             $errorResponse->setError($errorResponse->translateException($exception));
         }
     }

@@ -72,6 +72,23 @@ class Config
     }
 
     /**
+     * @return bool
+     * @throws APIException
+     */
+    public static function isProductionEnvironment()
+    {
+        if (self::isLocalEnvironment()) {
+            return false;
+        }
+
+        if (self::get('environment') === 'development') {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * @throws APIException
      * @return bool
      */

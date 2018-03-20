@@ -16,11 +16,12 @@ trait CacheCreateTrait
 
     /**
      * @param bool $useId
+     * @param int $expirationSeconds
      *
      * @return string
      * @throws \Exception
      */
-    public function create($useId = false)
+    public function create($useId = false, $expirationSeconds = 0)
     {
         if (!$useId) {
             $count = Cache::getCache()->incr(
@@ -32,10 +33,16 @@ trait CacheCreateTrait
             );
         }
 
+        $cacheKey = $this->getCacheKey($this->getId());
+
         Cache::getCache()->hMset(
-            $this->getCacheKey($this->getId()),
+            $cacheKey,
             $this->getValueArray(true, get_object_vars($this))
         );
+
+        if ($cacheKey && $expirationSeconds) {
+            Cache::getCache()->setTimeout($cacheKey, $expirationSeconds);
+        }
 
         try {
             if ($this instanceof MessageInterface) {

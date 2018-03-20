@@ -24,18 +24,28 @@ class DefaultContainer extends Container
         return self::DEFAULT_ERROR_STATUS_CODE;
     }
 
+    /**
+     * @param \Throwable $exception
+     * @param ErrorResponse $errorResponse
+     *
+     * @throws APIException
+     */
     protected function initializeErrorResponse(\Throwable $exception, ErrorResponse $errorResponse)
     {
         $errorResponse->setStatusCode($this->getStatusCode($exception));
         $errorResponse->setType('exception');
         $errorResponse->setMessage($exception->getMessage());
-        $errorResponse->setError($errorResponse->translateException($exception));
+
+        if (Config::isLocalEnvironment()) {
+            $errorResponse->setError($errorResponse->translateException($exception));
+        }
     }
 
     /**
-     * @param \Exception|\Throwable $exception
+     * @param \Throwable $exception
      *
      * @return ErrorResponse
+     * @throws APIException
      */
     protected function getErrorResponse(\Throwable $exception)
     {

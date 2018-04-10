@@ -33,7 +33,9 @@ trait DBCreateTrait
             if ($this->checkExistingDb()) {
                 $this->setFilters($this->getIdFilters());
 
-                $this->update($this->getRawData());
+                $data = $this->getValueArray(false, get_object_vars($this));
+
+                $this->update($data);
 
                 return true;
             }
@@ -88,7 +90,7 @@ trait DBCreateTrait
         if ($this->getSequenceId()) {
             $insertId = DB::getDatabase()->lastInsertId($this->getSequenceId());
         } else {
-            $insertId = "";
+            $insertId = '';
         }
 
         if ($useId) {

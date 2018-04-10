@@ -44,9 +44,9 @@ trait DBUpdateTrait
      */
     protected function updateDbRecord(array $data = [])
     {
-        $insertValues = $this->getValueArray(false, $data);
+        $updateValues = $this->getValueArray(false, $data);
 
-        $updateStatement = DB::getDatabase()->update($insertValues)
+        $updateStatement = DB::getDatabase()->update($updateValues)
             ->table($this->getTableName());
 
         $this->applyFilters(

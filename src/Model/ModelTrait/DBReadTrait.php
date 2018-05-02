@@ -136,6 +136,12 @@ trait DBReadTrait
             return true;
         }
 
+        if (is_array($filter->getFilterValue())) {
+            $sqlStatement->whereIn($filter->getFilterColumn(), $filter->getFilterValue());
+
+            return true;
+        }
+
         if ($filter->isRangeFilter()) {
             $this->applyRange($filter, $sqlStatement);
 

@@ -12,7 +12,7 @@ trait SierraTrait
 {
     protected static $cacheKey = 'PatronService:Sierra:Token';
 
-    private $timeoutSeconds = 10;
+    private $timeoutSeconds = 20;
 
     /**
      * @param string $id
@@ -75,8 +75,14 @@ trait SierraTrait
             $this->handleClientException($clientException);
 
             if (!$ignoreNoRecord) {
+                $response = json_decode((string) $clientException->getResponse()->getBody(), true);
+
                 throw new APIException(
-                    (string) $clientException->getMessage(),
+                    (
+                    isset($response['description']) ?
+                        'Error calling Sierra API  ' . $response['description'] :
+                        $clientException->getMessage()
+                    ),
                     null,
                     0,
                     null,

@@ -18,6 +18,7 @@ trait SierraReadTrait
     /**
      * @param bool $ignoreNoRecord
      *
+     * @throws APIException
      * @return string
      */
     protected function getSierraResponse($ignoreNoRecord = false)
@@ -43,8 +44,8 @@ trait SierraReadTrait
     /**
      * @param bool $ignoreNoRecord
      *
-     * @return bool
      * @throws APIException
+     * @return bool
      */
     public function read($ignoreNoRecord = false)
     {

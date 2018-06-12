@@ -13,7 +13,7 @@ abstract class Model implements \JsonSerializable
     /**
      * @var array
      */
-    public $excludeProperties = ['filters', 'excludeProperties', 'rawData', 'bulk', 'topic', 'streamName'];
+    public $excludeProperties = ['filters', 'excludeProperties', 'rawData', 'bulk', 'addNullToJson', 'topic', 'streamName'];
 
     /**
      * @var array
@@ -24,6 +24,11 @@ abstract class Model implements \JsonSerializable
      * @var bool
      */
     public $bulk = false;
+
+    /**
+     * @var bool
+     */
+    public $addNullToJson = true;
 
     /**
      * @param $value
@@ -60,12 +65,31 @@ abstract class Model implements \JsonSerializable
         return $objectName;
     }
 
+    /**
+     * @param string $objectName
+     * @param mixed $objectValue
+     *
+     * @return bool
+     */
+    protected function addToJsonArray($objectName, $objectValue)
+    {
+        if (in_array($objectName, $this->getExcludeProperties())) {
+            return false;
+        }
+
+        if ($objectValue === null && !$this->isAddNullToJson()) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function jsonSerialize()
     {
         $jsonArray = [];
 
         foreach (get_object_vars($this) as $objectName => $objectValue) {
-            if (!in_array($objectName, $this->getExcludeProperties())) {
+            if ($this->addToJsonArray($objectName, $objectValue)) {
                 $jsonArray[$this->getJsonObjectName($objectName)] = $this->getJsonObjectValue($objectValue);
             }
         }
@@ -143,5 +167,21 @@ abstract class Model implements \JsonSerializable
     public function setBulk($bulk)
     {
         $this->bulk = (bool) $bulk;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAddNullToJson()
+    {
+        return $this->addNullToJson;
+    }
+
+    /**
+     * @param bool $addNullToJson
+     */
+    public function setAddNullToJson($addNullToJson)
+    {
+        $this->addNullToJson = (bool) $addNullToJson;
     }
 }

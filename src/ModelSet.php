@@ -22,12 +22,12 @@ class ModelSet extends Model implements ReadInterface
     /**
      * @var string|OrderBy[]
      */
-    public $orderBy = "";
+    public $orderBy;
 
     /**
      * @var string
      */
-    public $orderDirection = "";
+    public $orderDirection = '';
 
     /**
      * @var int
@@ -214,5 +214,19 @@ class ModelSet extends Model implements ReadInterface
     public function setTotalCount($totalCount = 0)
     {
         $this->totalCount = (int) $totalCount;
+    }
+
+    /**
+     * @param OrderBy $orderBy
+     *
+     * @throws APIException
+     */
+    public function addOrderBy(OrderBy $orderBy)
+    {
+        if (is_string($this->orderBy)) {
+            throw new APIException('OrderBy was already set as a string (' . $this->orderBy . ')');
+        }
+
+        $this->orderBy[] = $orderBy;
     }
 }

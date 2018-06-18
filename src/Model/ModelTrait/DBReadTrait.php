@@ -277,7 +277,7 @@ trait DBReadTrait
         }
 
         if ($this->getOrderBy()) {
-            $this->addOrderBy($selectStatement);
+            $this->applyOrderBy($selectStatement);
         }
 
         if ($this->getOffset()) {
@@ -322,7 +322,7 @@ trait DBReadTrait
      *
      * @return bool
      */
-    protected function addOrderBy(SelectStatement $selectStatement)
+    protected function applyOrderBy(SelectStatement $selectStatement)
     {
         if (is_array($this->getOrderBy())) {
             /**

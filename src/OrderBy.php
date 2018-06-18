@@ -17,7 +17,7 @@ class OrderBy
             $this->setColumn($column);
         }
 
-        if ($this->getDirection()) {
+        if ($direction) {
             $this->setDirection($direction);
         }
     }

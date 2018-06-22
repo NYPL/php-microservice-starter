@@ -2,19 +2,20 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
-use NYPL\Starter\DB;
+use NYPL\Starter\Slim\DB;
 use NYPL\Starter\Filter;
 use NYPL\Starter\Filter\OrFilter;
 use NYPL\Starter\Model;
 use NYPL\Starter\ModelSet;
 use NYPL\Starter\OrderBy;
+use NYPL\Starter\Slim\ExtendedSelectStatement;
 use Slim\PDO\Statement\SelectStatement;
-use Slim\PDO\Statement\StatementContainer;
 
 trait DBReadTrait
 {
     /**
-     * @return SelectStatement
+     * @throws APIException
+     * @return ExtendedSelectStatement
      */
     protected function getSingleSelect()
     {
@@ -72,14 +73,14 @@ trait DBReadTrait
     /**
      * @param int $count
      * @param Filter $filter
-     * @param StatementContainer $sqlStatement
+     * @param ExtendedSelectStatement $selectStatement
      *
      * @return bool
      */
-    protected function applyOrWhere($count, Filter $filter, StatementContainer $sqlStatement)
+    protected function applyOrWhere($count, Filter $filter, ExtendedSelectStatement $selectStatement)
     {
         if (!$count) {
-            $sqlStatement->where(
+            $selectStatement->where(
                 $this->translateDbName($filter->getFilterColumn()),
                 $this->getOperator($filter),
                 $filter->getFilterValue()
@@ -88,7 +89,7 @@ trait DBReadTrait
             return true;
         }
 
-        $sqlStatement->orWhere(
+        $selectStatement->orWhere(
             $this->translateDbName($filter->getFilterColumn()),
             $this->getOperator($filter),
             $filter->getFilterValue()
@@ -99,37 +100,42 @@ trait DBReadTrait
 
     /**
      * @param OrFilter $filter
-     * @param StatementContainer $sqlStatement
+     * @param ExtendedSelectStatement $selectStatement
      */
-    protected function addOrWhere(OrFilter $filter, StatementContainer $sqlStatement)
+    protected function addOrWhere(OrFilter $filter, ExtendedSelectStatement $selectStatement)
     {
+        $selectStatement->addParenthesis();
+
         foreach ($filter->getFilters() as $count => $filter) {
-            $this->applyOrWhere($count, $filter, $sqlStatement);
+            $this->applyOrWhere($count, $filter, $selectStatement);
         }
+
+        $selectStatement->closeParenthesis();
     }
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $sqlStatement
+     * @param ExtendedSelectStatement $selectStatement
      *
      * @return bool
+     * @throws APIException
      */
-    protected function addWhere(Filter $filter, StatementContainer $sqlStatement)
+    protected function addWhere(Filter $filter, ExtendedSelectStatement $selectStatement)
     {
         if ($filter instanceof OrFilter) {
-            $this->addOrWhere($filter, $sqlStatement);
+            $this->addOrWhere($filter, $selectStatement);
 
             return true;
         }
 
         if ($filter->isJsonColumn()) {
-            $this->addJsonWhere($filter, $sqlStatement);
+            $this->addJsonWhere($filter, $selectStatement);
 
             return true;
         }
 
         if ($filter->getFilterValue() === null) {
-            $sqlStatement->whereNull(
+            $selectStatement->whereNull(
                 $this->translateDbName($filter->getFilterColumn())
             );
 
@@ -137,27 +143,30 @@ trait DBReadTrait
         }
 
         if (is_array($filter->getFilterValue())) {
-            $sqlStatement->whereIn($filter->getFilterColumn(), $filter->getFilterValue());
+            $selectStatement->whereIn($filter->getFilterColumn(), $filter->getFilterValue());
 
             return true;
         }
 
         if ($filter->isRangeFilter()) {
-            $this->applyRange($filter, $sqlStatement);
+            $this->applyRange($filter, $selectStatement);
 
             return true;
         }
 
-        $this->applyWhere($filter, $sqlStatement);
+        $this->applyWhere($filter, $selectStatement);
 
         return true;
     }
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $statementContainer
+     * @param ExtendedSelectStatement $selectStatement
+     *
+     * @return bool
+     * @throws APIException
      */
-    protected function addJsonWhere(Filter $filter, StatementContainer $statementContainer)
+    protected function addJsonWhere(Filter $filter, ExtendedSelectStatement $selectStatement)
     {
         $values = explode(',', $filter->getFilterValue());
 
@@ -167,7 +176,7 @@ trait DBReadTrait
             $valueString .= DB::getDatabase()->quote($value) . ',';
         }
 
-        $statementContainer->where(
+        $selectStatement->where(
             'jsonb_contains_or(' . $this->translateDbName($filter->getFilterColumn()) . ', array[' . substr($valueString, 0, -1) . '])',
             '=',
             true
@@ -178,12 +187,12 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $sqlStatement
+     * @param ExtendedSelectStatement $selectStatement
      *
      * @return bool
      * @throws APIException
      */
-    protected function applyRange(Filter $filter, StatementContainer $sqlStatement)
+    protected function applyRange(Filter $filter, ExtendedSelectStatement $selectStatement)
     {
         $this->setOrderBy($this->translateDbName($filter->getFilterColumn()));
 
@@ -204,7 +213,7 @@ trait DBReadTrait
                 );
             }
 
-            $sqlStatement->where(
+            $selectStatement->where(
                 $this->translateDbName($filter->getFilterColumn()),
                 '<',
                 $range[1]
@@ -214,7 +223,7 @@ trait DBReadTrait
         }
 
         if (!$range[1]) {
-            $sqlStatement->where(
+            $selectStatement->where(
                 $this->translateDbName($filter->getFilterColumn()),
                 '>=',
                 $range[0]
@@ -223,7 +232,7 @@ trait DBReadTrait
             return true;
         }
 
-        $sqlStatement->whereBetween(
+        $selectStatement->whereBetween(
             $this->translateDbName($filter->getFilterColumn()),
             $range
         );
@@ -232,14 +241,14 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $sqlStatement
+     * @param ExtendedSelectStatement $selectStatement
      *
      * @return bool
      */
-    protected function applyWhere(Filter $filter, StatementContainer $sqlStatement)
+    protected function applyWhere(Filter $filter, ExtendedSelectStatement $selectStatement)
     {
         if (strpos($filter->getFilterValue(), ',') !== false) {
-            $sqlStatement->whereIn(
+            $selectStatement->whereIn(
                 $this->translateDbName($filter->getFilterColumn()),
                 explode(',', $filter->getFilterValue())
             );
@@ -247,7 +256,7 @@ trait DBReadTrait
             return true;
         }
 
-        $sqlStatement->where(
+        $selectStatement->where(
             $this->translateDbName($filter->getFilterColumn()),
             $this->getOperator($filter),
             $filter->getFilterValue()
@@ -348,6 +357,7 @@ trait DBReadTrait
 
     /**
      * @return bool
+     * @throws APIException
      */
     protected function obtainTotalCount()
     {
@@ -374,6 +384,7 @@ trait DBReadTrait
      * @param bool $ignoreNoRecord
      *
      * @return bool
+     * @throws APIException
      */
     public function read($ignoreNoRecord = false)
     {

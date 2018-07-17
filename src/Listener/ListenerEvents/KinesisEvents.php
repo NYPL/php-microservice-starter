@@ -1,6 +1,7 @@
 <?php
 namespace NYPL\Starter\Listener\ListenerEvents;
 
+use NYPL\Starter\APIException;
 use NYPL\Starter\APILogger;
 use NYPL\Starter\Listener\ListenerData;
 use NYPL\Starter\Listener\ListenerEvent\KinesisEvent;
@@ -17,6 +18,23 @@ class KinesisEvents extends ListenerEvents
      * @var string
      */
     public $streamName = '';
+
+    /**
+     * @param array $payload
+     *
+     * @return string
+     * @throws APIException
+     */
+    public static function getStreamNameFromPayLoad($payload = [])
+    {
+        $kinesisEvent = new KinesisEvents();
+
+        if (!isset($payload['eventSourceARN'])) {
+            throw new APIException('Payload specified is not a valid payload');
+        }
+
+        return $kinesisEvent->getStreamNameFromArn($payload['eventSourceARN']);
+    }
 
     /**
      * @param array $record

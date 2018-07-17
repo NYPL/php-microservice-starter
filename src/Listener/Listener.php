@@ -13,13 +13,19 @@ abstract class Listener
     protected $listenerEvents;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $schemaName = '';
+    protected $payload = [];
 
+    /**
+     * Listener constructor.
+     * @throws APIException
+     */
     public function __construct()
     {
-        set_error_handler(ErrorHandler::class . "::errorFunction");
+        set_error_handler(ErrorHandler::class . '::errorFunction');
+
+        $this->initializePayload();
     }
 
     /**
@@ -44,46 +50,56 @@ abstract class Listener
     }
 
     /**
-     * @return string
+     * @return array
      */
-    protected function getSchemaName()
+    public function getPayload()
     {
-        return $this->schemaName;
+        return $this->payload;
     }
 
     /**
-     * @param string $schemaName
+     * @param array $payload
      */
-    protected function setSchemaName($schemaName)
+    public function setPayload($payload)
     {
-        $this->schemaName = $schemaName;
+        $this->payload = $payload;
     }
 
     /**
      * @throws APIException
      */
-    protected function initializeListenerEvents()
+    protected function initializePayload()
     {
         APILogger::addDebug('Decoding buffer using file_get_contents()');
 
-        $buffer = json_decode(
+        $payload = json_decode(
             file_get_contents('php://stdin'),
             true
         );
 
-        if (!isset($buffer['Records'])) {
+        if (!isset($payload['Records'])) {
             throw new APIException(
                 'Error decoding buffer',
-                ['json_error' => json_last_error(), 'buffer' => $buffer]
+                ['json_error' => json_last_error(), 'buffer' => $payload]
             );
         }
 
-        APILogger::addDebug('Decoding ' . count($buffer['Records']) . ' records');
+        $this->setPayload($payload);
+    }
 
-        foreach ($buffer['Records'] as $record) {
+    /**
+     * @param string $schemaName
+     *
+     * @throws APIException
+     */
+    protected function initializeListenerEvents($schemaName = '')
+    {
+        APILogger::addDebug('Adding ' . count($this->getPayload()['Records']) . ' record(s)');
+
+        foreach ($this->getPayload()['Records'] as $record) {
             $this->getListenerEvents()->addEvent(
                 $record,
-                $this->getSchemaName()
+                $schemaName
             );
         }
     }
@@ -95,10 +111,9 @@ abstract class Listener
     public function process(ListenerEvents $listenerEvents, $schemaName = '')
     {
         try {
-            $this->setSchemaName($schemaName);
             $this->setListenerEvents($listenerEvents);
 
-            $this->initializeListenerEvents();
+            $this->initializeListenerEvents($schemaName);
 
             $listenerResult = $this->processListenerEvents();
 

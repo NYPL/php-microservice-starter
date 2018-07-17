@@ -1,6 +1,7 @@
 <?php
 namespace NYPL\Starter\Listener;
 
+use NYPL\Starter\APIException;
 use NYPL\Starter\APILogger;
 
 abstract class ListenerEvents
@@ -29,6 +30,11 @@ abstract class ListenerEvents
     public $events;
 
     /**
+     * @var string
+     */
+    protected $schemaName = '';
+
+    /**
      * @return ListenerEvent[]
      */
     public function getEvents()
@@ -42,6 +48,22 @@ abstract class ListenerEvents
     public function setEvents(array $events)
     {
         $this->events = $events;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchemaName()
+    {
+        return $this->schemaName;
+    }
+
+    /**
+     * @param string $schemaName
+     */
+    public function setSchemaName($schemaName)
+    {
+        $this->schemaName = $schemaName;
     }
 
     /**
@@ -63,6 +85,8 @@ abstract class ListenerEvents
     /**
      * @param array $record
      * @param string $schemaName
+     *
+     * @throws APIException
      */
     public function addEvent(array $record, $schemaName = '')
     {
@@ -70,11 +94,19 @@ abstract class ListenerEvents
             $this->initializeEvents($record);
         }
 
+        if ($schemaName) {
+            $this->setSchemaName($schemaName);
+        }
+
+        if (!$this->getSchemaName()) {
+            throw new APIException('Schema was not defined');
+        }
+
         APILogger::addDebug('Adding event');
 
         $this->events[] = $this->translateEvent(
             $record,
-            $schemaName
+            $this->getSchemaName()
         );
     }
 

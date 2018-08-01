@@ -82,7 +82,7 @@ class KinesisEvents extends ListenerEvents
     /**
      * @return string
      */
-    public function getEventSourceARN(): string
+    public function getEventSourceARN()
     {
         return $this->eventSourceARN;
     }
@@ -90,7 +90,7 @@ class KinesisEvents extends ListenerEvents
     /**
      * @param string $eventSourceARN
      */
-    public function setEventSourceARN(string $eventSourceARN)
+    public function setEventSourceARN($eventSourceARN = '')
     {
         $this->eventSourceARN = $eventSourceARN;
 

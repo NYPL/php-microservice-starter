@@ -30,7 +30,7 @@ class KinesisEvents extends ListenerEvents
         $kinesisEvent = new KinesisEvents();
 
         if (!isset($payload['eventSourceARN'])) {
-            throw new APIException('Unable to get Event Source ARN from specific event payload');
+            throw new APIException('Unable to get Event Source ARN from specific event payload', $payload);
         }
 
         return $kinesisEvent->getStreamNameFromArn($payload['eventSourceARN']);
@@ -44,7 +44,7 @@ class KinesisEvents extends ListenerEvents
     public function translateEvents(array $record)
     {
         if (!isset($record['eventSourceARN'])) {
-            throw new APIException('Unable to get Event Source ARN from events payload');
+            throw new APIException('Unable to get Event Source ARN from events payload', $record);
         }
 
         $this->setEventSourceARN($record['eventSourceARN']);

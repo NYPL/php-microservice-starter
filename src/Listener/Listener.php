@@ -125,15 +125,6 @@ abstract class Listener
             }
 
             echo json_encode($listenerResult);
-        } catch (\Exception $exception) {
-            APILogger::addError($exception->getMessage(), $exception);
-
-            echo json_encode(
-                new ListenerResult(
-                    false,
-                    $exception->getMessage()
-                )
-            );
         } catch (\Throwable $exception) {
             APILogger::addError($exception->getMessage(), $exception);
 

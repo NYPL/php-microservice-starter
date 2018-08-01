@@ -61,6 +61,8 @@ class KinesisEvents extends ListenerEvents
      */
     public function translateEvent(array $record, $schemaName = '')
     {
+        APILogger::addDebug('Raw Kinesis data: ' . $record['kinesis']['data']);
+
         $kinesisEvent = new KinesisEvent(
             new ListenerData(
                 base64_decode($record['kinesis']['data']),

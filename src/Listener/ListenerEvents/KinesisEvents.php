@@ -50,7 +50,7 @@ class KinesisEvents extends ListenerEvents
 
             throw new APIException('Unable to get Event Source ARN from events payload');
         }
-        x
+        
         $this->setEventSourceARN($record['eventSourceARN']);
     }
 

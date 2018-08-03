@@ -283,7 +283,7 @@ abstract class Controller
             $response->initializeResponse($model);
         }
 
-        APILogger::addDebug('Response', $this->getResponse()->withJson($response));
+        APILogger::addDebug('Response', $this->getResponse());
 
         return $this->getResponse()->withJson($response);
     }

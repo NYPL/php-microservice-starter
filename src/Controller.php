@@ -250,7 +250,10 @@ abstract class Controller
             $model->setLimit($this->getRequest()->getParam('limit'));
 
             $includeTotalCount = $this->getRequest()->getParam('includeTotalCount') === 'true' ? true : false ;
-            
+
+            if ($includeTotalCount) {
+                $model->setIncludeTotalCount($includeTotalCount);
+            }
 
             if ($filter) {
                 $model->addFilter($filter);
@@ -263,10 +266,6 @@ abstract class Controller
             }
 
             $model->read();
-
-            if ($includeTotalCount) {
-                $model->setIncludeTotalCount($includeTotalCount);
-            }
 
             $response->initializeResponse($model);
         } else {

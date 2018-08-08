@@ -2,6 +2,7 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
+use NYPL\Starter\APILogger;
 use NYPL\Starter\Slim\DB;
 use NYPL\Starter\Filter;
 use NYPL\Starter\Filter\OrFilter;
@@ -111,6 +112,8 @@ trait DBReadTrait
         }
 
         $selectStatement->closeParenthesis();
+
+        APILogger::addDebug('selectStatement', $selectStatement);
     }
 
     /**
@@ -156,6 +159,8 @@ trait DBReadTrait
 
         $this->applyWhere($filter, $selectStatement);
 
+        APILogger::addDebug('selectStatement', $selectStatement);
+
         return true;
     }
 
@@ -181,6 +186,8 @@ trait DBReadTrait
             '=',
             true
         );
+
+        APILogger::addDebug('selectStatement', $selectStatement);
 
         return true;
     }

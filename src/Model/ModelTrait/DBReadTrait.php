@@ -125,6 +125,8 @@ trait DBReadTrait
      */
     protected function addWhere(Filter $filter, ExtendedSelectStatement $selectStatement)
     {
+        $selectStatement->addParenthesis();
+        
         if ($filter instanceof OrFilter) {
             $this->addOrWhere($filter, $selectStatement);
 
@@ -158,6 +160,8 @@ trait DBReadTrait
         }
 
         $this->applyWhere($filter, $selectStatement);
+
+        $selectStatement->closeParenthesis();
 
         APILogger::addDebug('selectStatement', $selectStatement);
 

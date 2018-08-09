@@ -74,10 +74,11 @@ trait DBReadTrait
      * @param int $count
      * @param Filter $filter
      * @param ExtendedSelectStatement $selectStatement
+     * @param string $chainType
      *
      * @return bool
      */
-    protected function applyOrWhere($count, Filter $filter, ExtendedSelectStatement $selectStatement)
+    protected function applyOrWhere($count, Filter $filter, ExtendedSelectStatement $selectStatement, $chainType = 'OR')
     {
         if (!$count) {
             $selectStatement->where(
@@ -89,11 +90,19 @@ trait DBReadTrait
             return true;
         }
 
-        $selectStatement->orWhere(
-            $this->translateDbName($filter->getFilterColumn()),
-            $this->getOperator($filter),
-            $filter->getFilterValue()
-        );
+        if ($chainType === 'OR') {
+            $selectStatement->orWhere(
+                $this->translateDbName($filter->getFilterColumn()),
+                $this->getOperator($filter),
+                $filter->getFilterValue()
+            );
+        } else if ($chainType === 'AND') {
+            $selectStatement->where(
+                $this->translateDbName($filter->getFilterColumn()),
+                $this->getOperator($filter),
+                $filter->getFilterValue()
+            );
+        }
 
         return true;
     }
@@ -106,8 +115,10 @@ trait DBReadTrait
     {
         $selectStatement->addParenthesis();
 
+        $chainType = $filter->getChainType();
+
         foreach ($filter->getFilters() as $count => $filter) {
-            $this->applyOrWhere($count, $filter, $selectStatement);
+            $this->applyOrWhere($count, $filter, $selectStatement, $chainType);
         }
 
         $selectStatement->closeParenthesis();

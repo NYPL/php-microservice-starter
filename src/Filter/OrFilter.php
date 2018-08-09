@@ -11,12 +11,20 @@ class OrFilter extends Filter
     public $filters = [];
 
     /**
+     * @var string
+     */
+    public $chainType;
+
+    /**
      * @param Filter[] $filters
      */
-    public function __construct(array $filters = [])
+    public function __construct(array $filters = [], $chainType = 'OR')
     {
         if ($filters) {
             $this->setFilters($filters);
+        }
+        if ($chainType) {
+            $this->setChainType($chainType);
         }
     }
 
@@ -42,5 +50,21 @@ class OrFilter extends Filter
     public function addFilter(Filter $filter)
     {
         $this->filters[] = $filter;
+    }
+
+    /**
+     * @return string
+     */
+    public function getChainType()
+    {
+        return $this->chainType;
+    }
+
+    /**
+     * @param string $chainType
+     */
+    public function setChainType($chainType)
+    {
+        $this->chainType = $chainType;
     }
 }

@@ -2,7 +2,6 @@
 namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
-use NYPL\Starter\APILogger;
 use NYPL\Starter\Slim\DB;
 use NYPL\Starter\Filter;
 use NYPL\Starter\Filter\OrFilter;
@@ -75,10 +74,11 @@ trait DBReadTrait
      * @param int $count
      * @param Filter $filter
      * @param ExtendedSelectStatement $selectStatement
+     * @param string $chainType
      *
      * @return bool
      */
-    protected function applyOrWhere($count, Filter $filter, ExtendedSelectStatement $selectStatement)
+    protected function applyOrWhere($count, Filter $filter, ExtendedSelectStatement $selectStatement, $chainType = 'OR')
     {
         if (!$count) {
             $selectStatement->where(
@@ -90,11 +90,19 @@ trait DBReadTrait
             return true;
         }
 
-        $selectStatement->orWhere(
-            $this->translateDbName($filter->getFilterColumn()),
-            $this->getOperator($filter),
-            $filter->getFilterValue()
-        );
+        if ($chainType === 'OR') {
+            $selectStatement->orWhere(
+                $this->translateDbName($filter->getFilterColumn()),
+                $this->getOperator($filter),
+                $filter->getFilterValue()
+            );
+        } else if ($chainType === 'AND') {
+            $selectStatement->where(
+                $this->translateDbName($filter->getFilterColumn()),
+                $this->getOperator($filter),
+                $filter->getFilterValue()
+            );
+        }
 
         return true;
     }
@@ -107,13 +115,13 @@ trait DBReadTrait
     {
         $selectStatement->addParenthesis();
 
+        $chainType = $filter->getChainType();
+
         foreach ($filter->getFilters() as $count => $filter) {
-            $this->applyOrWhere($count, $filter, $selectStatement);
+            $this->applyOrWhere($count, $filter, $selectStatement, $chainType);
         }
 
         $selectStatement->closeParenthesis();
-
-        APILogger::addDebug('selectStatement', $selectStatement);
     }
 
     /**
@@ -159,8 +167,6 @@ trait DBReadTrait
 
         $this->applyWhere($filter, $selectStatement);
 
-        APILogger::addDebug('selectStatement', $selectStatement);
-
         return true;
     }
 
@@ -186,8 +192,6 @@ trait DBReadTrait
             '=',
             true
         );
-
-        APILogger::addDebug('selectStatement', $selectStatement);
 
         return true;
     }

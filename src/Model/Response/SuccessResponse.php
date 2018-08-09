@@ -1,7 +1,6 @@
 <?php
 namespace NYPL\Starter\Model\Response;
 
-use NYPL\Starter\APILogger;
 use NYPL\Starter\Model;
 use NYPL\Starter\ModelSet;
 use NYPL\Starter\Model\Response;
@@ -116,7 +115,6 @@ abstract class SuccessResponse extends Response
      */
     public function getData()
     {
-        APILogger::addDebug('data', $this->data);
         return $this->data;
     }
 

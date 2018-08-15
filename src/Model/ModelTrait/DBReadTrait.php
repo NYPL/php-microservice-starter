@@ -99,15 +99,47 @@ trait DBReadTrait
     }
 
     /**
+     * @param int $count
+     * @param Filter $filter
+     * @param ExtendedSelectStatement $selectStatement
+     *
+     * @return bool
+     */
+    protected function applyAndWhere($count, Filter $filter, ExtendedSelectStatement $selectStatement)
+    {
+        if (!$count) {
+            $selectStatement->orWhere(
+                $this->translateDbName($filter->getFilterColumn()),
+                $this->getOperator($filter),
+                $filter->getFilterValue()
+            );
+
+            return true;
+        }
+
+        $selectStatement->where(
+            $this->translateDbName($filter->getFilterColumn()),
+            $this->getOperator($filter),
+            $filter->getFilterValue()
+        );
+
+        return true;
+    }
+
+    /**
      * @param OrFilter $filter
      * @param ExtendedSelectStatement $selectStatement
      */
-    protected function addOrWhere(OrFilter $filter, ExtendedSelectStatement $selectStatement)
+    protected function addOrWhere(OrFilter $orFilter, ExtendedSelectStatement $selectStatement)
     {
         $selectStatement->addParenthesis();
 
-        foreach ($filter->getFilters() as $count => $filter) {
-            $this->applyOrWhere($count, $filter, $selectStatement);
+        foreach ($orFilter->getFilters() as $count => $filter) {
+            if ($orFilter->isAndFilters()) {
+                $this->applyAndWhere($count, $filter, $selectStatement);
+            } else {
+                $this->applyOrWhere($count, $filter, $selectStatement);
+            }
         }
 
         $selectStatement->closeParenthesis();

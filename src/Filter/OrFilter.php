@@ -11,12 +11,22 @@ class OrFilter extends Filter
     public $filters = [];
 
     /**
-     * @param Filter[] $filters
+     * @var bool
      */
-    public function __construct(array $filters = [])
+    public $andFilters = false;
+
+    /**
+     * @param Filter[] $filters
+     * @param bool $andFilters
+     */
+    public function __construct(array $filters = [], $andFilters = false)
     {
         if ($filters) {
             $this->setFilters($filters);
+        }
+
+        if ($andFilters) {
+            $this->setAndFilters($andFilters);
         }
     }
 
@@ -42,5 +52,21 @@ class OrFilter extends Filter
     public function addFilter(Filter $filter)
     {
         $this->filters[] = $filter;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAndFilters()
+    {
+        return $this->andFilters;
+    }
+
+    /**
+     * @param bool $andFilters
+     */
+    public function setAndFilters($andFilters)
+    {
+        $this->andFilters = $andFilters;
     }
 }

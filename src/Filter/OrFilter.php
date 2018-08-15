@@ -41,8 +41,12 @@ class OrFilter extends Filter
     /**
      * @param \NYPL\Starter\Filter[] $filters
      */
-    public function setFilters($filters)
+    public function setFilters(array $filters)
     {
+        $filters = array_filter($filters, function ($element) {
+            if ($element instanceof Filter) return true;
+        });
+
         $this->filters = $filters;
     }
 

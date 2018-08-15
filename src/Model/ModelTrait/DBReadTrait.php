@@ -80,11 +80,7 @@ trait DBReadTrait
     protected function applyOrWhere($count, Filter $filter, ExtendedSelectStatement $selectStatement)
     {
         if (!$count) {
-            $selectStatement->where(
-                $this->translateDbName($filter->getFilterColumn()),
-                $this->getOperator($filter),
-                $filter->getFilterValue()
-            );
+            $this->addWhere($filter, $selectStatement);
 
             return true;
         }
@@ -117,11 +113,7 @@ trait DBReadTrait
             return true;
         }
 
-        $selectStatement->where(
-            $this->translateDbName($filter->getFilterColumn()),
-            $this->getOperator($filter),
-            $filter->getFilterValue()
-        );
+        $this->addWhere($filter, $selectStatement);
 
         return true;
     }

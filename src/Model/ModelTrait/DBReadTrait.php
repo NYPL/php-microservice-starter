@@ -10,6 +10,7 @@ use NYPL\Starter\ModelSet;
 use NYPL\Starter\OrderBy;
 use NYPL\Starter\Slim\ExtendedSelectStatement;
 use Slim\PDO\Statement\SelectStatement;
+use Slim\PDO\Statement\StatementContainer;
 
 trait DBReadTrait
 {
@@ -73,14 +74,18 @@ trait DBReadTrait
     /**
      * @param int $count
      * @param Filter $filter
-     * @param ExtendedSelectStatement $selectStatement
+     * @param StatementContainer $selectStatement
      *
      * @return bool
      */
-    protected function applyOrWhere($count, Filter $filter, ExtendedSelectStatement $selectStatement)
+    protected function applyOrWhere($count, Filter $filter, StatementContainer $selectStatement)
     {
         if (!$count) {
-            $this->addWhere($filter, $selectStatement);
+            $selectStatement->where(
+                $this->translateDbName($filter->getFilterColumn()),
+                $this->getOperator($filter),
+                $filter->getFilterValue()
+            );
 
             return true;
         }
@@ -95,43 +100,15 @@ trait DBReadTrait
     }
 
     /**
-     * @param int $count
-     * @param Filter $filter
-     * @param ExtendedSelectStatement $selectStatement
-     *
-     * @return bool
-     */
-    protected function applyAndWhere($count, Filter $filter, ExtendedSelectStatement $selectStatement)
-    {
-        if (!$count) {
-            $selectStatement->orWhere(
-                $this->translateDbName($filter->getFilterColumn()),
-                $this->getOperator($filter),
-                $filter->getFilterValue()
-            );
-
-            return true;
-        }
-
-        $this->addWhere($filter, $selectStatement);
-
-        return true;
-    }
-
-    /**
      * @param OrFilter $filter
      * @param ExtendedSelectStatement $selectStatement
      */
-    protected function addOrWhere(OrFilter $orFilter, ExtendedSelectStatement $selectStatement)
+    protected function addOrWhere(OrFilter $filter, ExtendedSelectStatement $selectStatement)
     {
         $selectStatement->addParenthesis();
 
-        foreach ($orFilter->getFilters() as $count => $filter) {
-            if ($orFilter->isAndFilters()) {
-                $this->applyAndWhere($count, $filter, $selectStatement);
-            } else {
-                $this->applyOrWhere($count, $filter, $selectStatement);
-            }
+        foreach ($filter->getFilters() as $count => $filter) {
+            $this->applyOrWhere($count, $filter, $selectStatement);
         }
 
         $selectStatement->closeParenthesis();
@@ -139,12 +116,12 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param ExtendedSelectStatement $selectStatement
+     * @param StatementContainer $selectStatement
      *
      * @return bool
      * @throws APIException
      */
-    protected function addWhere(Filter $filter, ExtendedSelectStatement $selectStatement)
+    protected function addWhere(Filter $filter, StatementContainer $selectStatement)
     {
         if ($filter instanceof OrFilter) {
             $this->addOrWhere($filter, $selectStatement);
@@ -185,12 +162,12 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param ExtendedSelectStatement $selectStatement
+     * @param StatementContainer $selectStatement
      *
      * @return bool
      * @throws APIException
      */
-    protected function addJsonWhere(Filter $filter, ExtendedSelectStatement $selectStatement)
+    protected function addJsonWhere(Filter $filter, StatementContainer $selectStatement)
     {
         $values = explode(',', $filter->getFilterValue());
 
@@ -211,12 +188,12 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param ExtendedSelectStatement $selectStatement
+     * @param StatementContainer $selectStatement
      *
      * @return bool
      * @throws APIException
      */
-    protected function applyRange(Filter $filter, ExtendedSelectStatement $selectStatement)
+    protected function applyRange(Filter $filter, StatementContainer $selectStatement)
     {
         $this->setOrderBy($this->translateDbName($filter->getFilterColumn()));
 
@@ -265,11 +242,11 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param ExtendedSelectStatement $selectStatement
+     * @param StatementContainer $selectStatement
      *
      * @return bool
      */
-    protected function applyWhere(Filter $filter, ExtendedSelectStatement $selectStatement)
+    protected function applyWhere(Filter $filter, StatementContainer $selectStatement)
     {
         if (strpos($filter->getFilterValue(), ',') !== false) {
             $selectStatement->whereIn(

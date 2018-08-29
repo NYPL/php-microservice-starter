@@ -80,7 +80,7 @@ trait SierraTrait
                 throw new APIException(
                     (
                     isset($response['description']) ?
-                        'Error calling Sierra API  ' . $response['description'] :
+                        'Error calling Sierra API: ' . $response['description'] :
                         $clientException->getMessage()
                     ),
                     null,

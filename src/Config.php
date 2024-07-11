@@ -141,7 +141,7 @@ class Config
             );
         }
 
-        $dotEnv = new Dotenv(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
+        $dotEnv = Dotenv\Dotenv::createImmutable(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
         $dotEnv->load();
     }
 

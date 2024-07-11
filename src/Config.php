@@ -155,8 +155,8 @@ class Config
         }
 
         if (file_exists(self::getConfigDirectory() . '/' . self::GLOBAL_ENVIRONMENT_FILE)) {
-            $dotEnv = new Dotenv(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
-            $dotEnv->load();
+          $dotEnv = Dotenv::createImmutable(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
+          $dotEnv->load();
         }
 
         self::setInitialized(true);

@@ -1,10 +1,11 @@
 <?php
 namespace NYPL\Starter;
 
+use Aura\Di\Container;
 use Slim\App;
-use Slim\Container;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Slim\Factory\AppFactory;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
 class Service extends App
 {
@@ -21,7 +22,10 @@ class Service extends App
             $container = new DefaultContainer();
         }
 
-        parent::__construct($container);
+        AppFactory::setContainer($container);
+        $app = AppFactory::create();
+
+        parent::__construct($app->getResponseFactory(), $container);
 
         $this->setupDefaultRoutes();
     }

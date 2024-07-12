@@ -1,10 +1,10 @@
 <?php
 namespace NYPL\Starter;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
 use NYPL\Starter\Model\Response\ErrorResponse;
-use Slim\Container;
+use Aura\DI\Container;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
 class DefaultContainer extends Container
 {
@@ -15,7 +15,7 @@ class DefaultContainer extends Container
      *
      * @return int
      */
-    protected function getStatusCode(\Throwable $exception)
+    protected function getStatusCode(\Throwable $exception): int
     {
         if ($exception instanceof APIException) {
             return $exception->getHttpCode();
@@ -47,7 +47,7 @@ class DefaultContainer extends Container
      * @return ErrorResponse
      * @throws APIException
      */
-    protected function getErrorResponse(\Throwable $exception)
+    protected function getErrorResponse(\Throwable $exception): ErrorResponse
     {
         if ($exception instanceof APIException && $exception->getErrorResponse()) {
             $errorResponse = $exception->getErrorResponse();

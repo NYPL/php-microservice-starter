@@ -15,7 +15,8 @@
     "zircote/swagger-php": ">=2.0.7",
     "aws/aws-sdk-php": ">=3.31.4",
     "vlucas/phpdotenv": ">=2.4.0",
-    "guzzlehttp/guzzle": ">=6.2.3"
+    "guzzlehttp/guzzle": ">=6.2.3",
+    "aura/di": "4.*"
   },
   "require-dev": {
   },

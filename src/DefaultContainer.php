@@ -1,8 +1,10 @@
 <?php
 namespace NYPL\Starter;
 
+use Aura\Di\Injection\InjectionFactory;
 use NYPL\Starter\Model\Response\ErrorResponse;
-use Aura\DI\Container;
+use Aura\Di\Container;
+use Psr\Container\ContainerInterface;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -88,9 +90,11 @@ class DefaultContainer extends Container
             ->withHeader("Access-Control-Allow-Origin", "*");
     }
 
-    public function __construct()
+    public function __construct(
+        InjectionFactory $injectionFactory,
+        ContainerInterface $delegateContainer = null)
     {
-        parent::__construct();
+        parent::__construct($injectionFactory,  $delegateContainer);
 
         $this["settings"]["displayErrorDetails"] = false;
 

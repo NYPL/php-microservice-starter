@@ -2,6 +2,7 @@
 namespace NYPL\Starter;
 
 use Aura\Di\Container;
+use Aura\Di\ContainerBuilder;
 use Slim\App;
 use Slim\Factory\AppFactory;
 use Slim\Psr7\Request;
@@ -19,8 +20,11 @@ class Service extends App
         register_shutdown_function(ErrorHandler::class . "::shutdownFunction");
 
         if (!$container) {
-            $container = new DefaultContainer();
+            $builder = new ContainerBuilder();
+            $container = $builder->newInstance();
+            //$container->set(ErrorHandler::class, $container->newInstance('NYPL\Starter\ErrorHandler'));
         }
+
 
         AppFactory::setContainer($container);
         $app = AppFactory::create();
@@ -53,6 +57,14 @@ class Service extends App
                 )
                 ->withHeader('X-NYPL-Original-Request', $request->getUri())
                 ->withHeader('X-NYPL-Response-Date', date('c'));
+        });
+
+        $this->get("[/{params:.*}]", function (Request $request, Response $response) {
+            return $response
+                ->withHeader(
+                    "Cache-Control",
+                    "public, max-age=" . self::CACHE_SECONDS_OPTIONS_REQUEST
+                );
         });
 
         $this->options("[/{params:.*}]", function (Request $request, Response $response) {

@@ -1,10 +1,10 @@
 <?php
 namespace NYPL\Starter\Slim;
 
-use Slim\PDO\Database;
-use Slim\PDO\Statement\SelectStatement;
+use FaaPz\PDO\Database;
+use FaaPz\PDO\Statement\Select;
 
-class ExtendedSelectStatement extends SelectStatement
+class ExtendedSelectStatement extends Select
 {
     /**
      * ExtendedSelectStatement constructor.

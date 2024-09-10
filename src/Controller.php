@@ -5,9 +5,8 @@ use NYPL\Starter\Filter\QueryFilter;
 use NYPL\Starter\Model\Source;
 use NYPL\Starter\Model\IdentityHeader;
 use NYPL\Starter\Model\Response\SuccessResponse;
-use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 abstract class Controller
 {
@@ -218,10 +217,10 @@ abstract class Controller
      */
     protected function addQueryFilter(ModelSet $model, $queryParameterName = '')
     {
-        if ($this->getRequest()->getQueryParam($queryParameterName)) {
+        if ($this->getQueryParam($queryParameterName)) {
             $filter = new QueryFilter(
                 $queryParameterName,
-                $this->getRequest()->getQueryParam($queryParameterName)
+                $this->getQueryParam($queryParameterName)
             );
 
             $model->addFilter($filter);
@@ -237,6 +236,7 @@ abstract class Controller
      * @param array $queryParameters
      *
      * @return Response
+     * @throws APIException
      */
     protected function getDefaultReadResponse(
         Model $model,
@@ -245,11 +245,11 @@ abstract class Controller
         array $queryParameters = []
     ) {
         if ($model instanceof ModelSet) {
-            $model->setOffset($this->getRequest()->getParam('offset'));
+            $model->setOffset($this->getQueryParam('offset'));
 
-            $model->setLimit($this->getRequest()->getParam('limit'));
+            $model->setLimit($this->getQueryParam('limit'));
 
-            $includeTotalCount = $this->getRequest()->getParam('includeTotalCount') === 'true' ? true : false ;
+            $includeTotalCount = $this->getQueryParam('includeTotalCount') === 'true' ? true : false ;
 
             if ($includeTotalCount) {
                 $model->setIncludeTotalCount($includeTotalCount);
@@ -346,7 +346,6 @@ abstract class Controller
         );
     }
 
-
     /**
      * @param string $message
      *
@@ -362,4 +361,32 @@ abstract class Controller
             403
         );
     }
+
+    /**
+     * Get query parameters from request as array.
+     *
+     * @return null|array
+     */
+    public function getQueryParams(): ?array
+    {
+        parse_str($this->getRequest()->getUri()->getQuery(), $queryParameters);
+        return $queryParameters;
+    }
+
+    /**
+     * Get query parameter value from request.
+     *
+     * @param  string  $var
+     * @return null|string
+     */
+    public function getQueryParam(string $var): ?string
+    {
+        $params = $this->getQueryParams();
+        $val = null;
+        if (isset($params[$var])) {
+            $val = $params[$var];
+        }
+        return $val;
+    }
+
 }

@@ -2,11 +2,12 @@
 namespace NYPL\Starter;
 
 use Aura\Di\Injection\InjectionFactory;
+use GuzzleHttp\Psr7\Stream;
 use NYPL\Starter\Model\Response\ErrorResponse;
 use Aura\Di\Container;
 use Psr\Container\ContainerInterface;
-use Slim\Psr7\Request;
-use Slim\Psr7\Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class DefaultContainer extends Container
 {
@@ -84,9 +85,11 @@ class DefaultContainer extends Container
     {
         $this->logError($request, $exception);
 
+        $json = json_encode($this->getErrorResponse($exception));
+        $streamBody = fopen('data://text/plain,' . $json,'r');
         return $container["response"]
             ->withStatus($this->getStatusCode($exception))
-            ->withJson($this->getErrorResponse($exception))
+            ->withBody(new Stream($streamBody))
             ->withHeader("Access-Control-Allow-Origin", "*");
     }
 

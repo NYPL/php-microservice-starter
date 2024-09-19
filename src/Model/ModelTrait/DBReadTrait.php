@@ -1,6 +1,8 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
+use FaaPz\PDO\Clause\Conditional;
+use FaaPz\PDO\Clause\Grouping;
 use NYPL\Starter\APIException;
 use NYPL\Starter\Slim\DB;
 use NYPL\Starter\Filter;
@@ -10,7 +12,8 @@ use NYPL\Starter\ModelSet;
 use NYPL\Starter\OrderBy;
 use NYPL\Starter\Slim\ExtendedSelectStatement;
 use Slim\PDO\Statement\SelectStatement;
-use Slim\PDO\Statement\StatementContainer;
+use FaaPz\PDO\Clause\Limit;
+use FaaPz\PDO\StatementInterface;
 
 trait DBReadTrait
 {
@@ -22,7 +25,6 @@ trait DBReadTrait
     {
         $selectStatement = DB::getDatabase()->select()
             ->from($this->getTableName());
-
         $this->applyFilters($this->getFilters(), $selectStatement);
 
         return $selectStatement;
@@ -74,11 +76,11 @@ trait DBReadTrait
     /**
      * @param int $count
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param StatementInterface $selectStatement
      *
      * @return bool
      */
-    protected function applyOrWhere($count, Filter $filter, StatementContainer $selectStatement)
+    protected function applyOrWhere($count, Filter $filter, StatementInterface $selectStatement)
     {
         if (!$count) {
             $this->addWhere($filter, $selectStatement);
@@ -98,11 +100,11 @@ trait DBReadTrait
     /**
      * @param int $count
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param StatementInterface $selectStatement
      *
      * @return bool
      */
-    protected function applyAndWhere($count, Filter $filter, StatementContainer $selectStatement)
+    protected function applyAndWhere($count, Filter $filter, StatementInterface $selectStatement)
     {
         if (!$count) {
             $selectStatement->orWhere(
@@ -140,12 +142,12 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param StatementInterface $selectStatement
      *
      * @return bool
      * @throws APIException
      */
-    protected function addWhere(Filter $filter, StatementContainer $selectStatement)
+    protected function addWhere(Filter $filter, StatementInterface $selectStatement)
     {
         if ($filter instanceof OrFilter) {
             $this->addOrWhere($filter, $selectStatement);
@@ -186,12 +188,12 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param StatementInterface $selectStatement
      *
      * @return bool
      * @throws APIException
      */
-    protected function addJsonWhere(Filter $filter, StatementContainer $selectStatement)
+    protected function addJsonWhere(Filter $filter, StatementInterface $selectStatement)
     {
         $values = explode(',', $filter->getFilterValue());
 
@@ -201,23 +203,23 @@ trait DBReadTrait
             $valueString .= DB::getDatabase()->quote($value) . ',';
         }
 
-        $selectStatement->where(
+        $selectStatement->where(new Conditional(
             'jsonb_contains_or(' . $this->translateDbName($filter->getFilterColumn()) . ', array[' . substr($valueString, 0, -1) . '])',
             '=',
             true
-        );
+        ));
 
         return true;
     }
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param StatementInterface $selectStatement
      *
      * @return bool
      * @throws APIException
      */
-    protected function applyRange(Filter $filter, StatementContainer $selectStatement)
+    protected function applyRange(Filter $filter, StatementInterface $selectStatement)
     {
         $this->setOrderBy($this->translateDbName($filter->getFilterColumn()));
 
@@ -238,21 +240,21 @@ trait DBReadTrait
                 );
             }
 
-            $selectStatement->where(
+            $selectStatement->where(new Conditional(
                 $this->translateDbName($filter->getFilterColumn()),
                 '<',
                 $range[1]
-            );
+            ));
 
             return true;
         }
 
         if (!$range[1]) {
-            $selectStatement->where(
+            $selectStatement->where(new Conditional(
                 $this->translateDbName($filter->getFilterColumn()),
                 '>=',
                 $range[0]
-            );
+            ));
 
             return true;
         }
@@ -266,11 +268,11 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param StatementInterface $selectStatement
      *
      * @return bool
      */
-    protected function applyWhere(Filter $filter, StatementContainer $selectStatement)
+    protected function applyWhere(Filter $filter, StatementInterface $selectStatement)
     {
         if (strpos($filter->getFilterValue(), ',') !== false) {
             $selectStatement->whereIn(
@@ -281,11 +283,18 @@ trait DBReadTrait
             return true;
         }
 
-        $selectStatement->where(
+        $conditional = new Conditional(
             $this->translateDbName($filter->getFilterColumn()),
             $this->getOperator($filter),
             $filter->getFilterValue()
         );
+
+        if ($existingWhere = $selectStatement->getWhere()) {
+            $grouping = new Grouping('AND', $conditional, $existingWhere);
+        } else {
+            $grouping = $conditional;
+        }
+        $selectStatement->where($grouping);
 
         return true;
     }
@@ -319,7 +328,7 @@ trait DBReadTrait
         }
 
         if ($this->getLimit()) {
-            $selectStatement->limit($this->getLimit());
+            $selectStatement->limit(new Limit($this->getLimit()));
         }
 
         $selectStatement = $selectStatement->execute();

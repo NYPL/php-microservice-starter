@@ -5,8 +5,10 @@ use NYPL\Starter\Filter\QueryFilter;
 use NYPL\Starter\Model\Source;
 use NYPL\Starter\Model\IdentityHeader;
 use NYPL\Starter\Model\Response\SuccessResponse;
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use \GuzzleHttp\Psr7\Stream;
 
 abstract class Controller
 {
@@ -89,6 +91,16 @@ abstract class Controller
     public function setResponse(Response $response)
     {
         $this->response = $response;
+    }
+
+    /**
+     * @return MessageInterface
+     */
+    public function getJsonResponse($data)
+    {
+        $json = json_encode($data);
+        $streamBody = fopen('data://text/plain,' . $json,'r');
+        return $this->getResponse()->withBody(new Stream($streamBody));
     }
 
     /**
@@ -283,7 +295,7 @@ abstract class Controller
             $response->initializeResponse($model);
         }
 
-        return $this->getResponse()->withJson($response);
+        return $this->getJsonResponse($response);
     }
 
     /**

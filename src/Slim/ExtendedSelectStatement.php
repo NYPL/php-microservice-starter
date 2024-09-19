@@ -28,4 +28,9 @@ class ExtendedSelectStatement extends Select
     {
         $this->whereClause->closeParenthesis();
     }
+    
+    public function getWhere() {
+        return $this->where;
+    }
+    
 }

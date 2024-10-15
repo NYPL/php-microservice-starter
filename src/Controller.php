@@ -53,11 +53,8 @@ abstract class Controller
     {
         $this->setRequest($request);
         $this->setResponse($response);
-
         $this->addCacheHeader($cacheSeconds);
-
         $this->initializeContentType();
-
         $this->initializeIdentityHeader();
     }
 

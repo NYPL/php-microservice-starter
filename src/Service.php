@@ -23,12 +23,12 @@ class Service extends App
         if (!$container) {
             $builder = new ContainerBuilder();
             $container = $builder->newInstance();
-            //$container->set(ErrorHandler::class, $container->newInstance('NYPL\Starter\ErrorHandler'));
         }
-
 
         AppFactory::setContainer($container);
         $app = AppFactory::create();
+
+        $app->addBodyParsingMiddleware();
 
         parent::__construct($app->getResponseFactory(), $container);
 
@@ -37,8 +37,7 @@ class Service extends App
 
     protected function setupDefaultRoutes()
     {
-
-        $middleware = function (Request $request, Response $response, callable $next) {
+        $this->add(function (Request $request, Response $response, callable $next) {
             $response = $next($request, $response);
             return $response
                 ->withHeader(
@@ -59,16 +58,14 @@ class Service extends App
                 )
                 ->withHeader('X-NYPL-Original-Request', $request->getUri())
                 ->withHeader('X-NYPL-Response-Date', date('c'));
-        };
+        });
 
-        $this->addRoutingMiddleware($middleware);
-//
-//        $this->options("[/{params:.*}]", function (Request $request, Response $response) {
-//            return $response
-//                ->withHeader(
-//                    "Cache-Control",
-//                    "public, max-age=" . self::CACHE_SECONDS_OPTIONS_REQUEST
-//                );
-//        });
+        $this->options("[/{params:.*}]", function (Request $request, Response $response) {
+            return $response
+                ->withHeader(
+                    "Cache-Control",
+                    "public, max-age=" . self::CACHE_SECONDS_OPTIONS_REQUEST
+                );
+        });
     }
 }

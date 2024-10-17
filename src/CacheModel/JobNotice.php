@@ -4,18 +4,18 @@ namespace NYPL\Starter\CacheModel;
 use NYPL\Starter\CacheModel;
 
 /**
- * @SWG\Definition(type="object")
+ * @OA\Schema(type="object")
  */
 class JobNotice extends CacheModel
 {
     /**
-     * @SWG\Property(example="Processing has started...", type="string")
+     * @OA\Property(example="Processing has started...", type="string")
      * @var string
      */
     public $text = '';
 
     /**
-     * @SWG\Property(type="object")
+     * @OA\Property(type="object")
      * @var mixed
      */
     public $data;

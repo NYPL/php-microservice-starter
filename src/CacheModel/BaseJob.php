@@ -6,31 +6,31 @@ use NYPL\Starter\CacheModel;
 class BaseJob extends CacheModel
 {
     /**
-     * @SWG\Property(example="https://www.nypl.org/item/121")
+     * @OA\Property(example="https://www.nypl.org/item/121")
      * @var string
      */
     public $successRedirectUrl = '';
 
     /**
-     * @SWG\Property(example="https://www.nypl.org/callback")
+     * @OA\Property(example="https://www.nypl.org/callback")
      * @var string
      */
     public $startCallbackUrl = '';
 
     /**
-     * @SWG\Property(example="https://www.nypl.org/callback")
+     * @OA\Property(example="https://www.nypl.org/callback")
      * @var string
      */
     public $successCallbackUrl = '';
 
     /**
-     * @SWG\Property(example="https://www.nypl.org/callback")
+     * @OA\Property(example="https://www.nypl.org/callback")
      * @var string
      */
     public $failureCallbackUrl = '';
 
     /**
-     * @SWG\Property(example="https://www.nypl.org/callback")
+     * @OA\Property(example="https://www.nypl.org/callback")
      * @var string
      */
     public $updateCallbackUrl = '';

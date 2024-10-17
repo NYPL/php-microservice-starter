@@ -83,7 +83,7 @@ trait DBCreateTrait
 
         $insertStatement = DB::getDatabase()->insert(array_keys($insertValues))
             ->into($this->getTableName())
-            ->values(...array_values($insertValues));
+            ->values(array_values($insertValues));
 
         $insertStatement->execute(false);
 

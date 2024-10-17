@@ -1,10 +1,13 @@
 <?php
 namespace NYPL\Starter;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Aura\Di\Injection\InjectionFactory;
+use GuzzleHttp\Psr7\Stream;
 use NYPL\Starter\Model\Response\ErrorResponse;
-use Slim\Container;
+use Aura\Di\Container;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class DefaultContainer extends Container
 {
@@ -15,7 +18,7 @@ class DefaultContainer extends Container
      *
      * @return int
      */
-    protected function getStatusCode(\Throwable $exception)
+    protected function getStatusCode(\Throwable $exception): int
     {
         if ($exception instanceof APIException) {
             return $exception->getHttpCode();
@@ -47,7 +50,7 @@ class DefaultContainer extends Container
      * @return ErrorResponse
      * @throws APIException
      */
-    protected function getErrorResponse(\Throwable $exception)
+    protected function getErrorResponse(\Throwable $exception): ErrorResponse
     {
         if ($exception instanceof APIException && $exception->getErrorResponse()) {
             $errorResponse = $exception->getErrorResponse();
@@ -82,15 +85,19 @@ class DefaultContainer extends Container
     {
         $this->logError($request, $exception);
 
+        $json = json_encode($this->getErrorResponse($exception));
+        $streamBody = fopen('data://text/plain,' . $json,'r');
         return $container["response"]
             ->withStatus($this->getStatusCode($exception))
-            ->withJson($this->getErrorResponse($exception))
+            ->withBody(new Stream($streamBody))
             ->withHeader("Access-Control-Allow-Origin", "*");
     }
 
-    public function __construct()
+    public function __construct(
+        InjectionFactory $injectionFactory,
+        ContainerInterface $delegateContainer = null)
     {
-        parent::__construct();
+        parent::__construct($injectionFactory,  $delegateContainer);
 
         $this["settings"]["displayErrorDetails"] = false;
 

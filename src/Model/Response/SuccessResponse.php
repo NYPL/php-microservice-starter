@@ -8,7 +8,7 @@ use NYPL\Starter\Model\Response;
 abstract class SuccessResponse extends Response
 {
     /**
-     * @SWG\Property
+     * @OA\Property
      */
     public $data;
 

@@ -1,9 +1,7 @@
 <?php
 namespace NYPL\Starter\Slim;
 
-use Slim\PDO\Clause\WhereClause;
-
-class ExtendedWhereClause extends WhereClause
+class ExtendedWhereClause
 {
     public function addParenthesis()
     {

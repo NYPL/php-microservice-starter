@@ -4,24 +4,24 @@ namespace NYPL\Starter\Model;
 use NYPL\Starter\APILogger;
 
 /**
- * @SWG\Definition(name="BulkError", type="object")
+ * @OA\Schema(name="BulkError", type="object")
  */
 class BulkError
 {
     /**
-     * @SWG\Property(format="int32")
+     * @OA\Property(format="int32")
      * @var int
      */
     public $index = 0;
 
     /**
-     * @SWG\Property(example="Description of error")
+     * @OA\Property(example="Description of error")
      * @var string
      */
     public $message = '';
 
     /**
-     * @SWG\Property(type="object")
+     * @OA\Property(type="object")
      * @var array
      */
     public $data = [];

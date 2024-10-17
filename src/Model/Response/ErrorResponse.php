@@ -5,30 +5,30 @@ use NYPL\Starter\APIException;
 use NYPL\Starter\Model\Response;
 
 /**
- * @SWG\Definition(name="ErrorResponse", type="object")
+ * @OA\Schema(name="ErrorResponse", type="object")
  */
 class ErrorResponse extends Response
 {
     /**
-     * @SWG\Property(format="int32")
+     * @OA\Property(format="int32")
      * @var int
      */
     public $statusCode = 500;
 
     /**
-     * @SWG\Property(example="error_type")
+     * @OA\Property(example="error_type")
      * @var string
      */
     public $type = '';
 
     /**
-     * @SWG\Property(example="Description of error")
+     * @OA\Property(example="Description of error")
      * @var string
      */
     public $message = '';
 
     /**
-     * @SWG\Property(type="object")
+     * @OA\Property(type="object")
      * @var array
      */
     public $error = [];

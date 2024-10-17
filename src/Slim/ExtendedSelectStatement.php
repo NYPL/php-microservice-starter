@@ -3,9 +3,15 @@ namespace NYPL\Starter\Slim;
 
 use FaaPz\PDO\Database;
 use FaaPz\PDO\Statement\Select;
+use GuzzleHttp\Client;
 
 class ExtendedSelectStatement extends Select
 {
+    /**
+     * @var ExtendedWhereClause
+     */
+    protected $whereClause;
+    
     /**
      * ExtendedSelectStatement constructor.
      *
@@ -28,9 +34,9 @@ class ExtendedSelectStatement extends Select
     {
         $this->whereClause->closeParenthesis();
     }
-    
+
     public function getWhere() {
         return $this->where;
     }
-    
+
 }

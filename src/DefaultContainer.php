@@ -12,7 +12,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class DefaultContainer extends Container
 {
     const DEFAULT_ERROR_STATUS_CODE = 500;
-    public $settings = [];
+    const settings = [];
 
     /**
      * @param \Throwable $exception

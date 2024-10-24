@@ -12,6 +12,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class DefaultContainer extends Container
 {
     const DEFAULT_ERROR_STATUS_CODE = 500;
+    public $settings = [];
 
     /**
      * @param \Throwable $exception
@@ -99,9 +100,9 @@ class DefaultContainer extends Container
     {
         parent::__construct($injectionFactory,  $delegateContainer);
 
-        $this["settings"]["displayErrorDetails"] = false;
+        $this->settings["displayErrorDetails"] = false;
 
-        $this["notFoundHandler"] = function (Container $container) {
+        $this->notFoundHandler = function (Container $container) {
             return function (Request $request, Response $response) use ($container) {
                 return $container["response"]
                     ->withStatus(404)
@@ -110,13 +111,13 @@ class DefaultContainer extends Container
             };
         };
 
-        $this['phpErrorHandler'] = function ($container) {
+        $this->phpErrorHandler = function ($container) {
             return function (Request $request, Response $response, \Throwable $exception) use ($container) {
                 return $this->handleError($container, $request, $exception);
             };
         };
 
-        $this["errorHandler"] = function (Container $container) {
+        $this->errorHandler = function (Container $container) {
             return function (Request $request, Response $response, \Throwable $exception) use ($container) {
                 return $this->handleError($container, $request, $exception);
             };

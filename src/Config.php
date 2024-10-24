@@ -47,12 +47,12 @@ class Config
      */
     public static function get($name = '', $defaultValue = null, $isEncrypted = false)
     {
-        if (getenv($name) !== false) {
+        if (!empty($_ENV[$name])) {
             if ($isEncrypted && self::isEncryptedEnvironment()) {
                 return self::decryptEnvironmentVariable($name);
             }
 
-            return (string) getenv($name);
+            return (string) $_ENV[$name];
         }
 
         return $defaultValue;
@@ -109,7 +109,7 @@ class Config
      */
     protected static function decryptEnvironmentVariable($name = '')
     {
-        if (!getenv($name)) {
+        if (empty($_ENV[$name])) {
             return '';
         }
 
@@ -120,7 +120,7 @@ class Config
         }
 
         $decryptedValue = (string) self::getKeyClient()->decrypt([
-            'CiphertextBlob' => base64_decode(getenv($name)),
+            'CiphertextBlob' => base64_decode($_ENV[$name]),
         ])['Plaintext'];
 
         AppCache::set($cacheKey, $decryptedValue);
@@ -141,7 +141,7 @@ class Config
             );
         }
 
-        $dotEnv = new Dotenv(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
+        $dotEnv = Dotenv::createImmutable(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
         $dotEnv->load();
     }
 
@@ -155,7 +155,7 @@ class Config
         }
 
         if (file_exists(self::getConfigDirectory() . '/' . self::GLOBAL_ENVIRONMENT_FILE)) {
-            $dotEnv = new Dotenv(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
+            $dotEnv = Dotenv::createImmutable(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
             $dotEnv->load();
         }
 

@@ -5,7 +5,7 @@ use NYPL\Starter\Model;
 use NYPL\Starter\Model\ModelTrait\DBCreateTrait;
 use NYPL\Starter\Model\ModelTrait\TranslateTrait;
 
-class Source extends Model
+abstract class Source extends Model
 {
     use TranslateTrait, DBCreateTrait;
 

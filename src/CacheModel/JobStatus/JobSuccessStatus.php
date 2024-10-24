@@ -4,12 +4,12 @@ namespace NYPL\Starter\CacheModel\JobStatus;
 use NYPL\Starter\CacheModel\JobStatus;
 
 /**
- * @SWG\Definition(type="object")
+ * @OA\Schema(type="object")
  */
 class JobSuccessStatus extends JobStatus
 {
     /**
-     * @SWG\Property(example="https://www.nypl.org/id/12121")
+     * @OA\Property(example="https://www.nypl.org/id/12121")
      * @var string
      */
     public $successRedirectUrl = '';

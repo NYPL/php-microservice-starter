@@ -5,12 +5,12 @@ use NYPL\Starter\CacheModel\JobNotice;
 use NYPL\Starter\Model\LocalDateTime;
 
 /**
- * @SWG\Definition(type="object")
+ * @OA\Schema(type="object")
  */
 class JobNoticeCreated extends JobNotice
 {
     /**
-     * @SWG\Property(example="2008-12-24T03:16:00Z", type="string")
+     * @OA\Property(example="2008-12-24T03:16:00Z", type="string")
      * @var LocalDateTime
      */
     public $createdDate;

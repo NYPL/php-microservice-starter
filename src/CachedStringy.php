@@ -43,7 +43,7 @@ class CachedStringy
      *
      * @return string
      */
-    protected static function runStringy($type = '', $string = '', callable $stringy)
+    protected static function runStringy($type, $string, callable $stringy)
     {
         if ($cachedString = self::getCachedString($type, $string)) {
             return $cachedString;

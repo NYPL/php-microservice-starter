@@ -84,7 +84,7 @@ abstract class Model implements \JsonSerializable
         return true;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $jsonArray = [];
 

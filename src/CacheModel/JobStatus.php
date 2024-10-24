@@ -5,24 +5,24 @@ use NYPL\Starter\CacheModel;
 use NYPL\Starter\CacheModel\JobNotice\JobNoticeCreated;
 
 /**
- * @SWG\Definition(type="object")
+ * @OA\Schema(type="object")
  */
 class JobStatus extends CacheModel
 {
     /**
-     * @SWG\Property
+     * @OA\Property
      * @var JobNoticeCreated
      */
     public $notice;
 
     /**
-     * @SWG\Property(example="https://www.nypl.org/callback")
+     * @OA\Property(example="https://www.nypl.org/callback")
      * @var string
      */
     public $callBackUrl = '';
 
     /**
-     * @SWG\Property(type="object")
+     * @OA\Property(type="object")
      * @var array
      */
     public $callBackData = [];

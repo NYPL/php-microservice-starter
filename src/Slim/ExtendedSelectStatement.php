@@ -1,11 +1,17 @@
 <?php
 namespace NYPL\Starter\Slim;
 
-use Slim\PDO\Database;
-use Slim\PDO\Statement\SelectStatement;
+use FaaPz\PDO\Database;
+use FaaPz\PDO\Statement\Select;
+use GuzzleHttp\Client;
 
-class ExtendedSelectStatement extends SelectStatement
+class ExtendedSelectStatement extends Select
 {
+    /**
+     * @var ExtendedWhereClause
+     */
+    protected $whereClause;
+    
     /**
      * ExtendedSelectStatement constructor.
      *
@@ -28,4 +34,9 @@ class ExtendedSelectStatement extends SelectStatement
     {
         $this->whereClause->closeParenthesis();
     }
+
+    public function getWhere() {
+        return $this->where;
+    }
+
 }

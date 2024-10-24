@@ -10,38 +10,38 @@ use NYPL\Starter\Model\ModelTrait\CacheLockTrait;
 use NYPL\Starter\Model\ModelTrait\CacheUpdateTrait;
 
 /**
- * @SWG\Definition(title="Job", type="object", required={"id"})
+ * @OA\Schema(title="Job", type="object", required={"id"})
  */
 class Job extends BaseJob implements DeleteInterface
 {
     use CacheCreateTrait, CacheUpdateTrait, CacheDeleteTrait, CacheLockTrait;
 
     /**
-     * @SWG\Property(example="37580c4174e059a")
+     * @OA\Property(example="37580c4174e059a")
      * @var string
      */
     public $id = '';
 
     /**
-     * @SWG\Property(example=false)
+     * @OA\Property(example=false)
      * @var bool
      */
     public $started = false;
 
     /**
-     * @SWG\Property(example=false)
+     * @OA\Property(example=false)
      * @var bool
      */
     public $finished = false;
 
     /**
-     * @SWG\Property(example=false)
+     * @OA\Property(example=false)
      * @var bool
      */
     public $success = false;
 
     /**
-     * @SWG\Property
+     * @OA\Property
      * @var JobNoticeCreated[]
      */
     public $notices;

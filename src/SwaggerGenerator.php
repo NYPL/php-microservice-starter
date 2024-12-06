@@ -1,7 +1,7 @@
 <?php
 namespace NYPL\Starter;
 
-use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface as Response;
 use OpenApi\Generator;
 use OpenApi\Loggers\DefaultLogger;
 

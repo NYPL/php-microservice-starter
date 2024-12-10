@@ -2,6 +2,7 @@
 namespace NYPL\Starter;
 
 use GuzzleHttp\Client;
+use Avro\Schema\Schema as AvroSchema;
 
 class SchemaClient
 {
@@ -60,8 +61,6 @@ class SchemaClient
      */
     public static function getSchema($schemaName = '')
     {
-        AvroLoader::load();
-
         $cacheKey = self::BASE_CACHE_KEY . 'Schema:' . $schemaName;
 
         if ($schema = AppCache::get($cacheKey)) {
@@ -73,7 +72,7 @@ class SchemaClient
         $schema = new Schema(
             $schemaName,
             0,
-            \AvroSchema::parse($response['data']['schema']),
+            AvroSchema::parse($response['data']['schema']),
             $response['data']['schemaObject']
         );
 

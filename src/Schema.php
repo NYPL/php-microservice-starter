@@ -1,6 +1,8 @@
 <?php
 namespace NYPL\Starter;
 
+use Avro\Schema\Schema as AvroSchema;
+
 class Schema
 {
     protected $topic = '';
@@ -8,7 +10,7 @@ class Schema
     protected $offset = 0;
 
     /**
-     * @var \AvroSchema
+     * @var AvroSchema
      */
     protected $avroSchema;
 
@@ -25,10 +27,10 @@ class Schema
     /**
      * @param string $topic
      * @param int $offset
-     * @param \AvroSchema|null $avroSchema
+     * @param AvroSchema|null $avroSchema
      * @param array $schema
      */
-    public function __construct($topic = '', $offset = 0, \AvroSchema $avroSchema = null, array $schema = [])
+    public function __construct($topic = '', $offset = 0, AvroSchema $avroSchema = null, array $schema = [])
     {
         if ($topic) {
             $this->setTopic($topic);
@@ -80,7 +82,7 @@ class Schema
     }
 
     /**
-     * @return \AvroSchema
+     * @return AvroSchema
      */
     public function getAvroSchema()
     {
@@ -88,9 +90,9 @@ class Schema
     }
 
     /**
-     * @param \AvroSchema $avroSchema
+     * @param AvroSchema $avroSchema
      */
-    public function setAvroSchema(\AvroSchema $avroSchema)
+    public function setAvroSchema(AvroSchema $avroSchema)
     {
         $this->avroSchema = $avroSchema;
     }

@@ -5,6 +5,7 @@ use NYPL\Starter\Model\BulkError;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
 use NYPL\Starter\Model\ModelTrait\DBCreateTrait;
 use NYPL\Starter\Model\ModelTrait\MessageTrait;
+use Avro\Exception\IOException;
 
 class BulkModels
 {
@@ -122,7 +123,7 @@ class BulkModels
 
     /**
      * @param bool $useId
-     * @throws \InvalidArgumentException|\AvroIOException|APIException
+     * @throws \InvalidArgumentException|IOException|APIException
      */
     public function create($useId = false)
     {

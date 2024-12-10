@@ -361,11 +361,11 @@ trait DBReadTrait
     }
 
     /**
-     * @param SelectStatement $selectStatement
+     * @param ExtendedSelectStatement $selectStatement
      *
      * @return bool
      */
-    protected function applyOrderBy(SelectStatement $selectStatement)
+    protected function applyOrderBy(ExtendedSelectStatement $selectStatement)
     {
         if (is_array($this->getOrderBy())) {
             /**

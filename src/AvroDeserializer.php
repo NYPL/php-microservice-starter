@@ -1,6 +1,9 @@
 <?php
 namespace NYPL\Starter;
 
+use Avro\Datum;
+use Avro\IO;
+
 class AvroDeserializer
 {
     /**
@@ -9,17 +12,17 @@ class AvroDeserializer
     protected static $initialized = false;
 
     /**
-     * @var \AvroStringIO[]
+     * @var StringIO[]
      */
     protected static $avroIoCache;
 
     /**
-     * @var \AvroIODatumReader[]
+     * @var IODatumReader[]
      */
     protected static $avroReaderCache;
 
     /**
-     * @var \AvroIOBinaryDecoder[]
+     * @var IOBinaryDecoder[]
      */
     protected static $avroDecoderCache;
 
@@ -29,8 +32,6 @@ class AvroDeserializer
     protected static function initialize()
     {
         if (!self::isInitialized()) {
-            AvroLoader::load();
-
             self::setInitialized(true);
         }
 
@@ -94,7 +95,7 @@ class AvroDeserializer
     /**
      * @param Schema $schema
      *
-     * @return \AvroStringIO
+     * @return StringIO
      */
     protected static function getAvroIo(Schema $schema)
     {
@@ -102,7 +103,7 @@ class AvroDeserializer
             return $avroIo;
         }
 
-        $avroIo = new \AvroStringIO();
+        $avroIo = new StringIO();
 
         self::addAvroIoToCache($schema, $avroIo);
 
@@ -112,7 +113,7 @@ class AvroDeserializer
     /**
      * @param Schema $schema
      *
-     * @return \AvroStringIO|null
+     * @return StringIO|null
      */
     protected static function getCachedAvroIo(Schema $schema)
     {
@@ -125,9 +126,9 @@ class AvroDeserializer
 
     /**
      * @param Schema $schema
-     * @param \AvroStringIO $avroIo
+     * @param StringIO $avroIo
      */
-    protected static function addAvroIoToCache(Schema $schema, \AvroStringIO $avroIo)
+    protected static function addAvroIoToCache(Schema $schema, StringIO $avroIo)
     {
         self::$avroIoCache[$schema->getCacheKey()] = $avroIo;
     }
@@ -135,7 +136,7 @@ class AvroDeserializer
     /**
      * @param Schema $schema
      *
-     * @return \AvroIODatumReader|null
+     * @return IODatumReader|null
      */
     protected static function getAvroReader(Schema $schema)
     {
@@ -143,7 +144,7 @@ class AvroDeserializer
             return $avroReader;
         }
 
-        $avroReader = new \AvroIODatumReader($schema->getAvroSchema());
+        $avroReader = new IODatumReader($schema->getAvroSchema());
 
         self::addAvroReaderToCache($schema, $avroReader);
 
@@ -153,7 +154,7 @@ class AvroDeserializer
     /**
      * @param Schema $schema
      *
-     * @return \AvroIODatumReader|null
+     * @return IODatumReader|null
      */
     protected static function getCachedAvroReader(Schema $schema)
     {
@@ -166,9 +167,9 @@ class AvroDeserializer
 
     /**
      * @param Schema $schema
-     * @param \AvroIODatumReader $avroReader
+     * @param IODatumReader $avroReader
      */
-    protected static function addAvroReaderToCache(Schema $schema, \AvroIODatumReader $avroReader)
+    protected static function addAvroReaderToCache(Schema $schema, IODatumReader $avroReader)
     {
         self::$avroReaderCache[$schema->getCacheKey()] = $avroReader;
     }
@@ -176,7 +177,7 @@ class AvroDeserializer
     /**
      * @param Schema $schema
      *
-     * @return \AvroIOBinaryDecoder|null
+     * @return IOBinaryDecoder|null
      */
     protected static function getAvroDecoder(Schema $schema)
     {
@@ -184,7 +185,7 @@ class AvroDeserializer
             return $avroDecoder;
         }
 
-        $avroDecoder = new \AvroIOBinaryDecoder(self::getAvroIo($schema));
+        $avroDecoder = new IOBinaryDecoder(self::getAvroIo($schema));
 
         self::addAvroDecoderToCache($schema, $avroDecoder);
 
@@ -194,7 +195,7 @@ class AvroDeserializer
     /**
      * @param Schema $schema
      *
-     * @return \AvroIOBinaryDecoder|null
+     * @return IOBinaryDecoder|null
      */
     protected static function getCachedAvroDecoder(Schema $schema)
     {
@@ -207,9 +208,9 @@ class AvroDeserializer
 
     /**
      * @param Schema $schema
-     * @param \AvroIOBinaryDecoder $avroDecoder
+     * @param IOBinaryDecoder $avroDecoder
      */
-    protected static function addAvroDecoderToCache(Schema $schema, \AvroIOBinaryDecoder $avroDecoder)
+    protected static function addAvroDecoderToCache(Schema $schema, IOBinaryDecoder $avroDecoder)
     {
         self::$avroDecoderCache[$schema->getCacheKey()] = $avroDecoder;
     }

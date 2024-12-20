@@ -23,7 +23,21 @@
   },
   "autoload": {
     "psr-4": {
-      "NYPL\\Starter\\": [ "src/" ]
+      "NYPL\\Starter\\": [
+        "src/"
+      ]
+    }
+  },
+  "extra": {
+    "patches": {
+      "nealio82/avro-php": {
+        "Allow integers": "patches/avro-php-allow-integers.patch"
+      }
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
     }
   }
 }

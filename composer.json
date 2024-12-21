@@ -17,9 +17,8 @@
     "vlucas/phpdotenv": "^5.6.1",
     "guzzlehttp/guzzle": "^7.9.2",
     "aura/di": "4.*",
-    "nealio82/avro-php": "^0.1.2"
-  },
-  "require-dev": {
+    "nealio82/avro-php": "^0.1.2",
+    "cweagans/composer-patches": "^1.7"
   },
   "autoload": {
     "psr-4": {

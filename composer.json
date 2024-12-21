@@ -19,12 +19,12 @@
     "aura/di": "4.*"
   },
   "autoload": {
+    "psr-0": {
+      "": "lib/"
+    },
     "psr-4": {
       "NYPL\\Starter\\": [
         "src/"
-      ],
-      "Avro\\": [
-        "lib/"
       ]
     }
   }

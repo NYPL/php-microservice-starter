@@ -368,8 +368,9 @@ class Schema
             case self::MAP_SCHEMA:
                 if (is_array($datum))
                 {
+                    // Patched to allow integers.
                     foreach ($datum as $k => $v)
-                        if (!is_string($k)
+                        if ((!is_string($k) && !is_int($k))
                             || !self::is_valid_datum($expected_schema->values(), $v))
                             return false;
                     return true;

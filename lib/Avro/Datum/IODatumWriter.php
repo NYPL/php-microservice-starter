@@ -153,8 +153,12 @@ class IODatumWriter
 
     private function write_record(Schema $writers_schema, $datum, IOBinaryEncoder $encoder)
     {
-        foreach ($writers_schema->fields() as $field)
-            $this->write_data($field->type(), $datum[$field->name()], $encoder);
+        // Patched to supply default value.
+        foreach ($writers_schema->fields() as $field) {
+            /* Patched to supply a default value with a field isn't set. */
+            $value = isset($datum[$field->name()]) ? $datum[$field->name()] : $field->default_value();
+            $this->write_data($field->type(), $value, $encoder);
+        }
     }
 
     /**#@-*/

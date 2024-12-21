@@ -53,7 +53,8 @@ class StringIO extends IO
     public function write($arg)
     {
         $this->check_closed();
-        if (is_string($arg))
+        // Patched to allow integers.
+        if (is_string($arg) || is_int($arg))
             return $this->append_str($arg);
         throw new IOException(
             sprintf('write argument must be a string: (%s) %s',

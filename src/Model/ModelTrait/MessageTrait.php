@@ -10,7 +10,6 @@ use Aws\Kinesis\KinesisClient;
 use Aws\Result;
 use NYPL\Starter\APIException;
 use NYPL\Starter\APILogger;
-use NYPL\Starter\AvroLoader;
 use NYPL\Starter\Config;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
 
@@ -189,8 +188,6 @@ trait MessageTrait
      */
     protected function encodeMessageAsAvro()
     {
-        AvroLoader::load();
-
         self::getAvroWriter()->write(
             json_decode(json_encode($this), true),
             self::getAvroEncoder()

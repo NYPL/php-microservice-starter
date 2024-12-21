@@ -61,8 +61,6 @@ class SchemaClient
      */
     public static function getSchema($schemaName = '')
     {
-        AvroLoader::load();
-
         $cacheKey = self::BASE_CACHE_KEY . 'Schema:' . $schemaName;
 
         if ($schema = AppCache::get($cacheKey)) {

@@ -3,7 +3,6 @@ namespace NYPL\Starter;
 
 use Avro\Datum;
 use Avro\IO;
-use NYPL\Starter\AvroLoader;
 
 class AvroDeserializer
 {
@@ -33,8 +32,6 @@ class AvroDeserializer
     protected static function initialize()
     {
         if (!self::isInitialized()) {
-            AvroLoader::load();
-
             self::setInitialized(true);
         }
 

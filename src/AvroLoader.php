@@ -27,7 +27,7 @@ class AvroLoader
     public static function load()
     {
         if (!self::isLoaded()) {
-            require __DIR__ . '/../lib/avro-php/Avro/Avro.php';
+            require __DIR__ . '/../lib/Avro/Avro.php';
 
             self::setLoaded(true);
         }

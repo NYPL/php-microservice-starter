@@ -16,27 +16,13 @@
     "aws/aws-sdk-php": "^3.319.4",
     "vlucas/phpdotenv": "^5.6.1",
     "guzzlehttp/guzzle": "^7.9.2",
-    "aura/di": "4.*",
-    "nealio82/avro-php": "^0.1.2",
-    "cweagans/composer-patches": "^1.7"
+    "aura/di": "4.*"
   },
   "autoload": {
     "psr-4": {
       "NYPL\\Starter\\": [
         "src/"
       ]
-    }
-  },
-  "extra": {
-    "patches": {
-      "nealio82/avro-php": {
-        "Allow integers": "patches/avro-php-allow-integers.patch"
-      }
-    }
-  },
-  "config": {
-    "allow-plugins": {
-      "cweagans/composer-patches": true
     }
   }
 }

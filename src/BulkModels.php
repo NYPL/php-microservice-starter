@@ -1,11 +1,11 @@
 <?php
 namespace NYPL\Starter;
 
+use Avro\Exception\IOException;
 use NYPL\Starter\Model\BulkError;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
 use NYPL\Starter\Model\ModelTrait\DBCreateTrait;
 use NYPL\Starter\Model\ModelTrait\MessageTrait;
-use Avro\Exception\IOException;
 
 class BulkModels
 {

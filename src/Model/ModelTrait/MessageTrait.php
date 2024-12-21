@@ -1,18 +1,18 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
+use Avro\Datum\IOBinaryEncoder;
 use Avro\Datum\IODatumWriter;
+use Avro\Exception\IOException;
+use Avro\IO\StringIO;
+use Avro\Schema\Schema;
 use Aws\Kinesis\KinesisClient;
 use Aws\Result;
 use NYPL\Starter\APIException;
 use NYPL\Starter\APILogger;
+use NYPL\Starter\AvroLoader;
 use NYPL\Starter\Config;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
-use Avro\Exception\IOException;
-use Avro\IO\StringIO;
-use Avro\Datum\IOBinaryDecoder;
-use Avro\Datum\IOBinaryEncoder;
-use Avro\Schema\Schema;
 
 trait MessageTrait
 {
@@ -189,6 +189,8 @@ trait MessageTrait
      */
     protected function encodeMessageAsAvro()
     {
+        AvroLoader::load();
+
         self::getAvroWriter()->write(
             json_decode(json_encode($this), true),
             self::getAvroEncoder()

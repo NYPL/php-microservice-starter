@@ -23,7 +23,7 @@
       "NYPL\\Starter\\": [
         "src/"
       ],
-      "Avro": [
+      "Avro\\": [
         "lib/"
       ]
     }

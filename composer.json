@@ -9,14 +9,14 @@
   ],
   "require": {
     "slim/slim": "^4.14.0",
-    "faapz/pdo": "^2.2.0",
-    "monolog/monolog": "^3.7.0",
-    "danielstjules/stringy": "^3.1",
-    "zircote/swagger-php": "^4.10.6",
-    "aws/aws-sdk-php": "^3.319.4",
+    "faapz/pdo": "^2.2.1",
+    "monolog/monolog": "^3.8.1",
+    "danielstjules/stringy": "^3.1.0",
+    "zircote/swagger-php": "^4.11.1",
+    "aws/aws-sdk-php": "^3.336.2",
     "vlucas/phpdotenv": "^5.6.1",
     "guzzlehttp/guzzle": "^7.9.2",
-    "aura/di": "4.*"
+    "aura/di": "^4.2.1"
   },
   "autoload": {
     "psr-0": {

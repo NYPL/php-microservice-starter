@@ -289,7 +289,7 @@ trait DBReadTrait
             $filter->getFilterValue()
         );
 
-        if ($existingWhere = $selectStatement->getWhere()) {
+        if (method_exists($selectStatement, 'getWhere') && $existingWhere = $selectStatement->getWhere()) {
             $grouping = new Grouping('AND', $conditional, $existingWhere);
         } else {
             $grouping = $conditional;

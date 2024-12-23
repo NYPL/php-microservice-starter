@@ -2,8 +2,8 @@
 namespace NYPL\Starter\Slim;
 
 use FaaPz\PDO\Database;
-use FaaPz\PDO\Statement\Select;
 use FaaPz\PDO\Statement\SelectInterface;
+use FaaPz\PDO\Statement\UpdateInterface;
 
 class ExtendedDatabase extends Database
 {
@@ -17,4 +17,13 @@ class ExtendedDatabase extends Database
         return new ExtendedSelectStatement($this, $columns);
     }
 
+    /**
+     * @param array $pairs
+     *
+     * @return UpdateInterface
+     */
+    public function update(array $pairs = []): UpdateInterface
+    {
+        return new ExtendedUpdateStatement($this, $pairs);
+    }
 }

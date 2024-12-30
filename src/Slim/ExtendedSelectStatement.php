@@ -3,15 +3,14 @@ namespace NYPL\Starter\Slim;
 
 use FaaPz\PDO\Database;
 use FaaPz\PDO\Statement\Select;
-use GuzzleHttp\Client;
 
-class ExtendedSelectStatement extends Select
+class ExtendedSelectStatement extends Select implements ExtendedSelectOrUpdateInterface
 {
     /**
      * @var ExtendedWhereClause
      */
     protected $whereClause;
-    
+
     /**
      * ExtendedSelectStatement constructor.
      *

@@ -2,11 +2,9 @@
 namespace NYPL\Starter\Slim;
 
 use FaaPz\PDO\Database;
-use FaaPz\PDO\Statement\Select;
 use FaaPz\PDO\Statement\Update;
-use GuzzleHttp\Client;
 
-class ExtendedUpdateStatement extends Update
+class ExtendedUpdateStatement extends Update implements ExtendedSelectOrUpdateInterface
 {
     /**
      * @var ExtendedWhereClause

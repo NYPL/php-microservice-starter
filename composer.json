@@ -11,7 +11,7 @@
     "slim/slim": "^4.14.0",
     "faapz/pdo": "^2.2.1",
     "monolog/monolog": "^3.8.1",
-    "danielstjules/stringy": "^3.1.0",
+    "voku/stringy": "^6.5.3",
     "zircote/swagger-php": "^4.11.1",
     "aws/aws-sdk-php": "^3.336.2",
     "vlucas/phpdotenv": "^5.6.1",

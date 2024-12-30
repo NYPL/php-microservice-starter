@@ -8,6 +8,7 @@ use Avro\Util\Util;
 /**
  * @package Avro
  */
+#[\AllowDynamicProperties]
 class RecordSchema extends NamedSchema
 {
     /**

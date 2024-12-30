@@ -7,6 +7,7 @@ namespace Avro\Schema;
  * Avro schema type.
  * @package Avro
  */
+#[\AllowDynamicProperties]
 class ArraySchema extends Schema
 {
     /**

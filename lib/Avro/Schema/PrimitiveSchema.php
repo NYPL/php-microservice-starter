@@ -8,6 +8,7 @@ use Avro\Exception\SchemaParseException;
  * Avro schema for basic types such as null, int, long, string.
  * @package Avro
  */
+#[\AllowDynamicProperties]
 class PrimitiveSchema extends Schema
 {
 

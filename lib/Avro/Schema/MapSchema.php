@@ -7,6 +7,7 @@ namespace Avro\Schema;
  * Avro Schema types.
  * @package Avro
  */
+#[\AllowDynamicProperties]
 class MapSchema extends Schema
 {
     /**

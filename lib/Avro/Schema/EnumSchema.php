@@ -9,6 +9,7 @@ use Avro\Util\Util;
 /**
  * @package Avro
  */
+#[\AllowDynamicProperties]
 class EnumSchema extends NamedSchema
 {
     /**

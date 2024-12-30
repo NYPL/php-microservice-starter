@@ -10,6 +10,7 @@ use Avro\Exception\SchemaParseException;
  *
  * @package Avro
  */
+#[\AllowDynamicProperties]
 class NamedSchemata
 {
     /**

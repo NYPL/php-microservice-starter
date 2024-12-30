@@ -10,6 +10,7 @@ use Avro\Exception\SchemaParseException;
  * @todo Refactor NamedSchema to use an AvroName instance
  *       to store name information.
  */
+#[\AllowDynamicProperties]
 class NamedSchema extends Schema
 {
     /**

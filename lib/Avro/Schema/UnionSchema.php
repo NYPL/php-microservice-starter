@@ -9,6 +9,7 @@ use Avro\Exception\SchemaParseException;
  * the union.
  * @package Avro
  */
+#[\AllowDynamicProperties]
 class UnionSchema extends Schema
 {
     /**

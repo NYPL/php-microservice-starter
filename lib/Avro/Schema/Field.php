@@ -8,6 +8,7 @@ use Avro\Exception\SchemaParseException;
  * Field of an {@link RecordSchema}
  * @package Avro
  */
+#[\AllowDynamicProperties]
 class Field extends Schema
 {
 

@@ -5,6 +5,11 @@ namespace Avro\Schema;
 use Avro\Exception\SchemaParseException;
 use Avro\Util\Util;
 
+/**
+ * Avro schema.
+ * @package Avro
+ */
+#[\AllowDynamicProperties]
 class Schema
 {
     /**

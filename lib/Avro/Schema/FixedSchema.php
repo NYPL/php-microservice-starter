@@ -8,6 +8,7 @@ use Avro\Exception\SchemaParseException;
  * NamedSchema with fixed-length data values
  * @package Avro
  */
+#[\AllowDynamicProperties]
 class FixedSchema extends NamedSchema
 {
 

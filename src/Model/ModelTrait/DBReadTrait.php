@@ -12,6 +12,7 @@ use NYPL\Starter\ModelSet;
 use NYPL\Starter\OrderBy;
 use NYPL\Starter\Slim\ExtendedSelectOrUpdateInterface;
 use FaaPz\PDO\Clause\Limit;
+use FaaPz\PDO\Clause\Raw;
 
 trait DBReadTrait
 {
@@ -169,7 +170,7 @@ trait DBReadTrait
             $selectStatement->where(new Conditional(
                 $this->translateDbName($filter->getFilterColumn()),
                 "IS",
-                null
+                new Raw("NULL")
             ));
 
             return true;
@@ -179,10 +180,9 @@ trait DBReadTrait
             $selectStatement->where(new Conditional(
                 $filter->getFilterColumn(),
                 "IN",
-                $filter->getFilterValue()
-            ));
+                $filter->getFilterValue(),
 
-            return true;
+            ));
 
             return true;
         }

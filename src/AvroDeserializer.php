@@ -1,8 +1,9 @@
 <?php
 namespace NYPL\Starter;
 
-use Avro\Datum;
-use Avro\IO;
+use Avro\Datum\IODatumReader;
+use Avro\Datum\IOBinaryDecoder;
+use Avro\IO\StringIO;
 
 class AvroDeserializer
 {
@@ -60,8 +61,8 @@ class AvroDeserializer
     /**
      * @param Schema $schema
      * @param mixed $payload
-     *
      * @return array|string
+     * @throws \Avro\Exception\IOException
      */
     public static function deserializeWithSchema(Schema $schema, $payload = null)
     {

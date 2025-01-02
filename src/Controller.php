@@ -8,7 +8,7 @@ use NYPL\Starter\Model\Response\SuccessResponse;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use \GuzzleHttp\Psr7\Stream;
+use GuzzleHttp\Psr7\Stream;
 
 abstract class Controller
 {
@@ -30,7 +30,7 @@ abstract class Controller
     public $request;
 
     /**
-     * @var Response|ResponseInterface
+     * @var Response
      */
     public $response;
 
@@ -46,10 +46,10 @@ abstract class Controller
 
     /**
      * @param Request $request
-     * @param Response|ResponseInterface $response
+     * @param Response $response
      * @param int $cacheSeconds
      */
-    public function __construct(Request $request, Response $response, $cacheSeconds = 0)
+    public function __construct(Request $request, Response $response, int $cacheSeconds = 0)
     {
         $this->setRequest($request);
         $this->setResponse($response);
@@ -64,7 +64,7 @@ abstract class Controller
     /**
      * @return Request
      */
-    public function getRequest()
+    public function getRequest(): Request
     {
         return $this->request;
     }
@@ -78,15 +78,15 @@ abstract class Controller
     }
 
     /**
-     * @return Response|ResponseInterface
+     * @return Response
      */
-    public function getResponse()
+    public function getResponse(): Response
     {
         return $this->response;
     }
 
     /**
-     * @param Response|ResponseInterface $response
+     * @param Response $response
      */
     public function setResponse(Response $response)
     {
@@ -94,9 +94,10 @@ abstract class Controller
     }
 
     /**
+     * @param $data
      * @return MessageInterface
      */
-    public function getJsonResponse($data)
+    public function getJsonResponse($data): MessageInterface
     {
         $json = json_encode($data);
         $streamBody = fopen('data://text/plain,' . $json,'r');
@@ -106,7 +107,7 @@ abstract class Controller
     /**
      * @return string
      */
-    public function getContentType()
+    public function getContentType(): string
     {
         return $this->contentType;
     }
@@ -114,7 +115,7 @@ abstract class Controller
     /**
      * @param string $contentType
      */
-    public function setContentType($contentType)
+    public function setContentType(string $contentType)
     {
         if ($contentType) {
             $this->setResponse(
@@ -143,9 +144,8 @@ abstract class Controller
 
     /**
      * @return string
-     * @throws APIException
      */
-    public function determineContentType()
+    public function determineContentType(): string
     {
         $acceptedContentTypes = $this->getRequest()->getHeaderLine(self::ACCEPT_HEADER);
 
@@ -178,7 +178,7 @@ abstract class Controller
      *
      * @return string
      */
-    public function bufferOutput(callable $bufferedFunction)
+    public function bufferOutput(callable $bufferedFunction): string
     {
         ob_start();
         $bufferedFunction();
@@ -191,7 +191,7 @@ abstract class Controller
     /**
      * @return bool
      */
-    public function initializeIdentityHeader()
+    public function initializeIdentityHeader(): bool
     {
         if ($this->getRequest()->hasHeader(self::IDENTITY_HEADER)) {
             $this->setIdentityHeader(new IdentityHeader(
@@ -227,18 +227,19 @@ abstract class Controller
      *
      * @return bool
      */
-    protected function addQueryFilter(ModelSet $model, $queryParameterName = '')
+    protected function addQueryFilter(ModelSet $model, string $queryParameterName = ''): bool
     {
         if ($this->getQueryParam($queryParameterName)) {
             $filter = new QueryFilter(
                 $queryParameterName,
                 $this->getQueryParam($queryParameterName)
             );
-
             $model->addFilter($filter);
 
             return true;
         }
+
+        return false;
     }
 
     /**
@@ -247,7 +248,7 @@ abstract class Controller
      * @param Filter|null $filter
      * @param array $queryParameters
      *
-     * @return Response
+     * @return MessageInterface
      * @throws APIException
      */
     protected function getDefaultReadResponse(
@@ -255,13 +256,14 @@ abstract class Controller
         SuccessResponse $response,
         Filter $filter = null,
         array $queryParameters = []
-    ) {
+    ): MessageInterface
+    {
         if ($model instanceof ModelSet) {
             $model->setOffset($this->getQueryParam('offset'));
 
             $model->setLimit($this->getQueryParam('limit'));
 
-            $includeTotalCount = $this->getQueryParam('includeTotalCount') === 'true' ? true : false ;
+            $includeTotalCount = ($this->getQueryParam('includeTotalCount') === 'true');
 
             if ($includeTotalCount) {
                 $model->setIncludeTotalCount($includeTotalCount);
@@ -303,9 +305,9 @@ abstract class Controller
      *
      * @return bool
      */
-    public function addCacheHeader($numberSeconds = 0)
+    public function addCacheHeader(int $numberSeconds = 0): bool
     {
-        if ($numberSeconds && $this->getRequest()->isGet()) {
+        if ($numberSeconds && $this->getRequest()->getMethod() == 'GET') {
             $this->setResponse(
                 $this->getResponse()->withHeader(
                     "Cache-Control",
@@ -324,7 +326,7 @@ abstract class Controller
      *
      * @return bool
      */
-    public function isAllowed($patronId = '')
+    public function isAllowed(string $patronId = ''): bool
     {
         if (!$this->getIdentityHeader()->isExists()) {
             return true;
@@ -339,11 +341,10 @@ abstract class Controller
 
     /**
      * @param array $allowedScopes
-     *
+     * @return true|void
      * @throws APIException
-     * @return bool
      */
-    public function checkScopes($allowedScopes = [])
+    public function checkScopes(array $allowedScopes = [])
     {
         if (!$this->getIdentityHeader()->isExists()) {
             return true;
@@ -363,7 +364,7 @@ abstract class Controller
      *
      * @throws APIException
      */
-    public function denyAccess($message = '')
+    public function denyAccess(string $message = '')
     {
         throw new APIException(
             'Insufficient access for endpoint: ' . $message,

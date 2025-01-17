@@ -60,3 +60,7 @@ $service->get("/swagger", function (Request $request, Response $response) {
     return SwaggerGenerator::generate(__DIR__ . "/src", $response);
 });
 ~~~~
+
+### Forked Avro library
+
+A fork of the Avro PHP library is included in this repo. See [the Avro README](lib/Avro/README.md) for details.

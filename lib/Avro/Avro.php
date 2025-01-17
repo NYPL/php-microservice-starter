@@ -6,7 +6,7 @@ use Avro\Debug\Debug;
 use Avro\Exception\Exception;
 
 /**
- * This is a fork of https://github.com/nealio82/avro-php. Changes were made to allow
+ * This is a fork of https://github.com/nealio82/avro-php, version 0.1.3. Changes were made to allow
  * schema arrays to have integer keys.
  */
 class Avro

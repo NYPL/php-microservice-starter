@@ -47,12 +47,12 @@ class Config
      */
     public static function get($name = '', $defaultValue = null, $isEncrypted = false)
     {
-        if (!empty($_ENV[$name])) {
+        if (getenv($name)) {
             if ($isEncrypted && self::isEncryptedEnvironment()) {
                 return self::decryptEnvironmentVariable($name);
             }
 
-            return (string) $_ENV[$name];
+            return (string) getenv($name);
         }
 
         return $defaultValue;

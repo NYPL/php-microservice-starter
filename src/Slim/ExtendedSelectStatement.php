@@ -34,8 +34,8 @@ class ExtendedSelectStatement extends Select implements ExtendedSelectOrUpdateIn
         $this->whereClause->closeParenthesis();
     }
 
-    public function getWhere() {
+    public function getWhere()
+    {
         return $this->where;
     }
-
 }

@@ -16,25 +16,21 @@ class ExtendedUpdateStatement extends Update implements ExtendedSelectOrUpdateIn
      * @param Database                                                     $dbh
      * @param array<string, float|int|string|RawInterface|SelectInterface> $pairs
      */
-    public function __construct(Database $dbh, array $pairs = [])
-    {
+    public function __construct(Database $dbh, array $pairs = []) {
         parent::__construct($dbh, $pairs);
 
         $this->whereClause = new ExtendedWhereClause();
     }
 
-    public function addParenthesis()
-    {
+    public function addParenthesis() {
         $this->whereClause->addParenthesis();
     }
 
-    public function closeParenthesis()
-    {
+    public function closeParenthesis() {
         $this->whereClause->closeParenthesis();
     }
 
     public function getWhere() {
         return $this->where;
     }
-
 }

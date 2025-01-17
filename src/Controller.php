@@ -100,7 +100,7 @@ abstract class Controller
     public function getJsonResponse($data): MessageInterface
     {
         $json = json_encode($data);
-        $streamBody = fopen('data://text/plain,' . $json,'r');
+        $streamBody = fopen('data://text/plain,' . $json, 'r');
         return $this->getResponse()->withBody(new Stream($streamBody));
     }
 
@@ -256,8 +256,7 @@ abstract class Controller
         SuccessResponse $response,
         Filter $filter = null,
         array $queryParameters = []
-    ): MessageInterface
-    {
+    ): MessageInterface {
         if ($model instanceof ModelSet) {
             $model->setOffset($this->getQueryParam('offset'));
 
@@ -401,5 +400,4 @@ abstract class Controller
         }
         return $val;
     }
-
 }

@@ -20,7 +20,7 @@ class SwaggerGenerator
             Config::get('SWAGGER_SCHEME')
         ];
         $json = json_encode($docs);
-        $streamBody = fopen('data://text/plain,' . $json,'r');
+        $streamBody = fopen('data://text/plain,' . $json, 'r');
         return $response->withHeader('Content-Type', 'application/json')
                 ->withHeader('Access-Control-Allow-Origin', '*')
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
@@ -30,6 +30,5 @@ class SwaggerGenerator
                     'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
                 )
                 ->withBody(new \GuzzleHttp\Psr7\Stream($streamBody));
-
     }
 }

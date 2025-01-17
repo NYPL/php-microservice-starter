@@ -181,7 +181,6 @@ trait DBReadTrait
                 $filter->getFilterColumn(),
                 "IN",
                 $filter->getFilterValue(),
-
             ));
 
             return true;
@@ -216,7 +215,8 @@ trait DBReadTrait
         }
 
         $selectStatement->where(new Conditional(
-            'jsonb_contains_or(' . $this->translateDbName($filter->getFilterColumn()) . ', array[' . substr($valueString, 0, -1) . '])',
+            'jsonb_contains_or(' . $this->translateDbName($filter->getFilterColumn()) . ', array[' .
+              substr($valueString, 0, -1) . '])',
             '=',
             true
         ));
@@ -338,7 +338,7 @@ trait DBReadTrait
         }
 
         if ($this->getLimit()) {
-            $selectStatement->limit(new Limit($this->getLimit(), $this->getOffset() ?? NULL));
+            $selectStatement->limit(new Limit($this->getLimit(), $this->getOffset() ?? null));
         }
 
         $selectStatement = $selectStatement->execute();

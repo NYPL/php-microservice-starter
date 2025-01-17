@@ -12,7 +12,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class DefaultContainer extends Container
 {
     const DEFAULT_ERROR_STATUS_CODE = 500;
-    const settings = [];
+    const SETTINGS = [];
 
     /**
      * @param \Throwable $exception
@@ -87,7 +87,7 @@ class DefaultContainer extends Container
         $this->logError($request, $exception);
 
         $json = json_encode($this->getErrorResponse($exception));
-        $streamBody = fopen('data://text/plain,' . $json,'r');
+        $streamBody = fopen('data://text/plain,' . $json, 'r');
         return $container["response"]
             ->withStatus($this->getStatusCode($exception))
             ->withBody(new Stream($streamBody))
@@ -96,11 +96,11 @@ class DefaultContainer extends Container
 
     public function __construct(
         InjectionFactory $injectionFactory,
-        ContainerInterface $delegateContainer = null)
-    {
-        parent::__construct($injectionFactory,  $delegateContainer);
+        ContainerInterface $delegateContainer = null
+    ) {
+        parent::__construct($injectionFactory, $delegateContainer);
 
-        $this->settings["displayErrorDetails"] = false;
+        self::SETTINGS["displayErrorDetails"] = false;
 
         $this->notFoundHandler = function (Container $container) {
             return function (Request $request, Response $response) use ($container) {

@@ -20,5 +20,4 @@ interface ExtendedSelectOrUpdateInterface
     public function closeParenthesis();
 
     public function getWhere();
-
 }

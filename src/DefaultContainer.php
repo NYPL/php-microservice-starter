@@ -12,15 +12,14 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class DefaultContainer extends Container
 {
     const DEFAULT_ERROR_STATUS_CODE = 500;
-    const SETTINGS = [];
+    const settings = [];
 
     /**
      * @param \Throwable $exception
      *
      * @return int
      */
-    protected function getStatusCode(\Throwable $exception): int
-    {
+    protected function getStatusCode(\Throwable $exception): int {
         if ($exception instanceof APIException) {
             return $exception->getHttpCode();
         }
@@ -34,8 +33,7 @@ class DefaultContainer extends Container
      *
      * @throws APIException
      */
-    protected function initializeErrorResponse(\Throwable $exception, ErrorResponse $errorResponse)
-    {
+    protected function initializeErrorResponse(\Throwable $exception, ErrorResponse $errorResponse) {
         $errorResponse->setStatusCode($this->getStatusCode($exception));
         $errorResponse->setType('exception');
         $errorResponse->setMessage($exception->getMessage());
@@ -51,8 +49,7 @@ class DefaultContainer extends Container
      * @return ErrorResponse
      * @throws APIException
      */
-    protected function getErrorResponse(\Throwable $exception): ErrorResponse
-    {
+    protected function getErrorResponse(\Throwable $exception): ErrorResponse {
         if ($exception instanceof APIException && $exception->getErrorResponse()) {
             $errorResponse = $exception->getErrorResponse();
         } else {
@@ -68,8 +65,7 @@ class DefaultContainer extends Container
      * @param Request $request
      * @param \Exception|\Throwable $exception
      */
-    protected function logError(Request $request, $exception)
-    {
+    protected function logError(Request $request, $exception) {
         APILogger::addLog(
             $this->getStatusCode($exception),
             $exception->getMessage(),
@@ -82,8 +78,7 @@ class DefaultContainer extends Container
         );
     }
 
-    protected function handleError(Container $container, Request $request, \Throwable $exception)
-    {
+    protected function handleError(Container $container, Request $request, \Throwable $exception) {
         $this->logError($request, $exception);
 
         $json = json_encode($this->getErrorResponse($exception));
@@ -100,7 +95,7 @@ class DefaultContainer extends Container
     ) {
         parent::__construct($injectionFactory, $delegateContainer);
 
-        self::SETTINGS["displayErrorDetails"] = false;
+        $this->settings["displayErrorDetails"] = false;
 
         $this->notFoundHandler = function (Container $container) {
             return function (Request $request, Response $response) use ($container) {

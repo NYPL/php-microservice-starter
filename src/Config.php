@@ -107,9 +107,8 @@ class Config
      * @throws APIException|\InvalidArgumentException
      * @return string
      */
-    protected static function decryptEnvironmentVariable($name = '')
-    {
-        if (empty($_ENV[$name])) {
+    protected static function decryptEnvironmentVariable($name = '') {
+        if (!getenv($name)) {
             return '';
         }
 
@@ -120,7 +119,7 @@ class Config
         }
 
         $decryptedValue = (string) self::getKeyClient()->decrypt([
-            'CiphertextBlob' => base64_decode($_ENV[$name]),
+            'CiphertextBlob' => base64_decode(getenv($name)),
         ])['Plaintext'];
 
         AppCache::set($cacheKey, $decryptedValue);

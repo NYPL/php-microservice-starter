@@ -8,20 +8,24 @@
     }
   ],
   "require": {
-    "slim/slim": "3.5.0",
-    "slim/pdo": "1.9.9",
-    "monolog/monolog": "1.23.0",
-    "danielstjules/stringy": "2.3.2",
-    "zircote/swagger-php": "2.0.7",
-    "aws/aws-sdk-php": "3.31.4",
-    "vlucas/phpdotenv": "2.4.0",
-    "guzzlehttp/guzzle": "6.2.3"
-  },
-  "require-dev": {
+    "slim/slim": "^4.14.0",
+    "faapz/pdo": "^2.2.1",
+    "monolog/monolog": "^3.8.1",
+    "voku/stringy": "^6.5.3",
+    "zircote/swagger-php": "^4.11.1",
+    "aws/aws-sdk-php": "^3.336.2",
+    "vlucas/phpdotenv": "^5.6.1",
+    "guzzlehttp/guzzle": "^7.9.2",
+    "aura/di": "^4.2.1"
   },
   "autoload": {
+    "psr-0": {
+      "": "lib/"
+    },
     "psr-4": {
-      "NYPL\\Starter\\": [ "src/" ]
+      "NYPL\\Starter\\": [
+        "src/"
+      ]
     }
   }
 }

@@ -44,7 +44,9 @@ class OrFilter extends Filter
     public function setFilters(array $filters)
     {
         $filters = array_filter($filters, function ($element) {
-            if ($element instanceof Filter) return true;
+            if ($element instanceof Filter) {
+                return true;
+            }
         });
 
         $this->filters = $filters;

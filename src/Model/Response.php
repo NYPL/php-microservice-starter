@@ -6,7 +6,7 @@ use NYPL\Starter\Config;
 abstract class Response
 {
     /**
-     * @SWG\Property(type="object")
+     * @OA\Property(type="object")
      * @var array
      */
     public $debugInfo = [];

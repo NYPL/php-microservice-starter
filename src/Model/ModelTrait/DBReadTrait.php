@@ -1,6 +1,8 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
+use FaaPz\PDO\Clause\Conditional;
+use FaaPz\PDO\Clause\Grouping;
 use NYPL\Starter\APIException;
 use NYPL\Starter\Slim\DB;
 use NYPL\Starter\Filter;
@@ -8,21 +10,20 @@ use NYPL\Starter\Filter\OrFilter;
 use NYPL\Starter\Model;
 use NYPL\Starter\ModelSet;
 use NYPL\Starter\OrderBy;
-use NYPL\Starter\Slim\ExtendedSelectStatement;
-use Slim\PDO\Statement\SelectStatement;
-use Slim\PDO\Statement\StatementContainer;
+use NYPL\Starter\Slim\ExtendedSelectOrUpdateInterface;
+use FaaPz\PDO\Clause\Limit;
+use FaaPz\PDO\Clause\Raw;
 
 trait DBReadTrait
 {
     /**
      * @throws APIException
-     * @return ExtendedSelectStatement
+     * @return ExtendedSelectOrUpdateInterface
      */
     protected function getSingleSelect()
     {
         $selectStatement = DB::getDatabase()->select()
             ->from($this->getTableName());
-
         $this->applyFilters($this->getFilters(), $selectStatement);
 
         return $selectStatement;
@@ -74,11 +75,11 @@ trait DBReadTrait
     /**
      * @param int $count
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param ExtendedSelectOrUpdateInterface $selectStatement
      *
      * @return bool
      */
-    protected function applyOrWhere($count, Filter $filter, StatementContainer $selectStatement)
+    protected function applyOrWhere($count, Filter $filter, ExtendedSelectOrUpdateInterface $selectStatement)
     {
         if (!$count) {
             $this->addWhere($filter, $selectStatement);
@@ -86,11 +87,18 @@ trait DBReadTrait
             return true;
         }
 
-        $selectStatement->orWhere(
+        $conditional = new Conditional(
             $this->translateDbName($filter->getFilterColumn()),
             $this->getOperator($filter),
             $filter->getFilterValue()
         );
+
+        if (method_exists($selectStatement, 'getWhere') && $existingWhere = $selectStatement->getWhere()) {
+            $grouping = new Grouping('OR', $conditional, $existingWhere);
+        } else {
+            $grouping = $conditional;
+        }
+        $selectStatement->where($grouping);
 
         return true;
     }
@@ -98,19 +106,18 @@ trait DBReadTrait
     /**
      * @param int $count
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param ExtendedSelectOrUpdateInterface $selectStatement
      *
      * @return bool
      */
-    protected function applyAndWhere($count, Filter $filter, StatementContainer $selectStatement)
+    protected function applyAndWhere($count, Filter $filter, ExtendedSelectOrUpdateInterface $selectStatement)
     {
         if (!$count) {
-            $selectStatement->orWhere(
+            $selectStatement->where(new Conditional(
                 $this->translateDbName($filter->getFilterColumn()),
                 $this->getOperator($filter),
                 $filter->getFilterValue()
-            );
-
+            ));
             return true;
         }
 
@@ -121,9 +128,9 @@ trait DBReadTrait
 
     /**
      * @param OrFilter $filter
-     * @param ExtendedSelectStatement $selectStatement
+     * @param ExtendedSelectOrUpdateInterface $selectStatement
      */
-    protected function addOrWhere(OrFilter $orFilter, ExtendedSelectStatement $selectStatement)
+    protected function addOrWhere(OrFilter $orFilter, ExtendedSelectOrUpdateInterface $selectStatement)
     {
         $selectStatement->addParenthesis();
 
@@ -140,12 +147,12 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param ExtendedSelectOrUpdateInterface $selectStatement
      *
      * @return bool
      * @throws APIException
      */
-    protected function addWhere(Filter $filter, StatementContainer $selectStatement)
+    protected function addWhere(Filter $filter, ExtendedSelectOrUpdateInterface $selectStatement)
     {
         if ($filter instanceof OrFilter) {
             $this->addOrWhere($filter, $selectStatement);
@@ -160,15 +167,21 @@ trait DBReadTrait
         }
 
         if ($filter->getFilterValue() === null) {
-            $selectStatement->whereNull(
-                $this->translateDbName($filter->getFilterColumn())
-            );
+            $selectStatement->where(new Conditional(
+                $this->translateDbName($filter->getFilterColumn()),
+                "IS",
+                new Raw("NULL")
+            ));
 
             return true;
         }
 
         if (is_array($filter->getFilterValue())) {
-            $selectStatement->whereIn($filter->getFilterColumn(), $filter->getFilterValue());
+            $selectStatement->where(new Conditional(
+                $filter->getFilterColumn(),
+                "IN",
+                $filter->getFilterValue(),
+            ));
 
             return true;
         }
@@ -186,12 +199,12 @@ trait DBReadTrait
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param ExtendedSelectOrUpdateInterface $selectStatement
      *
      * @return bool
      * @throws APIException
      */
-    protected function addJsonWhere(Filter $filter, StatementContainer $selectStatement)
+    protected function addJsonWhere(Filter $filter, ExtendedSelectOrUpdateInterface $selectStatement)
     {
         $values = explode(',', $filter->getFilterValue());
 
@@ -201,23 +214,24 @@ trait DBReadTrait
             $valueString .= DB::getDatabase()->quote($value) . ',';
         }
 
-        $selectStatement->where(
-            'jsonb_contains_or(' . $this->translateDbName($filter->getFilterColumn()) . ', array[' . substr($valueString, 0, -1) . '])',
+        $selectStatement->where(new Conditional(
+            'jsonb_contains_or(' . $this->translateDbName($filter->getFilterColumn()) . ', array[' .
+              substr($valueString, 0, -1) . '])',
             '=',
             true
-        );
+        ));
 
         return true;
     }
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param ExtendedSelectOrUpdateInterface $selectStatement
      *
      * @return bool
      * @throws APIException
      */
-    protected function applyRange(Filter $filter, StatementContainer $selectStatement)
+    protected function applyRange(Filter $filter, ExtendedSelectOrUpdateInterface $selectStatement)
     {
         $this->setOrderBy($this->translateDbName($filter->getFilterColumn()));
 
@@ -238,54 +252,63 @@ trait DBReadTrait
                 );
             }
 
-            $selectStatement->where(
+            $selectStatement->where(new Conditional(
                 $this->translateDbName($filter->getFilterColumn()),
                 '<',
                 $range[1]
-            );
+            ));
 
             return true;
         }
 
         if (!$range[1]) {
-            $selectStatement->where(
+            $selectStatement->where(new Conditional(
                 $this->translateDbName($filter->getFilterColumn()),
                 '>=',
                 $range[0]
-            );
+            ));
 
             return true;
         }
 
-        $selectStatement->whereBetween(
+        $selectStatement->where(new Conditional(
             $this->translateDbName($filter->getFilterColumn()),
+            'BETWEEN',
             $range
-        );
-    }
+        ));
 
+        return true;
+    }
 
     /**
      * @param Filter $filter
-     * @param StatementContainer $selectStatement
+     * @param ExtendedSelectOrUpdateInterface $selectStatement
      *
      * @return bool
      */
-    protected function applyWhere(Filter $filter, StatementContainer $selectStatement)
+    protected function applyWhere(Filter $filter, ExtendedSelectOrUpdateInterface $selectStatement)
     {
         if (strpos($filter->getFilterValue(), ',') !== false) {
-            $selectStatement->whereIn(
+            $selectStatement->where(new Conditional(
                 $this->translateDbName($filter->getFilterColumn()),
+                "IN",
                 explode(',', $filter->getFilterValue())
-            );
-
+            ));
             return true;
         }
 
-        $selectStatement->where(
+        $conditional = new Conditional(
             $this->translateDbName($filter->getFilterColumn()),
             $this->getOperator($filter),
             $filter->getFilterValue()
         );
+
+        if (method_exists($selectStatement, 'getWhere') && $existingWhere = $selectStatement->getWhere()) {
+            $grouping = new Grouping('AND', $conditional, $existingWhere);
+        } else {
+            $grouping = $conditional;
+        }
+        $selectStatement->where($grouping);
 
         return true;
     }
@@ -314,12 +337,8 @@ trait DBReadTrait
             $this->applyOrderBy($selectStatement);
         }
 
-        if ($this->getOffset()) {
-            $selectStatement->offset($this->getOffset());
-        }
-
         if ($this->getLimit()) {
-            $selectStatement->limit($this->getLimit());
+            $selectStatement->limit(new Limit($this->getLimit(), $this->getOffset() ?? null));
         }
 
         $selectStatement = $selectStatement->execute();
@@ -352,11 +371,11 @@ trait DBReadTrait
     }
 
     /**
-     * @param SelectStatement $selectStatement
+     * @param ExtendedSelectOrUpdateInterface $selectStatement
      *
      * @return bool
      */
-    protected function applyOrderBy(SelectStatement $selectStatement)
+    protected function applyOrderBy(ExtendedSelectOrUpdateInterface $selectStatement)
     {
         if (is_array($this->getOrderBy())) {
             /**
@@ -398,7 +417,7 @@ trait DBReadTrait
             $this->applyFilters($this->getFilters(), $selectStatement);
         }
 
-        $selectStatement = $selectStatement->count()->execute();
+        $selectStatement = $selectStatement->execute();
 
         $this->setTotalCount($selectStatement->fetchColumn(0));
 

@@ -1,22 +1,25 @@
 <?php
 namespace NYPL\Starter;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Aura\Di\Injection\InjectionFactory;
+use GuzzleHttp\Psr7\Stream;
 use NYPL\Starter\Model\Response\ErrorResponse;
-use Slim\Container;
+use Aura\Di\Container;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class DefaultContainer extends Container
 {
     const DEFAULT_ERROR_STATUS_CODE = 500;
+    const settings = [];
 
     /**
      * @param \Throwable $exception
      *
      * @return int
      */
-    protected function getStatusCode(\Throwable $exception)
-    {
+    protected function getStatusCode(\Throwable $exception): int {
         if ($exception instanceof APIException) {
             return $exception->getHttpCode();
         }
@@ -30,8 +33,7 @@ class DefaultContainer extends Container
      *
      * @throws APIException
      */
-    protected function initializeErrorResponse(\Throwable $exception, ErrorResponse $errorResponse)
-    {
+    protected function initializeErrorResponse(\Throwable $exception, ErrorResponse $errorResponse) {
         $errorResponse->setStatusCode($this->getStatusCode($exception));
         $errorResponse->setType('exception');
         $errorResponse->setMessage($exception->getMessage());
@@ -47,8 +49,7 @@ class DefaultContainer extends Container
      * @return ErrorResponse
      * @throws APIException
      */
-    protected function getErrorResponse(\Throwable $exception)
-    {
+    protected function getErrorResponse(\Throwable $exception): ErrorResponse {
         if ($exception instanceof APIException && $exception->getErrorResponse()) {
             $errorResponse = $exception->getErrorResponse();
         } else {
@@ -64,8 +65,7 @@ class DefaultContainer extends Container
      * @param Request $request
      * @param \Exception|\Throwable $exception
      */
-    protected function logError(Request $request, $exception)
-    {
+    protected function logError(Request $request, $exception) {
         APILogger::addLog(
             $this->getStatusCode($exception),
             $exception->getMessage(),
@@ -78,23 +78,26 @@ class DefaultContainer extends Container
         );
     }
 
-    protected function handleError(Container $container, Request $request, \Throwable $exception)
-    {
+    protected function handleError(Container $container, Request $request, \Throwable $exception) {
         $this->logError($request, $exception);
 
+        $json = json_encode($this->getErrorResponse($exception));
+        $streamBody = fopen('data://text/plain,' . $json, 'r');
         return $container["response"]
             ->withStatus($this->getStatusCode($exception))
-            ->withJson($this->getErrorResponse($exception))
+            ->withBody(new Stream($streamBody))
             ->withHeader("Access-Control-Allow-Origin", "*");
     }
 
-    public function __construct()
-    {
-        parent::__construct();
+    public function __construct(
+        InjectionFactory $injectionFactory,
+        ContainerInterface $delegateContainer = null
+    ) {
+        parent::__construct($injectionFactory, $delegateContainer);
 
-        $this["settings"]["displayErrorDetails"] = false;
+        $this->settings["displayErrorDetails"] = false;
 
-        $this["notFoundHandler"] = function (Container $container) {
+        $this->notFoundHandler = function (Container $container) {
             return function (Request $request, Response $response) use ($container) {
                 return $container["response"]
                     ->withStatus(404)
@@ -103,13 +106,13 @@ class DefaultContainer extends Container
             };
         };
 
-        $this['phpErrorHandler'] = function ($container) {
+        $this->phpErrorHandler = function ($container) {
             return function (Request $request, Response $response, \Throwable $exception) use ($container) {
                 return $this->handleError($container, $request, $exception);
             };
         };
 
-        $this["errorHandler"] = function (Container $container) {
+        $this->errorHandler = function (Container $container) {
             return function (Request $request, Response $response, \Throwable $exception) use ($container) {
                 return $this->handleError($container, $request, $exception);
             };

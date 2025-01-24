@@ -47,7 +47,7 @@ class Config
      */
     public static function get($name = '', $defaultValue = null, $isEncrypted = false)
     {
-        if (getenv($name) !== false) {
+        if (getenv($name)) {
             if ($isEncrypted && self::isEncryptedEnvironment()) {
                 return self::decryptEnvironmentVariable($name);
             }
@@ -107,8 +107,7 @@ class Config
      * @throws APIException|\InvalidArgumentException
      * @return string
      */
-    protected static function decryptEnvironmentVariable($name = '')
-    {
+    protected static function decryptEnvironmentVariable($name = '') {
         if (!getenv($name)) {
             return '';
         }
@@ -141,7 +140,7 @@ class Config
             );
         }
 
-        $dotEnv = new Dotenv(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
+        $dotEnv = Dotenv::createImmutable(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
         $dotEnv->load();
     }
 
@@ -155,7 +154,7 @@ class Config
         }
 
         if (file_exists(self::getConfigDirectory() . '/' . self::GLOBAL_ENVIRONMENT_FILE)) {
-            $dotEnv = new Dotenv(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
+            $dotEnv = Dotenv::createImmutable(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
             $dotEnv->load();
         }
 

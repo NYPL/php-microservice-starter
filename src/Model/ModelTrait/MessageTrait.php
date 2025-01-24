@@ -1,11 +1,15 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
+use Avro\Datum\IOBinaryEncoder;
+use Avro\Datum\IODatumWriter;
+use Avro\Exception\IOException;
+use Avro\IO\StringIO;
+use Avro\Schema\Schema;
 use Aws\Kinesis\KinesisClient;
 use Aws\Result;
 use NYPL\Starter\APIException;
 use NYPL\Starter\APILogger;
-use NYPL\Starter\AvroLoader;
 use NYPL\Starter\Config;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
 
@@ -47,7 +51,7 @@ trait MessageTrait
     /**
      * @param array $models
      * @param string $streamName
-     * @throws \AvroIOException|\InvalidArgumentException|APIException
+     * @throws IOException|\InvalidArgumentException|APIException
      */
     protected function bulkPublishMessages(array $models = [], $streamName = '')
     {
@@ -126,7 +130,7 @@ trait MessageTrait
     }
 
     /**
-     * @return \AvroStringIO
+     * @return StringIO
      */
     protected function getAvroIo()
     {
@@ -136,7 +140,7 @@ trait MessageTrait
             return self::$avroCache[$streamName]['io'];
         }
 
-        $io = new \AvroStringIO();
+        $io = new StringIO();
 
         self::$avroCache[$streamName]['io'] = $io;
 
@@ -144,7 +148,7 @@ trait MessageTrait
     }
 
     /**
-     * @return \AvroIODatumWriter
+     * @return IODatumWriter
      */
     protected function getAvroWriter()
     {
@@ -154,7 +158,7 @@ trait MessageTrait
             return self::$avroCache[$streamName]['writer'];
         }
 
-        $writer = new \AvroIODatumWriter($this->getAvroSchema());
+        $writer = new IODatumWriter($this->getAvroSchema());
 
         self::$avroCache[$streamName]['writer'] = $writer;
 
@@ -162,7 +166,7 @@ trait MessageTrait
     }
 
     /**
-     * @return \AvroIOBinaryEncoder
+     * @return IOBinaryEncoder
      */
     protected function getAvroEncoder()
     {
@@ -172,7 +176,7 @@ trait MessageTrait
             return self::$avroCache[$streamName]['encoder'];
         }
 
-        $encoder = new \AvroIOBinaryEncoder(self::getAvroIo());
+        $encoder = new IOBinaryEncoder(self::getAvroIo());
 
         self::$avroCache[$streamName]['encoder'] = $encoder;
 
@@ -184,8 +188,6 @@ trait MessageTrait
      */
     protected function encodeMessageAsAvro()
     {
-        AvroLoader::load();
-
         self::getAvroWriter()->write(
             json_decode(json_encode($this), true),
             self::getAvroEncoder()
@@ -199,7 +201,7 @@ trait MessageTrait
     }
 
     /**
-     * @throws \AvroIOException
+     * @throws IOException
      * @return string
      */
     public function createMessage()
@@ -239,7 +241,7 @@ trait MessageTrait
     }
 
     /**
-     * @return \AvroSchema
+     * @return Schema
      */
     public function getAvroSchema()
     {
@@ -252,7 +254,7 @@ trait MessageTrait
          */
         $jsonSchema = json_encode($this->getSchema());
 
-        $schema = \AvroSchema::parse($jsonSchema);
+        $schema = Schema::parse($jsonSchema);
 
         self::$schemaCache[$this->getStreamName()] = $schema;
 

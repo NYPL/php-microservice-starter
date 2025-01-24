@@ -8,24 +8,24 @@ use NYPL\Starter\Model\BulkError;
 abstract class BulkResponse extends Response
 {
     /**
-     * @SWG\Property
+     * @OA\Property
      */
     public $data;
 
     /**
-     * @SWG\Property(example=1, type="int")
+     * @OA\Property(example=1, type="int")
      * @var int
      */
     public $count = 0;
 
     /**
-     * @SWG\Property()
+     * @OA\Property()
      * @var BulkError[]
      */
     public $errors;
 
     /**
-     * @SWG\Property(example=200, type="int")
+     * @OA\Property(example=200, type="int")
      * @var int
      */
     public $statusCode;

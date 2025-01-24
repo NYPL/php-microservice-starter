@@ -1,7 +1,9 @@
 <?php
 namespace NYPL\Starter\Formatter;
 
+use Monolog\DateTimeImmutable;
 use Monolog\Formatter\JsonFormatter;
+use Monolog\LogRecord;
 
 class NyplLogFormatter extends JsonFormatter
 {
@@ -64,26 +66,11 @@ class NyplLogFormatter extends JsonFormatter
      *
      * @return string
      */
-    public function format(array $record)
+    public function format(LogRecord $logRecord): string
     {
-        $record['level'] = $this->translateMonologLevelToString($record['level']);
 
-        $record['levelCode'] = $this->translateLevelToInteger($record['level']);
+        $returnJson = parent::format($logRecord);
 
-        $record['timestamp'] = date('c');
-
-        unset($record['level_name'], $record['channel']);
-
-        if (!$record['extra']) {
-            unset($record['extra']);
-        }
-
-        if (!$record['context']) {
-            unset($record['context']);
-        }
-
-        $record = parent::format($record);
-
-        return $record;
+        return $returnJson;
     }
 }

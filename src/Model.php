@@ -13,7 +13,8 @@ abstract class Model implements \JsonSerializable
     /**
      * @var array
      */
-    public $excludeProperties = ['filters', 'excludeProperties', 'rawData', 'bulk', 'addNullToJson', 'topic', 'streamName'];
+    public $excludeProperties = ['filters', 'excludeProperties', 'rawData', 'bulk', 'addNullToJson', 'topic',
+        'streamName'];
 
     /**
      * @var array
@@ -84,7 +85,7 @@ abstract class Model implements \JsonSerializable
         return true;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $jsonArray = [];
 

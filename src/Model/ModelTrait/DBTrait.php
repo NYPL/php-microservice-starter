@@ -4,7 +4,7 @@ namespace NYPL\Starter\Model\ModelTrait;
 use NYPL\Starter\Slim\DB;
 use NYPL\Starter\Filter;
 use NYPL\Starter\Model;
-use Slim\PDO\Statement\StatementContainer;
+use FaaPz\PDO\StatementInterface;
 
 trait DBTrait
 {
@@ -36,9 +36,9 @@ trait DBTrait
 
     /**
      * @param Filter[] $filters
-     * @param StatementContainer $sqlStatement
+     * @param StatementInterface $sqlStatement
      */
-    public function applyFilters(array $filters, StatementContainer $sqlStatement)
+    public function applyFilters(array $filters, StatementInterface $sqlStatement)
     {
         foreach ($filters as $filter) {
             $this->addWhere(

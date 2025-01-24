@@ -14,8 +14,12 @@ class QueryFilter extends Filter
         return $queryParameterValue;
     }
 
-    public function __construct($queryParameterName = '', $queryParameterValue = null, $isJsonColumn = false, $operator = null)
-    {
+    public function __construct(
+        $queryParameterName = '',
+        $queryParameterValue = null,
+        $isJsonColumn = false,
+        $operator = null
+    ) {
         parent::__construct(
             $queryParameterName,
             $this->getQueryParameterValue($queryParameterValue),

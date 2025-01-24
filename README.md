@@ -4,18 +4,25 @@ This package is intended to be used as the starter package for PHP-based NYPL Mi
 
 This package adheres to [PSR-1](http://www.php-fig.org/psr/psr-1/), [PSR-2](http://www.php-fig.org/psr/psr-2/), and [PSR-4](http://www.php-fig.org/psr/psr-4/) (using the [Composer](https://getcomposer.org/) autoloader).
 
+## Deployment
+
+This library is intended to be used as a Composer dependency hosted on Packagist. To deploy a new version, create a 
+numeric tag, like "2.0.0" and push it up to [Github](https://github.com/NYPL/php-microservice-starter). Then, log into 
+[Packagist](https://packagist.org/packages/nypl/microservice-starter) and hit the update button to pull in the new tag.
+This will make your new tag available as a Composer dependency version that your apps can access.
+
 ## Installation
 
 Via Composer
 ~~~~
 "require": {
-    "nypl/microservice-starter": "~0.1"
+    "nypl/microservice-starter": "^2.0.0"
 }
 ~~~~
 
 ## Requirements
 
-* PHP >=5.5.0
+* PHP >= 8.3
 * PHP Extensions
     + [Rdkafka](https://arnaud-lb.github.io/php-rdkafka/phpdoc/book.rdkafka.html)
 
@@ -60,3 +67,8 @@ $service->get("/swagger", function (Request $request, Response $response) {
     return SwaggerGenerator::generate(__DIR__ . "/src", $response);
 });
 ~~~~
+
+### Forked Avro library
+
+A fork of the Avro PHP library is included in this repo. See [the Avro README](lib/Avro/README.md) for details.
+

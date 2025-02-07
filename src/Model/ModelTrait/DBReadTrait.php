@@ -93,6 +93,7 @@ trait DBReadTrait
             $filter->getFilterValue()
         );
 
+        // If a where clause exists, augment it with this conditional using "OR", otherwise add it as the first where.
         if (method_exists($selectStatement, 'getWhere') && $existingWhere = $selectStatement->getWhere()) {
             $grouping = new Grouping('OR', $conditional, $existingWhere);
         } else {

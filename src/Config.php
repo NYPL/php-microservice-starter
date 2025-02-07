@@ -6,7 +6,12 @@ use Dotenv\Dotenv;
 
 class Config
 {
-    protected const LOCAL_ENVIRONMENT_FILE = 'local.env';
+    protected const ENV_NAME_LOCAL = 'local';
+
+    protected const ENV_NAME_QA = 'qa';
+
+    protected const ENV_NAME_PROD = 'production';
+
     protected const GLOBAL_ENVIRONMENT_FILE = 'global.env';
     protected const DEFAULT_TIME_ZONE = 'America/New_York';
     protected const CACHE_PREFIX = 'Config:';
@@ -38,6 +43,16 @@ class Config
     }
 
     /**
+     * Get Environment from Environment variable 'ENVIRONMENT'. Defaults to "local".
+     *
+     * @return string|null
+     * @throws APIException
+     */
+    public static function getEnvironment() {
+        return self::get('ENVIRONMENT', self::ENV_NAME_LOCAL);
+    }
+
+    /**
      * @param string $name
      * @param null $defaultValue
      * @param bool $isEncrypted
@@ -59,33 +74,29 @@ class Config
     }
 
     /**
+     * Returns true if environment is local or not defined.
+     *
      * @throws APIException
      * @return bool
      */
     public static function isLocalEnvironment()
     {
-        if (self::get('LAMBDA_TASK_ROOT')) {
-            return false;
-        }
-
-        return true;
+        return self::getEnvironment() == self::ENV_NAME_LOCAL;
     }
 
     /**
+     * Returns true if environment is production or qa.
+     *
      * @return bool
      * @throws APIException
      */
     public static function isProductionEnvironment()
     {
-        if (self::isLocalEnvironment()) {
-            return false;
+        if (in_array(self::getEnvironment(), [self::ENV_NAME_QA, self::ENV_NAME_PROD])) {
+            return true;
         }
 
-        if (self::get('environment') === 'development') {
-            return false;
-        }
-
-        return true;
+        return false;
     }
 
     /**
@@ -94,11 +105,7 @@ class Config
      */
     protected static function isEncryptedEnvironment()
     {
-        if (self::get('LAMBDA_TASK_ROOT')) {
-            return true;
-        }
-
-        return false;
+        return !self::isLocalEnvironment();
     }
 
     /**
@@ -128,35 +135,27 @@ class Config
     }
 
     /**
-     * @throws APIException
-     */
-    protected static function loadLocalEnvironment()
-    {
-        $localEnvironmentFile = self::getConfigDirectory() . '/' . self::LOCAL_ENVIRONMENT_FILE;
-
-        if (!file_exists($localEnvironmentFile)) {
-            throw new APIException(
-                'Unable to load local environment configuration file (' . $localEnvironmentFile . ')'
-            );
-        }
-
-        $dotEnv = Dotenv::createImmutable(self::getConfigDirectory(), self::LOCAL_ENVIRONMENT_FILE);
-        $dotEnv->load();
-    }
-
-    /**
+     * Loads Global Environment file first, then environment file for current environment, allowing overrides.
+     *
      * @throws APIException
      */
     protected static function loadConfiguration()
     {
-        if (self::isLocalEnvironment()) {
-            self::loadLocalEnvironment();
-        }
-
+        // Load Global config.
         if (file_exists(self::getConfigDirectory() . '/' . self::GLOBAL_ENVIRONMENT_FILE)) {
-            $dotEnv = Dotenv::createImmutable(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
+            $dotEnv = Dotenv::createMutable(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
             $dotEnv->load();
         }
+
+        $environmentFile =  self::getConfigDirectory() . '/' . self::getEnvironment() . '.env';
+        if (!file_exists($environmentFile)) {
+            throw new APIException(
+                'Unable to load environment configuration file (' . $environmentFile . ')'
+            );
+        }
+
+        $dotEnv = Dotenv::createMutable(self::getConfigDirectory(), $environmentFile);
+        $dotEnv->load();
 
         self::setInitialized(true);
     }

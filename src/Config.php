@@ -49,7 +49,7 @@ class Config
      * @throws APIException
      */
     public static function getEnvironment() {
-        return self::get('ENVIRONMENT', self::ENV_NAME_LOCAL);
+        return getenv('ENVIRONMENT') ?: self::ENV_NAME_LOCAL;
     }
 
     /**
@@ -105,7 +105,7 @@ class Config
      */
     protected static function isEncryptedEnvironment()
     {
-        return !self::isLocalEnvironment();
+        return getenv('DECRYPT_ENV_VARS', true);
     }
 
     /**
@@ -143,18 +143,22 @@ class Config
     {
         // Load Global config.
         if (file_exists(self::getConfigDirectory() . '/' . self::GLOBAL_ENVIRONMENT_FILE)) {
-            $dotEnv = Dotenv::createMutable(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
+            $dotEnv = Dotenv::createUnsafeMutable(self::getConfigDirectory(), self::GLOBAL_ENVIRONMENT_FILE);
             $dotEnv->load();
         }
 
-        $environmentFile =  self::getConfigDirectory() . '/' . self::getEnvironment() . '.env';
-        if (!file_exists($environmentFile)) {
+        $environmentFile = self::getEnvironment() . '.env';
+        if (!file_exists(self::getConfigDirectory() . '/' . $environmentFile)) {
             throw new APIException(
                 'Unable to load environment configuration file (' . $environmentFile . ')'
             );
         }
 
-        $dotEnv = Dotenv::createMutable(self::getConfigDirectory(), $environmentFile);
+        // The method createUnsafeMutable() is used here instead of createMutable() because it enables getenv() to be
+        // used for fetching the loaded env vars. The preferred, thread-safe, practice is to fetch env vars directly
+        // from the $_ENV global array instead of using getenv(), however, we want to allow the use of getenv() to
+        // support legacy code.
+        $dotEnv = Dotenv::createUnsafeMutable(self::getConfigDirectory(), $environmentFile);
         $dotEnv->load();
 
         self::setInitialized(true);

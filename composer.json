@@ -16,7 +16,8 @@
     "aws/aws-sdk-php": "^3.336.2",
     "vlucas/phpdotenv": "^5.6.1",
     "guzzlehttp/guzzle": "^7.9.2",
-    "aura/di": "^4.2.1"
+    "aura/di": "^4.2.1",
+    "doctrine/annotations": "^2.0"
   },
   "autoload": {
     "psr-0": {

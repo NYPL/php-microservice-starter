@@ -105,7 +105,7 @@ class Config
      */
     protected static function isEncryptedEnvironment()
     {
-        return getenv('DECRYPT_ENV_VARS', true);
+        return (strtolower(getenv('DECRYPT_ENV_VARS', true)) === "true");
     }
 
     /**

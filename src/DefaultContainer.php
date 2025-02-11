@@ -100,26 +100,42 @@ class DefaultContainer extends Container
         parent::__construct($injectionFactory, $delegateContainer);
 
         $this->settings["displayErrorDetails"] = false;
+    }
 
-        $this->notFoundHandler = function (Container $container) {
-            return function (Request $request, Response $response) use ($container) {
-                return $container["response"]
-                    ->withStatus(404)
-                    ->withHeader("Content-Type", "text/html")
-                    ->write("Page not found");
-            };
-        };
-
-        $this->phpErrorHandler = function ($container) {
-            return function (Request $request, Response $response, \Throwable $exception) use ($container) {
-                return $this->handleError($container, $request, $exception);
-            };
-        };
-
-        $this->errorHandler = function (Container $container) {
-            return function (Request $request, Response $response, \Throwable $exception) use ($container) {
-                return $this->handleError($container, $request, $exception);
-            };
+    public function notFoundHandler(Container $container) {
+        return function (Request $request, Response $response) use ($container) {
+            return $container["response"]
+                ->withStatus(404)
+                ->withHeader("Content-Type", "text/html")
+                ->write("Page not found");
         };
     }
+
+    public function phpErrorHandler(Container $container) {
+        return function (Request $request, Response $response, \Throwable $exception) use ($container) {
+            return $this->handleError($container, $request, $exception);
+        };
+    }
+
+    public function errorHandler(Container $container) {
+        return function (Request $request, Response $response, \Throwable $exception) use ($container) {
+            return $this->handleError($container, $request, $exception);
+        };
+    }
+
+    /**
+     * Initialize Services.
+     * Use this to add Request and Response to container before executing Controller callback.
+     *
+     * @param Request $request
+     * @param Response $response
+     * @return void
+     * @throws \Aura\Di\Exception\ContainerLocked
+     * @throws \Aura\Di\Exception\ServiceNotObject
+     */
+    public function initServices(Request $request, Response $response) {
+        $this->set('request', $request);
+        $this->set('response', $response);
+    }
+
 }

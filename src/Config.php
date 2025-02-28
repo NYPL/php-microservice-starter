@@ -49,7 +49,7 @@ class Config
      * @throws APIException
      */
     public static function getEnvironment() {
-        return getenv('ENVIRONMENT') ?: self::ENV_NAME_LOCAL;
+        return $_ENV['ENVIRONMENT'] ?? self::ENV_NAME_LOCAL;
     }
 
     /**
@@ -62,12 +62,12 @@ class Config
      */
     public static function get($name = '', $defaultValue = null, $isEncrypted = false)
     {
-        if (getenv($name)) {
+        if (isset($_ENV[$name])) {
             if ($isEncrypted && self::isEncryptedEnvironment()) {
                 return self::decryptEnvironmentVariable($name);
             }
 
-            return (string) getenv($name);
+            return (string) $_ENV[$name];
         }
 
         return $defaultValue;
@@ -100,12 +100,19 @@ class Config
     }
 
     /**
+     * Get whether this environment is configured to store certain environment variables encrypted. Typically, this
+     * would only be true on a local environment where the developer added DECRYPT_ENV_VARS=false to the local.env so
+     * that they wouldn't have to encrypt them.
+     *
      * @throws APIException
      * @return bool
      */
     protected static function isEncryptedEnvironment()
     {
-        return (strtolower(getenv('DECRYPT_ENV_VARS', true)) === "true");
+        if (isset($_ENV['DECRYPT_ENV_VARS']) && strtolower($_ENV['DECRYPT_ENV_VARS']) === "false") {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -115,7 +122,7 @@ class Config
      * @return string
      */
     protected static function decryptEnvironmentVariable($name = '') {
-        if (!getenv($name)) {
+        if (!isset($_ENV[$name])) {
             return '';
         }
 
@@ -126,7 +133,7 @@ class Config
         }
 
         $decryptedValue = (string) self::getKeyClient()->decrypt([
-            'CiphertextBlob' => base64_decode(getenv($name)),
+            'CiphertextBlob' => base64_decode($_ENV[$name]),
         ])['Plaintext'];
 
         AppCache::set($cacheKey, $decryptedValue);

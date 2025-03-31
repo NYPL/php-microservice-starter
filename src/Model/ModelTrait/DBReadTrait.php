@@ -272,11 +272,21 @@ trait DBReadTrait
             return true;
         }
 
-        $selectStatement->where(new Conditional(
-            $this->translateDbName($filter->getFilterColumn()),
-            'BETWEEN',
-            $range
-        ));
+        // Using two comparison operators instead of BETWEEN due to bug in FaaPz/PDO.
+        // @see https://github.com/FaaPz/PDO/issues/175#issuecomment-2766528827
+        $selectStatement->where(
+            new Grouping('AND',
+                new Conditional(
+                    $this->translateDbName($filter->getFilterColumn()),
+                    '>=',
+                    $range[0]
+                ), new Conditional(
+                    $this->translateDbName($filter->getFilterColumn()),
+                    '<=',
+                    $range[1]
+                )
+            )
+        );
 
         return true;
     }

@@ -9,6 +9,9 @@ use NYPL\Starter\Model\LocalDateTime;
 
 trait DBUpdateTrait
 {
+
+    use DBTrait;
+    
     /**
      * @param array $data
      *

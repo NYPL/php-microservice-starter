@@ -95,10 +95,21 @@ class Filter
     /**
      * @return bool
      */
-    public function isRangeFilter()
+    public function isRangeFilter(): bool
     {
-        return strpos($this->getFilterValue(), '[') !== false && strpos($this->getFilterValue(), ']') !== false;
+        $value = $this->getFilterValue();
+        return (is_string($value) && preg_match('/^\[.*\]$/', $value));
     }
+
+    /**
+     * @return bool
+     */
+    public function isInArrayFilter(): bool
+    {
+        $value = $this->getFilterValue();
+        return is_array($value) || (is_string($value) && str_contains($value, ','));
+    }
+
 
     /**
      * @param bool $jsonColumn

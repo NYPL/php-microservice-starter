@@ -3,12 +3,14 @@ namespace NYPL\Starter\Model\ModelTrait;
 
 use NYPL\Starter\APIException;
 use NYPL\Starter\Slim\DB;
-use NYPL\Starter\Model;
 use NYPL\Starter\Model\ModelInterface\MessageInterface;
 use NYPL\Starter\Model\LocalDateTime;
 
 trait DBUpdateTrait
 {
+
+    use DBTrait;
+
     /**
      * @param array $data
      *

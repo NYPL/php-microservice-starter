@@ -1,13 +1,14 @@
 <?php
 namespace NYPL\Starter\Slim;
 
+use FaaPz\PDO\Database;
 use NYPL\Starter\APIException;
 use NYPL\Starter\Config;
 
 class DB
 {
     /**
-     * @var ExtendedDatabase
+     * @var Database
      */
     public static $database;
 
@@ -17,7 +18,7 @@ class DB
     protected static function initializeDatabase()
     {
         self::setDatabase(
-            new ExtendedDatabase(
+            new Database(
                 Config::get('DB_CONNECT_STRING'),
                 Config::get('DB_USERNAME'),
                 Config::get('DB_PASSWORD', null, true)
@@ -27,7 +28,7 @@ class DB
 
     /**
      * @throws APIException
-     * @return ExtendedDatabase
+     * @return Database
      */
     public static function getDatabase()
     {
@@ -39,7 +40,7 @@ class DB
     }
 
     /**
-     * @param ExtendedDatabase $database
+     * @param Database $database
      */
     public static function setDatabase($database)
     {

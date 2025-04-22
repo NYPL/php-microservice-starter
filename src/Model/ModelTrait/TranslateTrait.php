@@ -4,7 +4,6 @@ namespace NYPL\Starter\Model\ModelTrait;
 use NYPL\Starter\APIException;
 use NYPL\Starter\CachedStringy;
 use NYPL\Starter\Model;
-use Stringy\Stringy;
 
 trait TranslateTrait
 {

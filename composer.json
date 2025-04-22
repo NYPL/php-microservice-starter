@@ -9,7 +9,7 @@
   ],
   "require": {
     "slim/slim": "^4.14.0",
-    "faapz/pdo": "^2.2.1",
+    "faapz/pdo": "^2.2.3",
     "monolog/monolog": "^3.8.1",
     "voku/stringy": "^6.5.3",
     "zircote/swagger-php": "^4.11.1",

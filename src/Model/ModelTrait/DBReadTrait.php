@@ -1,13 +1,12 @@
 <?php
 namespace NYPL\Starter\Model\ModelTrait;
 
-
+use FaaPz\PDO\AdvancedStatement;
 use NYPL\Starter\APIException;
 use NYPL\Starter\Slim\DB;
 use NYPL\Starter\Model;
 use NYPL\Starter\ModelSet;
 use NYPL\Starter\OrderBy;
-use NYPL\Starter\Slim\ExtendedSelectOrUpdateInterface;
 use FaaPz\PDO\Clause\Limit;
 
 trait DBReadTrait
@@ -16,7 +15,7 @@ trait DBReadTrait
 
     /**
      * @throws APIException
-     * @return ExtendedSelectOrUpdateInterface
+     * @return AdvancedStatement
      */
     protected function getSingleSelect()
     {
@@ -114,11 +113,11 @@ trait DBReadTrait
     }
 
     /**
-     * @param ExtendedSelectOrUpdateInterface $selectStatement
+     * @param AdvancedStatement $selectStatement
      *
      * @return bool
      */
-    protected function applyOrderBy(ExtendedSelectOrUpdateInterface $selectStatement)
+    protected function applyOrderBy(AdvancedStatement $selectStatement)
     {
         if (is_array($this->getOrderBy())) {
             /**

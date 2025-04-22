@@ -278,7 +278,6 @@ abstract class Controller
                 }
             }
 
-
             $model->read();
 
             $response->initializeResponse($model);

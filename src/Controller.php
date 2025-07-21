@@ -100,7 +100,7 @@ abstract class Controller
     public function getJsonResponse($data): MessageInterface
     {
         $json = json_encode($data);
-        $streamBody = fopen('data://text/plain,' . $json, 'r');
+        $streamBody = fopen('data://text/plain,' . urlencode($json), 'r');
         return $this->getResponse()->withBody(new Stream($streamBody));
     }
 

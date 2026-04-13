@@ -17,12 +17,19 @@ class ErrorHandler
     public static function processShutdownError($errorString = '', $context = [])
     {
         if (!self::isIgnoreError()) {
+            $errorCode = 500;
+            if ($context instanceof \Throwable) {
+              $exceptionCode = $context->getCode();
+              if ($exceptionCode >= 400 && $exceptionCode <= 599) {
+                $errorCode = $exceptionCode;
+              }
+            }
             $exception = new APIException($errorString, $context);
 
             APILogger::addError($errorString, $exception);
 
             $apiResponse = new ErrorResponse(
-                500,
+                $errorCode,
                 'error',
                 $errorString,
                 $exception
@@ -32,7 +39,7 @@ class ErrorHandler
                 ob_clean();
             }
 
-            http_response_code(500);
+            http_response_code($errorCode);
             header('Content-Type: application/json');
             header('Access-Control-Allow-Origin: *');
             echo json_encode($apiResponse, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);

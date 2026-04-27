@@ -19,7 +19,7 @@ class ErrorHandler
         if (!self::isIgnoreError()) {
             $errorCode = 500;
             if ($context instanceof \Throwable) {
-              $exceptionCode = $context->getCode();
+              $exceptionCode = $context->getHttpCode();
               if ($exceptionCode >= 400 && $exceptionCode <= 599) {
                 $errorCode = $exceptionCode;
               }

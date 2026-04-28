@@ -1,5 +1,8 @@
 ### Change Log
 
+### 2.0.3
+ - Change: Missing record produces a 404 response
+
 ### 2.0.0
 - Upgrades codebase for PHP 8.x compatibility (<8.x is no longer compatible).
 - Upgrades Slim from 3.x to 4.x, as well as all Dependencies.

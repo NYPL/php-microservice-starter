@@ -16,7 +16,7 @@ This will make your new tag available as a Composer dependency version that your
 Via Composer
 ~~~~
 "require": {
-    "nypl/microservice-starter": "^2.0.0"
+    "nypl/microservice-starter": "^2.0.3"
 }
 ~~~~
 
